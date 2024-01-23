@@ -1,7 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:daylio_clone/runner.dart';
 
-import 'src/app.dart';
+Future<void> main() async {
+  /// помимо main файла также могут быть
+  /// main_qa main_release и тд
+  /// ниже может быть инициализация окружения
+  /// поэтому основной запуск мы будем делать
+  /// в runner.dart
 
-void main() {
-  runApp(const MyApp());
+  await run();
 }
