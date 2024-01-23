@@ -1,7 +1,9 @@
-import 'package:daylio_clone/src/themes/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/widgets/notes/notes_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../more/more_widget.dart';
 
 class MainScreenWidget extends StatefulWidget {
   const MainScreenWidget({super.key});
@@ -16,7 +18,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
   final List<Widget> _tabs = [
     const NotesWidget(),
     const Text('Статистика'),
-    const Text('Более'),
+    const MoreWidget(),
   ];
 
   void onSelectTab(int index) {
@@ -30,7 +32,36 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(DateFormat.yMMMM().format(DateTime.now())),
+        title: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            const SizedBox(
+              width: 20,
+            ),
+            IconButton(
+              icon: const Icon(
+                Icons.chevron_left,
+                color: Colors.white,
+              ),
+              onPressed: () {},
+            ),
+            Text(DateFormat.yMMMM().format(DateTime.now())),
+            IconButton(
+              icon: const Icon(
+                Icons.chevron_right,
+                color: Colors.white,
+              ),
+              onPressed: () {},
+            ),
+            IconButton(
+                icon: const Icon(
+                  Icons.search,
+                  color: Colors.white,
+                ),
+                onPressed: () {})
+          ],
+        ),
         centerTitle: true,
       ),
       body: IndexedStack(
@@ -39,7 +70,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => Navigator.pushNamed(context, '/add_note'),
         backgroundColor: AppColors.bottomNavigationBarBackground,
         shape: const CircleBorder(
           side: BorderSide(color: AppColors.background, width: 2.3),
@@ -49,72 +80,84 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
         child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomAppBar(
+        padding: const EdgeInsets.symmetric(horizontal: 9.0, vertical: 0.0),
+        height: 70.0,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
                   onPressed: () {
                     onSelectTab(0);
                   },
                   icon: const Icon(Icons.notes),
-                  color: _selectedTab == 0 ? Colors.black : AppColors.listBackground,
+                  color: _selectedTab == 0
+                      ? AppColors.bottomNavigationBarSelectedItemColor
+                      : AppColors.bottomNavigationBarUnselectedItemColor,
                 ),
-                const Text('Записи', style: TextStyle(fontSize: 5),),
+                Text(
+                  'Записи',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: _selectedTab == 0
+                        ? AppColors.bottomNavigationBarSelectedItemColor
+                        : AppColors.bottomNavigationBarUnselectedItemColor,
+                  ),
+                ),
               ],
             ),
-
-
             Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
                   onPressed: () {
                     onSelectTab(1);
                   },
                   icon: const Icon(Icons.stacked_bar_chart),
-                  color: _selectedTab == 1 ? Colors.black : AppColors.listBackground,
+                  color: _selectedTab == 1
+                      ? AppColors.bottomNavigationBarSelectedItemColor
+                      : AppColors.bottomNavigationBarUnselectedItemColor,
                 ),
-                const Text('Статистика', style: TextStyle(fontSize: 5),),
+                Text(
+                  'Статистика',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: _selectedTab == 1
+                        ? AppColors.bottomNavigationBarSelectedItemColor
+                        : AppColors.bottomNavigationBarUnselectedItemColor,
+                  ),
+                ),
               ],
-
             ),
-
-
             Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
                   onPressed: () {
                     onSelectTab(2);
                   },
                   icon: const Icon(Icons.more_horiz),
-                  color: _selectedTab == 2 ? Colors.black : AppColors.listBackground,
+                  color: _selectedTab == 2
+                      ? AppColors.bottomNavigationBarSelectedItemColor
+                      : AppColors.bottomNavigationBarUnselectedItemColor,
                 ),
-                const Text('Более', style: TextStyle(fontSize: 5),),
+                Text(
+                  'Более',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: _selectedTab == 2
+                        ? AppColors.bottomNavigationBarSelectedItemColor
+                        : AppColors.bottomNavigationBarUnselectedItemColor,
+                  ),
+                ),
               ],
             ),
-
-
             const SizedBox(width: 5),
-
           ],
         ),
-
-        // currentIndex: _selectedTab,
-        // items: const [
-        //   BottomNavigationBarItem(
-        //     icon:  Icon(Icons.notes),
-        //     label: 'Записи',
-        //   ),
-        //   BottomNavigationBarItem(
-        //     icon:  Icon(Icons.stacked_bar_chart),
-        //     label: 'Статистика',
-        //   ),
-        //   BottomNavigationBarItem(
-        //     icon: Icon(Icons.more_horiz),
-        //     label: 'Более',
-        //   ),
-        //],
       ),
     );
   }

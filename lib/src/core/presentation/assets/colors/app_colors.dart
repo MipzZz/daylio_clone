@@ -6,4 +6,6 @@ abstract class AppColors{
   static const listBackground = Color.fromRGBO(29, 33, 36, 0.67);
   static const bottomNavigationBarBackground = Color.fromRGBO(5, 178, 107, 1.0);
   static const mainTextColor = Colors.white;
+  static const bottomNavigationBarSelectedItemColor = Colors.black;
+  static const bottomNavigationBarUnselectedItemColor = Color.fromRGBO(29, 33, 36, 0.67);
 }

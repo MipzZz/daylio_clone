@@ -1,4 +1,4 @@
-import 'package:daylio_clone/src/themes/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -42,20 +42,28 @@ class _NotesWidgetState extends State<NotesWidget> {
       date: '2022-01-01',
     ),
     Note(
-      id: 2,
+      id: 3,
       mood: 'Good',
       sleep: '8',
       food: '8',
       date: '2022-01-01',
     ),
     Note(
-      id: 2,
+      id: 4,
       mood: 'Good',
       sleep: '8',
       food: '9',
       date: '2022-01-01',
     ),
   ];
+
+  void _onNoteTab(int index) {
+    final id = _notes[index].id;
+    Navigator.of(context).pushNamed(
+      '/note_detail',
+      arguments: id,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +72,7 @@ class _NotesWidgetState extends State<NotesWidget> {
         ListView.builder(
           padding: const EdgeInsets.only(top: 70),
           itemCount: _notes.length,
+          itemExtent: 90,
           itemBuilder: (BuildContext context, int index) {
             final _note = _notes[index];
             return Padding(
@@ -105,9 +114,7 @@ class _NotesWidgetState extends State<NotesWidget> {
                                     _note.mood,
                                     maxLines: 1,
                                     textAlign: TextAlign.left,
-                                    style: const TextStyle(
-                                      fontSize: 20
-                                    ),
+                                    style: const TextStyle(fontSize: 20),
                                   ),
                                   const SizedBox(width: 10),
                                   Text(_note.date),
@@ -130,6 +137,12 @@ class _NotesWidgetState extends State<NotesWidget> {
                       ),
                     ),
                   ),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _onNoteTab(index),
+                    ),
+                  )
                 ],
               ),
             );
