@@ -1,9 +1,10 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
-import 'package:daylio_clone/src/widgets/main_screen/main_screen_widget.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../widgets/add_note/add_note_widget.dart';
-import '../../../../widgets/notes_details/note_details_widget.dart';
+import '../../../sample_feature/presentation/add_note/add_note_widget.dart';
+import '../../../sample_feature/presentation/main_screen/main_screen_widget.dart';
+import '../../../sample_feature/presentation/notes_details/note_details_widget.dart';
+
 
 class AppView extends StatelessWidget {
   const AppView({super.key});
@@ -12,7 +13,20 @@ class AppView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        datePickerTheme: const DatePickerThemeData(
+          backgroundColor: AppColors.background,
+          rangePickerHeaderForegroundColor: AppColors.mainTextColor,
+          weekdayStyle: TextStyle(color: AppColors.mainTextColor),
+          headerForegroundColor: AppColors.mainTextColor,
+          dayForegroundColor: MaterialStatePropertyAll(AppColors.mainTextColor),
+          yearForegroundColor: MaterialStatePropertyAll(AppColors.mainTextColor),
+          todayForegroundColor: MaterialStatePropertyAll(AppColors.mainTextColor),
+        ),
+        timePickerTheme: const TimePickerThemeData(
+          backgroundColor: AppColors.background,
+        ),
         appBarTheme: const AppBarTheme(
+          foregroundColor: AppColors.mainTextColor,
           backgroundColor: AppColors.background,
           titleTextStyle:
               TextStyle(color: AppColors.mainTextColor, fontSize: 20),

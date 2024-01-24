@@ -1,9 +1,10 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
-import 'package:daylio_clone/src/widgets/notes/notes_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../more/more_widget.dart';
+import '../notes/notes_widget.dart';
+import '../statistic/statistic_widget.dart';
 
 class MainScreenWidget extends StatefulWidget {
   const MainScreenWidget({super.key});
@@ -17,7 +18,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
 
   final List<Widget> _tabs = [
     const NotesWidget(),
-    const Text('Статистика'),
+    const StatisticWidget(),
     const MoreWidget(),
   ];
 
