@@ -1,9 +1,9 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:flutter/material.dart';
 
-import '../../../sample_feature/presentation/add_note/add_note_widget.dart';
-import '../../../sample_feature/presentation/main_screen/main_screen_widget.dart';
-import '../../../sample_feature/presentation/notes_details/note_details_widget.dart';
+import '../../../sample_feature/presentation/add_note/add_note_screen.dart';
+import '../../../sample_feature/presentation/main_screen/main_screen.dart';
+import '../../../sample_feature/presentation/notes_details/note_details_screen.dart';
 
 
 class AppView extends StatelessWidget {
