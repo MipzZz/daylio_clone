@@ -19,7 +19,7 @@ class NotesRepository {
       );
       await _driftStorage.saveNote(noteCompanion);
       final updateNotes = await _driftStorage.readNotes();
-      final notes = updateNotes.map((e) => NoteModel.fromNotebaleData(e));
+      final notes = updateNotes.map(NoteModel.fromNoteTableData);
       _notesController.add(notes);
     } on Object {
       rethrow;
@@ -28,9 +28,7 @@ class NotesRepository {
 
   Future<Iterable<NoteModel>> readNotes() async {
     final updateNotes = await _driftStorage.readNotes();
-    final notes = updateNotes.map((e) => NoteModel.fromNotebaleData(e));
+    final notes = updateNotes.map(NoteModel.fromNoteTableData);
     return notes;
   }
-
-
 }

@@ -1,4 +1,4 @@
-import '../../../../core/data/source/local/db/drift_storage.dart';
+import 'package:daylio_clone/src/core/data/source/local/db/drift_storage.dart';
 
 class NoteModel {
   final int id;
@@ -6,7 +6,17 @@ class NoteModel {
   final String sleep;
   final String food;
 
-  NoteModel(this.id, this.mood, this.sleep, this.food);
+  NoteModel({
+    required this.id,
+    required this.mood,
+    required this.sleep,
+    required this.food,
+  });
 
-  NoteModel.fromNotebaleData(NoteTableData note) : this(note.id, note.mood, note.sleep, note.food);
+  factory NoteModel.fromNoteTableData(NoteTableData note) => NoteModel(
+        id: note.id,
+        mood: note.mood,
+        sleep: note.sleep,
+        food: note.food,
+      );
 }
