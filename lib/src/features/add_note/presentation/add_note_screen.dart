@@ -1,11 +1,10 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
-import 'package:daylio_clone/src/features/sample_feature/presentation/widgets/food_row_widget.dart';
-import 'package:daylio_clone/src/features/sample_feature/presentation/widgets/mood_row_widget.dart';
-import 'package:daylio_clone/src/features/sample_feature/presentation/widgets/sleep_row_widget.dart';
+import 'package:daylio_clone/src/features/widgets/date_picker_widget.dart';
+import 'package:daylio_clone/src/features/widgets/food_row_widget.dart';
+import 'package:daylio_clone/src/features/widgets/mood_row_widget.dart';
+import 'package:daylio_clone/src/features/widgets/sleep_row_widget.dart';
+import 'package:daylio_clone/src/features/widgets/time_picker_widget.dart';
 import 'package:flutter/material.dart';
-
-import '../widgets/date_picker_widget.dart';
-import '../widgets/time_picker_widget.dart';
 
 class AddNoteWidget extends StatefulWidget {
   const AddNoteWidget({super.key});

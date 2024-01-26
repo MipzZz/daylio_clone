@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../more/more_widget.dart';
-import '../notes/notes_widget.dart';
-import '../statistic/statistic_widget.dart';
+import '../../more/presentation/more_widget.dart';
+import '../../notes_list/presentation/notes_widget.dart';
+import '../../statistic/presentation/statistic_widget.dart';
 
 class MainScreenWidget extends StatefulWidget {
   const MainScreenWidget({super.key});

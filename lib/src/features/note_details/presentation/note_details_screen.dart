@@ -1,8 +1,8 @@
 import 'package:daylio_clone/src/core/presentation/assets/res/app_icons.dart';
-import 'package:daylio_clone/src/features/sample_feature/presentation/widgets/date_picker_widget.dart';
-import 'package:daylio_clone/src/features/sample_feature/presentation/widgets/food_row_widget.dart';
-import 'package:daylio_clone/src/features/sample_feature/presentation/widgets/sleep_row_widget.dart';
-import 'package:daylio_clone/src/features/sample_feature/presentation/widgets/time_picker_widget.dart';
+import 'package:daylio_clone/src/features/widgets/date_picker_widget.dart';
+import 'package:daylio_clone/src/features/widgets/food_row_widget.dart';
+import 'package:daylio_clone/src/features/widgets/sleep_row_widget.dart';
+import 'package:daylio_clone/src/features/widgets/time_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -97,35 +97,40 @@ class MoodFacesRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
-            child: SvgPicture.asset(
-          AppIcons.funRegular,
-          width: 50,
-          height: 50,
-        )),
+          child: SvgPicture.asset(
+            AppIcons.funRegular,
+            width: 50,
+            height: 50,
+          ),
+        ),
         Expanded(
-            child: SvgPicture.asset(
-          AppIcons.goodRegular,
-          width: 50,
-          height: 50,
-        )),
+          child: SvgPicture.asset(
+            AppIcons.goodRegular,
+            width: 50,
+            height: 50,
+          ),
+        ),
         Expanded(
-            child: SvgPicture.asset(
-          AppIcons.normalRegular,
-          width: 50,
-          height: 50,
-        )),
+          child: SvgPicture.asset(
+            AppIcons.normalRegular,
+            width: 50,
+            height: 50,
+          ),
+        ),
         Expanded(
-            child: SvgPicture.asset(
-          AppIcons.badRegular,
-          width: 50,
-          height: 50,
-        )),
+          child: SvgPicture.asset(
+            AppIcons.badRegular,
+            width: 50,
+            height: 50,
+          ),
+        ),
         Expanded(
-            child: SvgPicture.asset(
-          AppIcons.terribleRegular,
-          width: 50,
-          height: 50,
-        )),
+          child: SvgPicture.asset(
+            AppIcons.terribleRegular,
+            width: 50,
+            height: 50,
+          ),
+        ),
       ],
     );
   }

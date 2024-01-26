@@ -16,7 +16,6 @@ class NotesRepository {
     try {
       await _driftStorage.saveNote(note);
       final updateNotes = await _driftStorage.readNotes();
-
       _notesController.add(updateNotes);
     } on Object {
       rethrow;
