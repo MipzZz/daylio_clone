@@ -1,6 +1,8 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/features/sample_feature/domain/provider/notes_provider/notes_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../more/more_widget.dart';
 import '../notes/notes_widget.dart';
@@ -27,6 +29,13 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
     setState(() {
       _selectedTab = index;
     });
+  }
+
+  Future<void> _addNote() async {
+    final res = await Navigator.pushNamed(context, '/add_note');
+    if (res == true && mounted) {
+      context.read<NotesProvider>().readNotes();
+    }
   }
 
   @override
@@ -71,7 +80,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/add_note'),
+        onPressed: _addNote,
         backgroundColor: AppColors.bottomNavigationBarBackground,
         shape: const CircleBorder(
           side: BorderSide(color: AppColors.background, width: 2.3),
