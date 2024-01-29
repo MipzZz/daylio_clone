@@ -29,34 +29,11 @@ class NotesProvider extends ChangeNotifier {
     _notesRepository.notesStream.listen(_readNotes);
   }
 
-  Future<NoteModel> readNote(int id) async {
-    try {
-      final note = await _notesRepository.readNote(id);
-      return note;
-    } on Object {
-      rethrow;
-    }
-  }
-
   Future<void> readNotes() async {
     try {
       final notes = await _notesRepository.readNotes();
       state = state.copyWith(notes: notes.toList());
       notifyListeners();
-    } on Object {
-      rethrow;
-    }
-  }
-
-  Future<void> saveNote({required String mood, required String sleep, required String food}) async {
-    try {
-      final note = NoteModel(
-        id: 0,
-        mood: mood,
-        sleep: sleep,
-        food: food,
-      );
-      await _notesRepository.saveNote(note);
     } on Object {
       rethrow;
     }

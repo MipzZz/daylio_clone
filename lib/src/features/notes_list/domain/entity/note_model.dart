@@ -20,4 +20,18 @@ class NoteModel {
         sleep: note.sleep,
         food: note.food,
       );
+
+  NoteModel copyWith({
+    int? id,
+    String? mood,
+    String? sleep,
+    String? food,
+  }) {
+    return NoteModel(
+      id: id ?? this.id,
+      mood: mood ?? this.mood,
+      sleep: sleep ?? this.sleep,
+      food: food ?? this.food,
+    );
+  }
 }
