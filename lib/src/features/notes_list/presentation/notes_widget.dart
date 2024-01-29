@@ -1,22 +1,8 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/note_model.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/provider/notes_provider/notes_provider.dart';
 import 'package:flutter/material.dart';
-
-class Note {
-  final int id;
-  final String mood;
-  final String sleep;
-  final String food;
-  final String date;
-
-  Note({
-    required this.id,
-    required this.mood,
-    required this.sleep,
-    required this.food,
-    required this.date,
-  });
-}
+import 'package:provider/provider.dart';
 
 class NotesWidget extends StatefulWidget {
   const NotesWidget({super.key});
@@ -26,39 +12,9 @@ class NotesWidget extends StatefulWidget {
 }
 
 class _NotesWidgetState extends State<NotesWidget> {
-  final _notes = [
-    Note(
-      id: 1,
-      mood: 'Good',
-      sleep: '3',
-      food: '2',
-      date: '2022-01-01',
-    ),
-    Note(
-      id: 2,
-      mood: 'Good',
-      sleep: '4',
-      food: '7',
-      date: '2022-01-01',
-    ),
-    Note(
-      id: 3,
-      mood: 'Good',
-      sleep: '8',
-      food: '8',
-      date: '2022-01-01',
-    ),
-    Note(
-      id: 4,
-      mood: 'Good',
-      sleep: '8',
-      food: '9',
-      date: '2022-01-01',
-    ),
-  ];
 
   void _onNoteTab(int index) {
-    final id = _notes[index].id;
+    final id = index;
     Navigator.of(context).pushNamed(
       '/note_detail',
       arguments: id,
@@ -67,6 +23,7 @@ class _NotesWidgetState extends State<NotesWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final _notes = context.select((NotesProvider vm) => vm.state.notes);
     return Stack(
       children: [
         ListView.builder(
@@ -108,29 +65,8 @@ class _NotesWidgetState extends State<NotesWidget> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    _note.mood,
-                                    maxLines: 1,
-                                    textAlign: TextAlign.left,
-                                    style: const TextStyle(fontSize: 20),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(_note.date),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  const Icon(Icons.bed,
-                                      color: AppColors.mainGreen),
-                                  Text(_note.sleep),
-                                  const SizedBox(width: 10),
-                                  const Icon(Icons.emoji_food_beverage,
-                                      color: AppColors.mainGreen),
-                                  Text(_note.food),
-                                ],
-                              ),
+                              _MoodRow(note: _note),
+                              _SleepAndFoodRow(note: _note),
                             ],
                           ),
                         ],
@@ -140,13 +76,60 @@ class _NotesWidgetState extends State<NotesWidget> {
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () => _onNoteTab(index),
+                      onTap: () => _onNoteTab(_note.id),
                     ),
                   )
                 ],
               ),
             );
           },
+        ),
+      ],
+    );
+  }
+}
+
+class _SleepAndFoodRow extends StatelessWidget {
+  const _SleepAndFoodRow({
+    super.key,
+    required NoteModel note,
+  }) : _note = note;
+
+  final NoteModel _note;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(Icons.bed,
+            color: AppColors.mainGreen),
+        Text(_note.sleep),
+        const SizedBox(width: 10),
+        const Icon(Icons.emoji_food_beverage,
+            color: AppColors.mainGreen),
+        Text(_note.food),
+      ],
+    );
+  }
+}
+
+class _MoodRow extends StatelessWidget {
+  const _MoodRow({
+    super.key,
+    required NoteModel note,
+  }) : _note = note;
+
+  final NoteModel _note;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          _note.mood,
+          maxLines: 1,
+          textAlign: TextAlign.left,
+          style: const TextStyle(fontSize: 20),
         ),
       ],
     );

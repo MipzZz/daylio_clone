@@ -13,6 +13,7 @@ class NoteModel {
     required this.food,
   });
 
+
   factory NoteModel.fromNoteTableData(NoteTableData note) => NoteModel(
         id: note.id,
         mood: note.mood,

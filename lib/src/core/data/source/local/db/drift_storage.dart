@@ -33,4 +33,13 @@ class AppDb extends _$AppDb{
   Future<int> saveNote(NoteTableCompanion entity) async {
     return await into(noteTable).insert(entity);
   }
+
+  Future<int> deleteNote(int id) async {
+    return await (delete(noteTable)..where((tbl) => tbl.id.equals(id))).go();
+  }
+
+  Future<NoteTableData> readNote(int id) async {
+    return await (select(noteTable)..where((tbl) => tbl.id.equals(id))).getSingle();
+  }
+
 }

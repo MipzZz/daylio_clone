@@ -77,17 +77,17 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
         index: _selectedTab,
         children: _tabs,
       ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _addNote,
-      //   backgroundColor: AppColors.bottomNavigationBarBackground,
-      //   shape: const CircleBorder(
-      //     side: BorderSide(color: AppColors.background, width: 2.3),
-      //   ),
-      //   foregroundColor: Colors.black,
-      //   elevation: 10,
-      //   child: const Icon(Icons.add),
-      // ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: _addNote,
+        backgroundColor: AppColors.bottomNavigationBarBackground,
+        shape: const CircleBorder(
+          side: BorderSide(color: AppColors.background, width: 2.3),
+        ),
+        foregroundColor: Colors.black,
+        elevation: 10,
+        child: const Icon(Icons.add),
+      ),
       bottomNavigationBar: BottomAppBar(
         padding: const EdgeInsets.symmetric(horizontal: 9.0, vertical: 0.0),
         height: 70.0,
@@ -164,11 +164,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
                 ),
               ],
             ),
-            // const SizedBox(width: 5),
-            ElevatedButton(
-              onPressed: () {},
-              child: Icon(Icons.add),
-            )
+            const SizedBox(width: 5),
           ],
         ),
       ),

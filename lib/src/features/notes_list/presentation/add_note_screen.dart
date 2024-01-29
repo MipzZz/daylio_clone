@@ -21,18 +21,18 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
         title: const Text('Добавить запись'),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 50),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            DateNTimeRow(),
-            SizedBox(height: 30),
-            MoodRowWidget(),
-            SizedBox(height: 50),
-            SleepRowWidget(),
-            SizedBox(height: 50),
-            FoodRowWidget(),
-            SizedBox(height: 50),
+            const DateNTimeRow(),
+            const SizedBox(height: 30),
+            const MoodRowWidget(),
+            const SizedBox(height: 50),
+            const SleepRowWidget(),
+            const SizedBox(height: 50),
+            const FoodRowWidget(),
+            const SizedBox(height: 50),
             OutlinedButton(
               style: ButtonStyle(
                   backgroundColor:
