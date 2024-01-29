@@ -1,10 +1,11 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/features/notes_list/data/repository/notes_repository.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/provider/add_note_provider/add_note_provider.dart';
 import 'package:daylio_clone/src/features/widgets/date_picker_widget.dart';
-import 'package:daylio_clone/src/features/widgets/food_row_widget.dart';
-import 'package:daylio_clone/src/features/widgets/mood_row_widget.dart';
-import 'package:daylio_clone/src/features/widgets/sleep_row_widget.dart';
+import 'package:daylio_clone/src/features/widgets/dropdown_widget.dart';
 import 'package:daylio_clone/src/features/widgets/time_picker_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AddNoteWidget extends StatefulWidget {
   const AddNoteWidget({super.key});
@@ -16,39 +17,53 @@ class AddNoteWidget extends StatefulWidget {
 class _AddNoteWidgetState extends State<AddNoteWidget> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Добавить запись'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const DateNTimeRow(),
-            const SizedBox(height: 30),
-            const MoodRowWidget(),
-            const SizedBox(height: 50),
-            const SleepRowWidget(),
-            const SizedBox(height: 50),
-            const FoodRowWidget(),
-            const SizedBox(height: 50),
-            OutlinedButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(AppColors.mainGreen),
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                  side: MaterialStateProperty.all<BorderSide>(
-                    const BorderSide(color: AppColors.mainGreen, width: 2),
-                  )),
-              onPressed: () {},
-              child:
-                  const Text('Добавить запись', style: TextStyle(fontSize: 15)),
-            ),
-          ],
+    return Provider(
+      create: (context) => AddNoteProvider(notesRepository: NotesRepository()),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Добавить запись'),
+        ),
+        body: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 50),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DateNTimeRow(),
+              SizedBox(height: 30),
+              _MoodRowWidget(),
+              SizedBox(height: 50),
+              _SleepRowWidget(),
+              SizedBox(height: 50),
+              _FoodRowWidget(),
+              SizedBox(height: 50),
+              _AddNoteButton(),
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _AddNoteButton extends StatelessWidget {
+  const _AddNoteButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      style: ButtonStyle(
+          backgroundColor:
+              MaterialStateProperty.all<Color>(AppColors.mainGreen),
+          foregroundColor:
+              MaterialStateProperty.all<Color>(Colors.white),
+          side: MaterialStateProperty.all<BorderSide>(
+            const BorderSide(color: AppColors.mainGreen, width: 2),
+          )),
+      onPressed: () {},
+      child:
+          const Text('Добавить запись', style: TextStyle(fontSize: 15)),
     );
   }
 }
@@ -67,5 +82,128 @@ class DateNTimeRow extends StatelessWidget {
         Expanded(child: TimePickerWidget()),
       ],
     );
+  }
+}
+
+class _MoodRowWidget extends StatelessWidget {
+  const _MoodRowWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return  Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+            child: _DropdownMenuWidget(
+              labelText: 'Оценка настроения',
+            )),
+        Expanded(
+          child: TextField(
+            maxLines: 1,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Описание настроения',
+            ),
+            style: TextStyle(fontSize: 10),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SleepRowWidget extends StatelessWidget {
+  const _SleepRowWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return  Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+          child: _DropdownMenuWidget(
+            labelText: 'Оценка сна',
+          ),
+        ),
+        Expanded(
+          child: TextField(
+            maxLines: 1,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Описание сна',
+            ),
+            style: TextStyle(fontSize: 10),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FoodRowWidget extends StatelessWidget {
+  const _FoodRowWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+          child: _DropdownMenuWidget(
+            labelText: 'Оценка еды',
+          ),
+        ),
+        Expanded(
+          child: TextField(
+            maxLines: 1,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Описание еды',
+            ),
+            style: TextStyle(fontSize: 10),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DropdownMenuWidget extends StatelessWidget {
+  final String labelText;
+  final dropDownMenuController = TextEditingController();
+  _DropdownMenuWidget({super.key, required this.labelText});
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownMenu(
+      controller: dropDownMenuController,
+        inputDecorationTheme: const InputDecorationTheme(
+          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          border: OutlineInputBorder(),
+        ),
+        label: Text(labelText),
+        textStyle: const TextStyle(fontSize: 15),
+        dropdownMenuEntries: const [
+          DropdownMenuEntry(
+            value: 1,
+            label: 'Отлично',
+          ),
+          DropdownMenuEntry(
+            value: 2,
+            label: 'Хорошо',
+          ),
+          DropdownMenuEntry(
+            value: 3,
+            label: 'Нормально',
+          ),
+          DropdownMenuEntry(
+            value: 4,
+            label: 'Плохо',
+          )
+        ]);
   }
 }
