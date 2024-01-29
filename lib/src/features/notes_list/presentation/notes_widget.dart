@@ -70,7 +70,7 @@ class _NotesWidgetState extends State<NotesWidget> {
     return Stack(
       children: [
         ListView.builder(
-          padding: const EdgeInsets.only(top: 70),
+          padding: const EdgeInsets.only(top: 5),
           itemCount: _notes.length,
           itemExtent: 90,
           itemBuilder: (BuildContext context, int index) {

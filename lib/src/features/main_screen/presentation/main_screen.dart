@@ -1,13 +1,11 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/features/more/presentation/more_widget.dart';
+import 'package:daylio_clone/src/features/notes_list/presentation/notes_widget.dart';
 import 'package:daylio_clone/src/features/sample_feature/domain/provider/notes_provider/notes_provider.dart';
+import 'package:daylio_clone/src/features/statistic/presentation/statistic_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import '../../more/presentation/more_widget.dart';
-import '../../notes_list/presentation/notes_widget.dart';
-import '../../statistic/presentation/statistic_widget.dart';
-
 class MainScreenWidget extends StatefulWidget {
   const MainScreenWidget({super.key});
 
@@ -41,6 +39,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.max,
@@ -78,17 +77,17 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
         index: _selectedTab,
         children: _tabs,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addNote,
-        backgroundColor: AppColors.bottomNavigationBarBackground,
-        shape: const CircleBorder(
-          side: BorderSide(color: AppColors.background, width: 2.3),
-        ),
-        foregroundColor: Colors.black,
-        elevation: 10,
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _addNote,
+      //   backgroundColor: AppColors.bottomNavigationBarBackground,
+      //   shape: const CircleBorder(
+      //     side: BorderSide(color: AppColors.background, width: 2.3),
+      //   ),
+      //   foregroundColor: Colors.black,
+      //   elevation: 10,
+      //   child: const Icon(Icons.add),
+      // ),
       bottomNavigationBar: BottomAppBar(
         padding: const EdgeInsets.symmetric(horizontal: 9.0, vertical: 0.0),
         height: 70.0,
@@ -165,7 +164,11 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
                 ),
               ],
             ),
-            const SizedBox(width: 5),
+            // const SizedBox(width: 5),
+            ElevatedButton(
+              onPressed: () {},
+              child: Icon(Icons.add),
+            )
           ],
         ),
       ),
