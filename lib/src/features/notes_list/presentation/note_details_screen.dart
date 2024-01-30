@@ -79,7 +79,7 @@ class _DeleteButton extends StatelessWidget {
             const BorderSide(color: Colors.redAccent, width: 2),
           )),
       onPressed: () {
-        final id = context.read<int>();
+        final id = context.read<int>(); //TODO Исправить ошибку, которая возникает, при попытке удалить созданный вручную объект.
         viewModel.deleteNote(id: id);
         Navigator.pop(context);
       },

@@ -51,6 +51,7 @@ class _AddNoteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.read<AddNoteProvider>();
     return OutlinedButton(
       style: ButtonStyle(
           backgroundColor:
@@ -60,7 +61,7 @@ class _AddNoteButton extends StatelessWidget {
             const BorderSide(color: AppColors.mainGreen, width: 2),
           )),
       onPressed: () {
-        context.read<AddNoteProvider>().saveNote;
+        viewModel.saveNote();
         Navigator.pop(context);
       },
       child: const Text('Добавить запись', style: TextStyle(fontSize: 15)),
