@@ -1,6 +1,6 @@
-
 import 'package:daylio_clone/src/core/presentation/assets/res/app_icons.dart';
 import 'package:daylio_clone/src/features/notes_list/data/repository/notes_repository.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/provider/notes_details_provider/notes_details_provider.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/provider/notes_provider/notes_provider.dart';
 import 'package:daylio_clone/src/features/widgets/date_picker_widget.dart';
@@ -25,17 +25,15 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
     final id = widget.noteId;
     final notesRepository = context.read<NotesRepository>();
     return ChangeNotifierProvider(
-      create: (context) => NotesDetailsProvider(notesRepository: notesRepository, id: id),
+      create: (context) =>
+          NotesDetailsProvider(notesRepository: notesRepository, id: id),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          actions: [
+          actions: const [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.save),
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: _SaveButton(),
             )
           ],
           title: Text(widget.noteId.toString()),
@@ -63,6 +61,20 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
   }
 }
 
+class _SaveButton extends StatelessWidget {
+  const _SaveButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () => context.read<NotesDetailsProvider>().updateNote(),
+      icon: const Icon(Icons.save),
+    );
+  }
+}
+
 class _DeleteButton extends StatelessWidget {
   const _DeleteButton({
     super.key,
@@ -79,7 +91,7 @@ class _DeleteButton extends StatelessWidget {
             const BorderSide(color: Colors.redAccent, width: 2),
           )),
       onPressed: () {
-        final id = context.read<int>(); //TODO Исправить ошибку, которая возникает, при попытке удалить созданный вручную объект.
+        final id = context.read<NotesDetailsProvider>().state.note.id;
         viewModel.deleteNote(id: id);
         Navigator.pop(context);
       },
@@ -98,15 +110,14 @@ class _MoodDescriptionWidget extends StatefulWidget {
 }
 
 class _MoodDescriptionWidgetState extends State<_MoodDescriptionWidget> {
-
-  
-
   @override
   Widget build(BuildContext context) {
-    final moodController = TextEditingController(text: context.watch<NotesDetailsProvider>().state.note.mood);
+    final moodController = TextEditingController(
+        text: context.watch<NotesDetailsProvider>().state.note.mood);
     return TextField(
       controller: moodController,
       maxLines: 1,
+      onChanged: (text) => Provider.of<NotesDetailsProvider>(context, listen: false).setMood(text),
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
         labelText: 'Описание настроения',
@@ -126,8 +137,8 @@ class _DateNTimeRow extends StatelessWidget {
     return const Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(child: DatePickerWidget()),
-        Expanded(child: TimePickerWidget()),
+        Expanded(child: _DatePickerWidget()),
+        Expanded(child: _TimePickerWidget()),
       ],
     );
   }
@@ -144,10 +155,13 @@ class _MoodFacesRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
-          child: SvgPicture.asset(
-            AppIcons.funRegular,
-            width: 50,
-            height: 50,
+          child: GestureDetector(
+            // onTap: ,
+            child: SvgPicture.asset(
+              AppIcons.excellentRegular,
+              width: 50,
+              height: 50,
+            ),
           ),
         ),
         Expanded(
@@ -190,15 +204,31 @@ class _SleepRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    final _sleepController = TextEditingController();
+
+    return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
-          child: DropdownMenuWidget(
-            labelText: 'Оценка сна',
+          child: DropdownMenu<GradeLabel>(
+            initialSelection: GradeLabel.good,
+            controller: _sleepController,
+            label: const Text('Оценка сна'),
+            inputDecorationTheme: const InputDecorationTheme(
+              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              border: OutlineInputBorder(),
+            ),
+            textStyle: const TextStyle(fontSize: 15),
+            dropdownMenuEntries: GradeLabel.values
+                .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
+              return DropdownMenuEntry<GradeLabel>(
+                value: grade,
+                label: grade.title,
+              );
+            }).toList(),
           ),
         ),
-        Expanded(
+        const Expanded(
           child: TextField(
             maxLines: 1,
             decoration: InputDecoration(
@@ -236,6 +266,117 @@ class _FoodRowWidget extends StatelessWidget {
             style: TextStyle(fontSize: 10),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _DatePickerWidget extends StatefulWidget {
+  const _DatePickerWidget({
+    super.key,
+  });
+
+  @override
+  State<_DatePickerWidget> createState() => _DatePickerWidgetState();
+}
+
+class _DatePickerWidgetState extends State<_DatePickerWidget> {
+
+  void selectDate(DateTime selectedDate) async {
+    final DateTime? date = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2022),
+      lastDate: DateTime(2030),
+    );
+    if (date != null) {
+      setState(() {
+        Provider.of<NotesDetailsProvider>(context, listen: false).setDate(date);
+        selectedDate = date;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    DateTime selectedDate = context.watch<NotesDetailsProvider>().state.note.date;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          '${selectedDate.day}.${selectedDate.month}.${selectedDate.year}',
+          style: const TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.black45),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          ),
+          onPressed: () => selectDate(selectedDate),
+          child: const Text(
+            'Выбрать дату',
+            style: TextStyle(fontSize: 12),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TimePickerWidget extends StatefulWidget {
+  const _TimePickerWidget({
+    super.key,
+  });
+
+  @override
+  State<_TimePickerWidget> createState() => _TimePickerWidgetState();
+}
+
+class _TimePickerWidgetState extends State<_TimePickerWidget> {
+
+  void setTime(TimeOfDay selectedTime) async {
+    final TimeOfDay? timeOfDay = await showTimePicker(
+        context: context,
+        initialTime: selectedTime,
+        initialEntryMode: TimePickerEntryMode.dial,
+        builder: (BuildContext context, Widget? child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!,
+          );
+        });
+    if (timeOfDay != null) {
+      setState(() {
+        Provider.of<NotesDetailsProvider>(context, listen: false).setTime(timeOfDay);
+        selectedTime = timeOfDay;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    TimeOfDay selectedTime = TimeOfDay.fromDateTime(context.watch<NotesDetailsProvider>().state.note.date);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          '${selectedTime.hour}:${selectedTime.minute}',
+          style: const TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.black45),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          ),
+          onPressed: () => setTime(selectedTime),
+          child: const Text(
+            'Выбрать время',
+            style: TextStyle(fontSize: 12),
+          ),
+        )
       ],
     );
   }

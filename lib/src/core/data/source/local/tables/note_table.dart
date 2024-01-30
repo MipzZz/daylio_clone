@@ -5,4 +5,5 @@ class NoteTable extends Table{
   TextColumn get mood => text().named('mood')();
   TextColumn get food => text().named('food')();
   TextColumn get sleep => text().named('sleep')();
+  DateTimeColumn get date => dateTime().named('date')();
 }

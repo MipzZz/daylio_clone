@@ -131,6 +131,8 @@ class _MoodRow extends StatelessWidget {
           textAlign: TextAlign.left,
           style: const TextStyle(fontSize: 20),
         ),
+        const SizedBox(width: 10),
+        Text('${_note.date.hour}:${_note.date.minute}',),
       ],
     );
   }

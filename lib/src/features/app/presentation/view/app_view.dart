@@ -25,7 +25,7 @@ class _AppViewState extends State<AppView> {
         ChangeNotifierProvider(
           create: (context) => NotesProvider(notesRepository: _notesRepository),
         ),
-        Provider.value(value: _notesRepository),
+        Provider(create: (context) => _notesRepository),
       ],
       child: MaterialApp(
         theme: AppThemeData.darkMainTheme,

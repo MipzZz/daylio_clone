@@ -6,6 +6,7 @@ import 'package:daylio_clone/src/features/statistic/presentation/statistic_widge
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 class MainScreenWidget extends StatefulWidget {
   const MainScreenWidget({super.key});
 
@@ -39,8 +40,17 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+            onPressed: () {},
+          ),
+          const SizedBox(width: 10),
+        ],
         title: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -63,12 +73,6 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
               ),
               onPressed: () {},
             ),
-            IconButton(
-                icon: const Icon(
-                  Icons.search,
-                  color: Colors.white,
-                ),
-                onPressed: () {})
           ],
         ),
         centerTitle: true,
@@ -107,13 +111,15 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
                       ? AppColors.bottomNavigationBarSelectedItemColor
                       : AppColors.bottomNavigationBarUnselectedItemColor,
                 ),
-                Text(
-                  'Записи',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: _selectedTab == 0
-                        ? AppColors.bottomNavigationBarSelectedItemColor
-                        : AppColors.bottomNavigationBarUnselectedItemColor,
+                FittedBox(
+                  child: Text(
+                    'Записи',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _selectedTab == 0
+                          ? AppColors.bottomNavigationBarSelectedItemColor
+                          : AppColors.bottomNavigationBarUnselectedItemColor,
+                    ),
                   ),
                 ),
               ],
@@ -130,13 +136,15 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
                       ? AppColors.bottomNavigationBarSelectedItemColor
                       : AppColors.bottomNavigationBarUnselectedItemColor,
                 ),
-                Text(
-                  'Статистика',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: _selectedTab == 1
-                        ? AppColors.bottomNavigationBarSelectedItemColor
-                        : AppColors.bottomNavigationBarUnselectedItemColor,
+                FittedBox(
+                  child: Text(
+                    'Статистика',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _selectedTab == 1
+                          ? AppColors.bottomNavigationBarSelectedItemColor
+                          : AppColors.bottomNavigationBarUnselectedItemColor,
+                    ),
                   ),
                 ),
               ],
@@ -153,18 +161,20 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
                       ? AppColors.bottomNavigationBarSelectedItemColor
                       : AppColors.bottomNavigationBarUnselectedItemColor,
                 ),
-                Text(
-                  'Более',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: _selectedTab == 2
-                        ? AppColors.bottomNavigationBarSelectedItemColor
-                        : AppColors.bottomNavigationBarUnselectedItemColor,
+                FittedBox(
+                  child: Text(
+                    'Более',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _selectedTab == 2
+                          ? AppColors.bottomNavigationBarSelectedItemColor
+                          : AppColors.bottomNavigationBarUnselectedItemColor,
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(width: 5),
+            const SizedBox(width: 1),
           ],
         ),
       ),

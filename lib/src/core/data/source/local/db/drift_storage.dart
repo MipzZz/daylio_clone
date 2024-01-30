@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:daylio_clone/src/core/data/source/local/tables/note_entity.dart';
+import 'package:daylio_clone/src/core/data/source/local/tables/note_table.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -40,6 +40,10 @@ class AppDb extends _$AppDb{
 
   Future<NoteTableData> readNote(int id) async {
     return await (select(noteTable)..where((tbl) => tbl.id.equals(id))).getSingle();
+  }
+
+  Future<bool> updateNote(NoteTableCompanion entity) async {
+    return await update(noteTable).replace(entity);
   }
 
 }

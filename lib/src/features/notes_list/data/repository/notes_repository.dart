@@ -18,6 +18,7 @@ class NotesRepository {
         mood: Value(note.mood),
         sleep: Value(note.sleep),
         food: Value(note.food),
+        date: Value(note.date),
       );
       await _driftStorage.saveNote(noteCompanion);
       final updateNotes = await _driftStorage.readNotes();
@@ -38,6 +39,24 @@ class NotesRepository {
     final updateNote = await _driftStorage.readNote(id);
     final note = NoteModel.fromNoteTableData(updateNote);
     return note;
+  }
+
+  Future<void> updateNote(NoteModel note) async {
+    try {
+      final noteCompanion = NoteTableCompanion(
+        id: Value(note.id),
+        mood: Value(note.mood),
+        sleep: Value(note.sleep),
+        food: Value(note.food),
+        date: Value(note.date),
+      );
+      await _driftStorage.updateNote(noteCompanion);
+      final updateNotes = await _driftStorage.readNotes();
+      final notes = updateNotes.map(NoteModel.fromNoteTableData);
+      _notesController.add(notes);
+    } on Object {
+      rethrow;
+    }
   }
 
   Future<void> deleteNote(int id) async {

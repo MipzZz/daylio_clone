@@ -33,8 +33,13 @@ class $NoteTableTable extends NoteTable
   late final GeneratedColumn<String> sleep = GeneratedColumn<String>(
       'sleep', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
-  List<GeneratedColumn> get $columns => [id, mood, food, sleep];
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+      'date', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, mood, food, sleep, date];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -66,6 +71,12 @@ class $NoteTableTable extends NoteTable
     } else if (isInserting) {
       context.missing(_sleepMeta);
     }
+    if (data.containsKey('date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
     return context;
   }
 
@@ -83,6 +94,8 @@ class $NoteTableTable extends NoteTable
           .read(DriftSqlType.string, data['${effectivePrefix}food'])!,
       sleep: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}sleep'])!,
+      date: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
     );
   }
 
@@ -97,11 +110,13 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
   final String mood;
   final String food;
   final String sleep;
+  final DateTime date;
   const NoteTableData(
       {required this.id,
       required this.mood,
       required this.food,
-      required this.sleep});
+      required this.sleep,
+      required this.date});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -109,6 +124,7 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
     map['mood'] = Variable<String>(mood);
     map['food'] = Variable<String>(food);
     map['sleep'] = Variable<String>(sleep);
+    map['date'] = Variable<DateTime>(date);
     return map;
   }
 
@@ -118,6 +134,7 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
       mood: Value(mood),
       food: Value(food),
       sleep: Value(sleep),
+      date: Value(date),
     );
   }
 
@@ -129,6 +146,7 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
       mood: serializer.fromJson<String>(json['mood']),
       food: serializer.fromJson<String>(json['food']),
       sleep: serializer.fromJson<String>(json['sleep']),
+      date: serializer.fromJson<DateTime>(json['date']),
     );
   }
   @override
@@ -139,16 +157,22 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
       'mood': serializer.toJson<String>(mood),
       'food': serializer.toJson<String>(food),
       'sleep': serializer.toJson<String>(sleep),
+      'date': serializer.toJson<DateTime>(date),
     };
   }
 
   NoteTableData copyWith(
-          {int? id, String? mood, String? food, String? sleep}) =>
+          {int? id,
+          String? mood,
+          String? food,
+          String? sleep,
+          DateTime? date}) =>
       NoteTableData(
         id: id ?? this.id,
         mood: mood ?? this.mood,
         food: food ?? this.food,
         sleep: sleep ?? this.sleep,
+        date: date ?? this.date,
       );
   @override
   String toString() {
@@ -156,13 +180,14 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
           ..write('id: $id, ')
           ..write('mood: $mood, ')
           ..write('food: $food, ')
-          ..write('sleep: $sleep')
+          ..write('sleep: $sleep, ')
+          ..write('date: $date')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, mood, food, sleep);
+  int get hashCode => Object.hash(id, mood, food, sleep, date);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -170,7 +195,8 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
           other.id == this.id &&
           other.mood == this.mood &&
           other.food == this.food &&
-          other.sleep == this.sleep);
+          other.sleep == this.sleep &&
+          other.date == this.date);
 }
 
 class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
@@ -178,31 +204,37 @@ class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
   final Value<String> mood;
   final Value<String> food;
   final Value<String> sleep;
+  final Value<DateTime> date;
   const NoteTableCompanion({
     this.id = const Value.absent(),
     this.mood = const Value.absent(),
     this.food = const Value.absent(),
     this.sleep = const Value.absent(),
+    this.date = const Value.absent(),
   });
   NoteTableCompanion.insert({
     this.id = const Value.absent(),
     required String mood,
     required String food,
     required String sleep,
+    required DateTime date,
   })  : mood = Value(mood),
         food = Value(food),
-        sleep = Value(sleep);
+        sleep = Value(sleep),
+        date = Value(date);
   static Insertable<NoteTableData> custom({
     Expression<int>? id,
     Expression<String>? mood,
     Expression<String>? food,
     Expression<String>? sleep,
+    Expression<DateTime>? date,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (mood != null) 'mood': mood,
       if (food != null) 'food': food,
       if (sleep != null) 'sleep': sleep,
+      if (date != null) 'date': date,
     });
   }
 
@@ -210,12 +242,14 @@ class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
       {Value<int>? id,
       Value<String>? mood,
       Value<String>? food,
-      Value<String>? sleep}) {
+      Value<String>? sleep,
+      Value<DateTime>? date}) {
     return NoteTableCompanion(
       id: id ?? this.id,
       mood: mood ?? this.mood,
       food: food ?? this.food,
       sleep: sleep ?? this.sleep,
+      date: date ?? this.date,
     );
   }
 
@@ -234,6 +268,9 @@ class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
     if (sleep.present) {
       map['sleep'] = Variable<String>(sleep.value);
     }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
     return map;
   }
 
@@ -243,7 +280,8 @@ class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
           ..write('id: $id, ')
           ..write('mood: $mood, ')
           ..write('food: $food, ')
-          ..write('sleep: $sleep')
+          ..write('sleep: $sleep, ')
+          ..write('date: $date')
           ..write(')'))
         .toString();
   }
