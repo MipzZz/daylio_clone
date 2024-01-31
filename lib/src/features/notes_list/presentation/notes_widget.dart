@@ -1,7 +1,9 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/res/app_icons.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/provider/notes_provider/notes_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class NotesWidget extends StatefulWidget {
@@ -59,8 +61,11 @@ class _NotesWidgetState extends State<NotesWidget> {
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
-                          const Icon(Icons.face,
-                              size: 70, color: AppColors.mainGreen),
+                          SvgPicture.asset(
+                            _note.mood.icon['selected'] ?? AppIcons.badRegular,
+                            height: 50,
+                            width: 50,
+                          ),
                           const SizedBox(width: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,11 +108,11 @@ class _SleepAndFoodRow extends StatelessWidget {
       children: [
         const Icon(Icons.bed,
             color: AppColors.mainGreen),
-        Text(_note.sleep),
+        Text('${_note.sleep.title} поспал'),
         const SizedBox(width: 10),
         const Icon(Icons.emoji_food_beverage,
             color: AppColors.mainGreen),
-        Text(_note.food),
+        Text('${_note.food.title} покушал'),
       ],
     );
   }
@@ -126,7 +131,7 @@ class _MoodRow extends StatelessWidget {
     return Row(
       children: [
         Text(
-          _note.mood,
+          _note.mood.title,
           maxLines: 1,
           textAlign: TextAlign.left,
           style: const TextStyle(fontSize: 20),

@@ -1,7 +1,12 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/res/app_icons.dart';
 import 'package:daylio_clone/src/features/notes_list/data/repository/notes_repository.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/food_model.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/grade_label.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/provider/add_note_provider/add_note_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class AddNoteWidget extends StatefulWidget {
@@ -15,26 +20,29 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
   @override
   Widget build(BuildContext context) {
     return Provider(
-      create: (context) => AddNoteProvider(notesRepository: context.read<NotesRepository>()),
+      create: (context) =>
+          AddNoteProvider(notesRepository: context.read<NotesRepository>()),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Добавить запись'),
         ),
-        body: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 50),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DateNTimeRow(),
-              SizedBox(height: 30),
-              _MoodRowWidget(),
-              SizedBox(height: 50),
-              _SleepRowWidget(),
-              SizedBox(height: 50),
-              _FoodRowWidget(),
-              SizedBox(height: 50),
-              _AddNoteButton(),
-            ],
+        body: const SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 50),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DateNTimeRow(),
+                SizedBox(height: 30),
+                _MoodFacesRow(),
+                SizedBox(height: 30),
+                _SleepRowWidget(),
+                SizedBox(height: 50),
+                _FoodRowWidget(),
+                SizedBox(height: 50),
+                _AddNoteButton(),
+              ],
+            ),
           ),
         ),
       ),
@@ -53,7 +61,7 @@ class _AddNoteButton extends StatelessWidget {
     return OutlinedButton(
       style: ButtonStyle(
           backgroundColor:
-              MaterialStateProperty.all<Color>(AppColors.mainGreen),
+          MaterialStateProperty.all<Color>(AppColors.mainGreen),
           foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
           side: MaterialStateProperty.all<BorderSide>(
             const BorderSide(color: AppColors.mainGreen, width: 2),
@@ -84,62 +92,6 @@ class DateNTimeRow extends StatelessWidget {
   }
 }
 
-class _MoodRowWidget extends StatelessWidget {
-  const _MoodRowWidget({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Expanded(
-          child: DropdownMenu(
-            onSelected: (value) {
-              context.read<AddNoteProvider>().saveMood(value.toString());
-            },
-            inputDecorationTheme: const InputDecorationTheme(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              border: OutlineInputBorder(),
-            ),
-            label: const Text('Оценка настроения'),
-            textStyle: const TextStyle(fontSize: 15),
-            dropdownMenuEntries: const [
-              DropdownMenuEntry(
-                value: 1,
-                label: 'Отлично',
-              ),
-              DropdownMenuEntry(
-                value: 2,
-                label: 'Хорошо',
-              ),
-              DropdownMenuEntry(
-                value: 3,
-                label: 'Нормально',
-              ),
-              DropdownMenuEntry(
-                value: 4,
-                label: 'Плохо',
-              )
-            ],
-          ),
-        ),
-        const Expanded(
-          child: TextField(
-            maxLines: 1,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Описание настроения',
-            ),
-            style: TextStyle(fontSize: 10),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _SleepRowWidget extends StatelessWidget {
   const _SleepRowWidget({
     super.key,
@@ -153,7 +105,7 @@ class _SleepRowWidget extends StatelessWidget {
         Expanded(
           child: DropdownMenu(
             onSelected: (value) {
-              context.read<AddNoteProvider>().saveSleep(value.toString());
+              context.read<AddNoteProvider>().saveSelectedSleep(value);
             },
             inputDecorationTheme: const InputDecorationTheme(
               contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -161,34 +113,24 @@ class _SleepRowWidget extends StatelessWidget {
             ),
             label: const Text('Оценка сна'),
             textStyle: const TextStyle(fontSize: 15),
-            dropdownMenuEntries: const [
-              DropdownMenuEntry(
-                value: 1,
-                label: 'Отлично',
-              ),
-              DropdownMenuEntry(
-                value: 2,
-                label: 'Хорошо',
-              ),
-              DropdownMenuEntry(
-                value: 3,
-                label: 'Нормально',
-              ),
-              DropdownMenuEntry(
-                value: 4,
-                label: 'Плохо',
-              )
-            ],
+            dropdownMenuEntries: GradeLabel.values
+                .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
+              return DropdownMenuEntry<GradeLabel>(
+                value: grade,
+                label: grade.title,
+              );
+            }).toList(),
           ),
         ),
-        const Expanded(
+        Expanded(
           child: TextField(
+            onChanged: (text) => context.read<AddNoteProvider>().saveSleepDescription(text),
             maxLines: 1,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Описание сна',
             ),
-            style: TextStyle(fontSize: 10),
+            style: const TextStyle(fontSize: 10),
           ),
         ),
       ],
@@ -205,9 +147,9 @@ class _FoodRowWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
-          child: DropdownMenu(
+          child: DropdownMenu<GradeLabel>(
             onSelected: (value) {
-              context.read<AddNoteProvider>().saveFood(value.toString());
+              context.read<AddNoteProvider>().saveSelectedFood(value);
             },
             inputDecorationTheme: const InputDecorationTheme(
               contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -215,34 +157,24 @@ class _FoodRowWidget extends StatelessWidget {
             ),
             label: const Text('Оценка еды'),
             textStyle: const TextStyle(fontSize: 15),
-            dropdownMenuEntries: const [
-              DropdownMenuEntry(
-                value: 1,
-                label: 'Отлично',
-              ),
-              DropdownMenuEntry(
-                value: 2,
-                label: 'Хорошо',
-              ),
-              DropdownMenuEntry(
-                value: 3,
-                label: 'Нормально',
-              ),
-              DropdownMenuEntry(
-                value: 4,
-                label: 'Плохо',
-              )
-            ],
+            dropdownMenuEntries: GradeLabel.values
+                .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
+              return DropdownMenuEntry<GradeLabel>(
+                value: grade,
+                label: grade.title,
+              );
+            }).toList(),
           ),
         ),
-        const Expanded(
+        Expanded(
           child: TextField(
+            onChanged: (text) => context.read<AddNoteProvider>().saveFoodDescription(text),
             maxLines: 1,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Описание еды',
             ),
-            style: TextStyle(fontSize: 10),
+            style: const TextStyle(fontSize: 10),
           ),
         ),
       ],
@@ -282,7 +214,10 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<AddNoteProvider>().time = '${selectedTime.hour}:${selectedTime.minute}';
+    context
+        .watch<AddNoteProvider>()
+        .time =
+    '${selectedTime.hour}:${selectedTime.minute}';
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -335,7 +270,11 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<AddNoteProvider>().day = '${selectedDate.day}.${selectedDate.month}.${selectedDate.year}'; // Update the state.
+    context
+        .watch<AddNoteProvider>()
+        .day =
+    '${selectedDate.day}.${selectedDate.month}.${selectedDate
+        .year}'; // Update the state.
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -353,6 +292,100 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
           child: const Text(
             'Выбрать дату',
             style: TextStyle(fontSize: 12),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MoodFacesRow extends StatefulWidget {
+  const _MoodFacesRow({
+    super.key,
+  });
+
+  @override
+  State<_MoodFacesRow> createState() => _MoodFacesRowState();
+}
+
+class _MoodFacesRowState extends State<_MoodFacesRow> {
+  int _activeMoodId = 0;
+
+  void selectMood(int index) {
+    if (_activeMoodId == index) return;
+    Provider.of<AddNoteProvider>(context, listen: false).setActiveMood(index);
+    setState(() {
+      _activeMoodId = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<MoodModel> moods = context
+        .watch<AddNoteProvider>()
+        .state
+        .moods;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        GestureDetector(
+          onTap: () {
+            selectMood(0);
+          },
+          child: SvgPicture.asset(
+            _activeMoodId == 0
+                ? moods[0].icon['selected'] ?? AppIcons.badRegular
+                : moods[0].icon['notSelected'] ?? AppIcons.badRegular,
+            width: 50,
+            height: 50,
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            selectMood(1);
+          },
+          child: SvgPicture.asset(
+            _activeMoodId == 1
+                ? moods[1].icon['selected'] ?? AppIcons.badRegular
+                : moods[1].icon['notSelected'] ?? AppIcons.badRegular,
+            width: 50,
+            height: 50,
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            selectMood(2);
+          },
+          child: SvgPicture.asset(
+            _activeMoodId == 2
+                ? moods[2].icon['selected'] ?? AppIcons.badRegular
+                : moods[2].icon['notSelected'] ?? AppIcons.badRegular,
+            width: 50,
+            height: 50,
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            selectMood(3);
+          },
+          child: SvgPicture.asset(
+            _activeMoodId == 3
+                ? moods[3].icon['selected'] ?? AppIcons.goodRegular
+                : moods[3].icon['notSelected'] ?? AppIcons.goodRegular,
+            width: 50,
+            height: 50,
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            selectMood(4);
+          },
+          child: SvgPicture.asset(
+            _activeMoodId == 4
+                ? moods[4].icon['selected'] ?? AppIcons.badRegular
+                : moods[4].icon['notSelected'] ?? AppIcons.badRegular,
+            width: 50,
+            height: 50,
           ),
         ),
       ],

@@ -1,6 +1,7 @@
 import 'package:daylio_clone/src/core/presentation/assets/res/app_icons.dart';
 import 'package:daylio_clone/src/features/notes_list/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/entity/grade_label.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/provider/notes_details_provider/notes_details_provider.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/provider/notes_provider/notes_provider.dart';
 import 'package:daylio_clone/src/features/widgets/date_picker_widget.dart';
@@ -45,8 +46,6 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
               _DateNTimeRow(),
               SizedBox(height: 45),
               _MoodFacesRow(),
-              SizedBox(height: 50),
-              _MoodDescriptionWidget(),
               SizedBox(height: 50),
               _SleepRowWidget(),
               SizedBox(height: 50),
@@ -100,33 +99,6 @@ class _DeleteButton extends StatelessWidget {
   }
 }
 
-class _MoodDescriptionWidget extends StatefulWidget {
-  const _MoodDescriptionWidget({
-    super.key,
-  });
-
-  @override
-  State<_MoodDescriptionWidget> createState() => _MoodDescriptionWidgetState();
-}
-
-class _MoodDescriptionWidgetState extends State<_MoodDescriptionWidget> {
-  @override
-  Widget build(BuildContext context) {
-    final moodController = TextEditingController(
-        text: context.watch<NotesDetailsProvider>().state.note.mood);
-    return TextField(
-      controller: moodController,
-      maxLines: 1,
-      onChanged: (text) => Provider.of<NotesDetailsProvider>(context, listen: false).setMood(text),
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Описание настроения',
-      ),
-      style: const TextStyle(fontSize: 10),
-    );
-  }
-}
-
 class _DateNTimeRow extends StatelessWidget {
   const _DateNTimeRow({
     super.key,
@@ -144,50 +116,88 @@ class _DateNTimeRow extends StatelessWidget {
   }
 }
 
-class _MoodFacesRow extends StatelessWidget {
+class _MoodFacesRow extends StatefulWidget {
   const _MoodFacesRow({
     super.key,
   });
 
   @override
+  State<_MoodFacesRow> createState() => _MoodFacesRowState();
+}
+
+class _MoodFacesRowState extends State<_MoodFacesRow> {
+
+  void selectMood(int index, int activeMoodId) {
+    if (activeMoodId == index) return;
+    Provider.of<NotesDetailsProvider>(context, listen: false).setActiveMood(index);
+    setState(() {
+      activeMoodId = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    List<MoodModel> moods = context.watch<NotesDetailsProvider>().state.moods;
+    final _activeMoodId = context.watch<NotesDetailsProvider>().state.activeMoodId;
     return Row(
-      mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Expanded(
-          child: GestureDetector(
-            // onTap: ,
-            child: SvgPicture.asset(
-              AppIcons.excellentRegular,
-              width: 50,
-              height: 50,
-            ),
-          ),
-        ),
-        Expanded(
+        GestureDetector(
+          onTap: () {
+            selectMood(0, _activeMoodId);
+          },
           child: SvgPicture.asset(
-            AppIcons.goodRegular,
+            _activeMoodId == 0
+                ? moods[0].icon['selected'] ?? AppIcons.badRegular
+                : moods[0].icon['notSelected'] ?? AppIcons.badRegular,
             width: 50,
             height: 50,
           ),
         ),
-        Expanded(
+        GestureDetector(
+          onTap: () {
+            selectMood(1, _activeMoodId);
+          },
           child: SvgPicture.asset(
-            AppIcons.normalRegular,
+            _activeMoodId == 1
+                ? moods[1].icon['selected'] ?? AppIcons.badRegular
+                : moods[1].icon['notSelected'] ?? AppIcons.badRegular,
             width: 50,
             height: 50,
           ),
         ),
-        Expanded(
+        GestureDetector(
+          onTap: () {
+            selectMood(2,_activeMoodId);
+          },
           child: SvgPicture.asset(
-            AppIcons.badRegular,
+            _activeMoodId == 2
+                ? moods[2].icon['selected'] ?? AppIcons.badRegular
+                : moods[2].icon['notSelected'] ?? AppIcons.badRegular,
             width: 50,
             height: 50,
           ),
         ),
-        Expanded(
+        GestureDetector(
+          onTap: () {
+            selectMood(3, _activeMoodId);
+          },
           child: SvgPicture.asset(
-            AppIcons.terribleRegular,
+            _activeMoodId == 3
+                ? moods[3].icon['selected'] ?? AppIcons.goodRegular
+                : moods[3].icon['notSelected'] ?? AppIcons.goodRegular,
+            width: 50,
+            height: 50,
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            selectMood(4, _activeMoodId);
+          },
+          child: SvgPicture.asset(
+            _activeMoodId == 4
+                ? moods[4].icon['selected'] ?? AppIcons.badRegular
+                : moods[4].icon['notSelected'] ?? AppIcons.badRegular,
             width: 50,
             height: 50,
           ),
@@ -248,15 +258,29 @@ class _FoodRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    // final id = int.tryParse(context.watch<NotesDetailsProvider>().state.note.food); //TODO Взять id выбранной оценки еды
+    return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
-          child: DropdownMenuWidget(
-            labelText: 'Оценка еды',
+          child: DropdownMenu<GradeLabel>(
+            // initialSelection: GradeLabel.values[id ?? 0],
+            label: const Text('Оценка сна'),
+            inputDecorationTheme: const InputDecorationTheme(
+              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              border: OutlineInputBorder(),
+            ),
+            textStyle: const TextStyle(fontSize: 15),
+            dropdownMenuEntries: GradeLabel.values
+                .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
+              return DropdownMenuEntry<GradeLabel>(
+                value: grade,
+                label: grade.title,
+              );
+            }).toList(),
           ),
         ),
-        Expanded(
+        const Expanded(
           child: TextField(
             maxLines: 1,
             decoration: InputDecoration(

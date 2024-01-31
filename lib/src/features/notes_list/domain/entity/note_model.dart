@@ -1,10 +1,13 @@
 import 'package:daylio_clone/src/core/data/source/local/db/drift_storage.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/food_model.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/mood_model.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/sleep_model.dart';
 
 class NoteModel {
   final int id;
-  final String mood;
-  final String sleep;
-  final String food;
+  final MoodModel mood;
+  final SleepModel sleep;
+  final FoodModel food;
   final DateTime date;
 
   NoteModel({
@@ -25,9 +28,9 @@ class NoteModel {
 
   NoteModel copyWith({
     int? id,
-    String? mood,
-    String? sleep,
-    String? food,
+    MoodModel? mood,
+    SleepModel? sleep,
+    FoodModel? food,
     DateTime? date,
   }) {
     return NoteModel(

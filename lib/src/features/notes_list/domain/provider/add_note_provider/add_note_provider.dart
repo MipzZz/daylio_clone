@@ -1,39 +1,44 @@
 import 'package:daylio_clone/src/features/notes_list/data/repository/notes_repository.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/food_model.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/grade_label.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/entity/note_model.dart';
-import 'package:flutter/material.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/note_state.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/sleep_model.dart';
 import 'package:intl/intl.dart';
 
-class NoteState {
-  final NoteModel note;
-
-  NoteState({required this.note});
-
-  NoteState copyWith({NoteModel? note}) {
-    return NoteState(note: note ?? this.note);
-  }
-}
 
 class AddNoteProvider {
   final NotesRepository _notesRepository;
-  NoteState state =
-      NoteState(note: NoteModel(id: 0, mood: '', sleep: '', food: '', date: DateTime.now()));
+  NoteState state = NoteState(
+      note: NoteModel(
+          id: 0,
+          mood: MoodModel.empty(),
+          sleep: SleepModel.empty(),
+          food: FoodModel.empty(),
+          date: DateTime.now()),
+      activeMoodId: 0);
+
   String day = '';
   String time = '';
 
   AddNoteProvider({
     required NotesRepository notesRepository,
-  }) : _notesRepository = notesRepository;
-
-  Future<void> saveMood(String mood) async {
-    state = state.copyWith(note: state.note.copyWith(mood: mood));
+  }) : _notesRepository = notesRepository {
+    saveMood();
   }
 
-  Future<void> saveSleep(String sleep) async {
-    state = state.copyWith(note: state.note.copyWith(sleep: sleep));
+  Future<void> saveMood() async {
+    state = state.copyWith(
+        note: state.note.copyWith(
+            mood: state.moods[state.activeMoodId]));
   }
 
-  Future<void> saveFood(String food) async {
-    state = state.copyWith(note: state.note.copyWith(food: food));
+
+  Future<void> saveFood(FoodModel food) async {
+    state = state.copyWith(
+        note: state.note.copyWith(
+            food: food));
   }
 
   Future<void> saveDate() async {
@@ -42,8 +47,41 @@ class AddNoteProvider {
     state = state.copyWith(note: state.note.copyWith(date: date));
   }
 
+  Future<void> setActiveMood(int id) async {
+    state = state.copyWith(activeMoodId: id);
+    saveMood();
+  }
+
   Future<void> saveNote() async {
     saveDate();
     await _notesRepository.saveNote(state.note);
+  }
+
+  Future<void> saveSleep(SleepModel sleep) async {
+    state = state.copyWith(
+        note: state.note.copyWith(
+            sleep: sleep));
+  }
+
+  Future<void> saveSelectedSleep(GradeLabel? value) async {
+    if (value != null) {
+      state = state.copyWith(note: state.note.copyWith(sleep: state.note.sleep.copyWith(id: value.index)));
+      state = state.copyWith(note: state.note.copyWith(sleep: state.note.sleep.copyWith(title: value.title)));
+    }
+  }
+
+  Future<void> saveSelectedFood(GradeLabel? value) async{
+    if (value != null) {
+      state = state.copyWith(note: state.note.copyWith(food: state.note.food.copyWith(id: value.index)));
+      state = state.copyWith(note: state.note.copyWith(food: state.note.food.copyWith(title: value.title)));
+    }
+  }
+
+  Future<void> saveFoodDescription(String text) async {
+    state = state.copyWith(note: state.note.copyWith(food: state.note.food.copyWith(description: text)));
+  }
+
+  Future<void> saveSleepDescription(String text) async {
+    state = state.copyWith(note: state.note.copyWith(sleep: state.note.sleep.copyWith(description: text)));
   }
 }

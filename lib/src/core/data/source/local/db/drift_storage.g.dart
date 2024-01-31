@@ -20,19 +20,22 @@ class $NoteTableTable extends NoteTable
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
   static const VerificationMeta _moodMeta = const VerificationMeta('mood');
   @override
-  late final GeneratedColumn<String> mood = GeneratedColumn<String>(
-      'mood', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumnWithTypeConverter<MoodModel, String> mood =
+      GeneratedColumn<String>('mood', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<MoodModel>($NoteTableTable.$convertermood);
   static const VerificationMeta _foodMeta = const VerificationMeta('food');
   @override
-  late final GeneratedColumn<String> food = GeneratedColumn<String>(
-      'food', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumnWithTypeConverter<FoodModel, String> food =
+      GeneratedColumn<String>('food', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<FoodModel>($NoteTableTable.$converterfood);
   static const VerificationMeta _sleepMeta = const VerificationMeta('sleep');
   @override
-  late final GeneratedColumn<String> sleep = GeneratedColumn<String>(
-      'sleep', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumnWithTypeConverter<SleepModel, String> sleep =
+      GeneratedColumn<String>('sleep', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<SleepModel>($NoteTableTable.$convertersleep);
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
   late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
@@ -53,24 +56,9 @@ class $NoteTableTable extends NoteTable
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('mood')) {
-      context.handle(
-          _moodMeta, mood.isAcceptableOrUnknown(data['mood']!, _moodMeta));
-    } else if (isInserting) {
-      context.missing(_moodMeta);
-    }
-    if (data.containsKey('food')) {
-      context.handle(
-          _foodMeta, food.isAcceptableOrUnknown(data['food']!, _foodMeta));
-    } else if (isInserting) {
-      context.missing(_foodMeta);
-    }
-    if (data.containsKey('sleep')) {
-      context.handle(
-          _sleepMeta, sleep.isAcceptableOrUnknown(data['sleep']!, _sleepMeta));
-    } else if (isInserting) {
-      context.missing(_sleepMeta);
-    }
+    context.handle(_moodMeta, const VerificationResult.success());
+    context.handle(_foodMeta, const VerificationResult.success());
+    context.handle(_sleepMeta, const VerificationResult.success());
     if (data.containsKey('date')) {
       context.handle(
           _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
@@ -88,12 +76,13 @@ class $NoteTableTable extends NoteTable
     return NoteTableData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      mood: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}mood'])!,
-      food: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}food'])!,
-      sleep: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}sleep'])!,
+      mood: $NoteTableTable.$convertermood.fromSql(attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}mood'])!),
+      food: $NoteTableTable.$converterfood.fromSql(attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}food'])!),
+      sleep: $NoteTableTable.$convertersleep.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}sleep'])!),
       date: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
     );
@@ -103,13 +92,20 @@ class $NoteTableTable extends NoteTable
   $NoteTableTable createAlias(String alias) {
     return $NoteTableTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<MoodModel, String> $convertermood =
+      const MoodModelConverter();
+  static TypeConverter<FoodModel, String> $converterfood =
+      const FoodModelConverter();
+  static TypeConverter<SleepModel, String> $convertersleep =
+      const SleepModelConverter();
 }
 
 class NoteTableData extends DataClass implements Insertable<NoteTableData> {
   final int id;
-  final String mood;
-  final String food;
-  final String sleep;
+  final MoodModel mood;
+  final FoodModel food;
+  final SleepModel sleep;
   final DateTime date;
   const NoteTableData(
       {required this.id,
@@ -121,9 +117,18 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['mood'] = Variable<String>(mood);
-    map['food'] = Variable<String>(food);
-    map['sleep'] = Variable<String>(sleep);
+    {
+      map['mood'] =
+          Variable<String>($NoteTableTable.$convertermood.toSql(mood));
+    }
+    {
+      map['food'] =
+          Variable<String>($NoteTableTable.$converterfood.toSql(food));
+    }
+    {
+      map['sleep'] =
+          Variable<String>($NoteTableTable.$convertersleep.toSql(sleep));
+    }
     map['date'] = Variable<DateTime>(date);
     return map;
   }
@@ -143,9 +148,9 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return NoteTableData(
       id: serializer.fromJson<int>(json['id']),
-      mood: serializer.fromJson<String>(json['mood']),
-      food: serializer.fromJson<String>(json['food']),
-      sleep: serializer.fromJson<String>(json['sleep']),
+      mood: serializer.fromJson<MoodModel>(json['mood']),
+      food: serializer.fromJson<FoodModel>(json['food']),
+      sleep: serializer.fromJson<SleepModel>(json['sleep']),
       date: serializer.fromJson<DateTime>(json['date']),
     );
   }
@@ -154,18 +159,18 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'mood': serializer.toJson<String>(mood),
-      'food': serializer.toJson<String>(food),
-      'sleep': serializer.toJson<String>(sleep),
+      'mood': serializer.toJson<MoodModel>(mood),
+      'food': serializer.toJson<FoodModel>(food),
+      'sleep': serializer.toJson<SleepModel>(sleep),
       'date': serializer.toJson<DateTime>(date),
     };
   }
 
   NoteTableData copyWith(
           {int? id,
-          String? mood,
-          String? food,
-          String? sleep,
+          MoodModel? mood,
+          FoodModel? food,
+          SleepModel? sleep,
           DateTime? date}) =>
       NoteTableData(
         id: id ?? this.id,
@@ -201,9 +206,9 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
 
 class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
   final Value<int> id;
-  final Value<String> mood;
-  final Value<String> food;
-  final Value<String> sleep;
+  final Value<MoodModel> mood;
+  final Value<FoodModel> food;
+  final Value<SleepModel> sleep;
   final Value<DateTime> date;
   const NoteTableCompanion({
     this.id = const Value.absent(),
@@ -214,9 +219,9 @@ class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
   });
   NoteTableCompanion.insert({
     this.id = const Value.absent(),
-    required String mood,
-    required String food,
-    required String sleep,
+    required MoodModel mood,
+    required FoodModel food,
+    required SleepModel sleep,
     required DateTime date,
   })  : mood = Value(mood),
         food = Value(food),
@@ -240,9 +245,9 @@ class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
 
   NoteTableCompanion copyWith(
       {Value<int>? id,
-      Value<String>? mood,
-      Value<String>? food,
-      Value<String>? sleep,
+      Value<MoodModel>? mood,
+      Value<FoodModel>? food,
+      Value<SleepModel>? sleep,
       Value<DateTime>? date}) {
     return NoteTableCompanion(
       id: id ?? this.id,
@@ -260,13 +265,16 @@ class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
       map['id'] = Variable<int>(id.value);
     }
     if (mood.present) {
-      map['mood'] = Variable<String>(mood.value);
+      map['mood'] =
+          Variable<String>($NoteTableTable.$convertermood.toSql(mood.value));
     }
     if (food.present) {
-      map['food'] = Variable<String>(food.value);
+      map['food'] =
+          Variable<String>($NoteTableTable.$converterfood.toSql(food.value));
     }
     if (sleep.present) {
-      map['sleep'] = Variable<String>(sleep.value);
+      map['sleep'] =
+          Variable<String>($NoteTableTable.$convertersleep.toSql(sleep.value));
     }
     if (date.present) {
       map['date'] = Variable<DateTime>(date.value);
