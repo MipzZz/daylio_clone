@@ -1,6 +1,5 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
-import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style_abstract_class.dart';
 import 'package:flutter/material.dart';
 
 class StatisticWidget extends StatelessWidget {
@@ -19,7 +18,7 @@ class StatisticWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               FittedBox(
-                child: Text('Статистика настроения', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),),
+                child: Text('Статистика настроения', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45),),
               ),
               SizedBox(height: 10),
               Text('Отлично: 5', style: AppTextStyle.statisticText,),

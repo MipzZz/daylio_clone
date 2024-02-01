@@ -1,7 +1,7 @@
+import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/presentation/assets/res/app_icons.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/entity/note_model.dart';
-import 'package:flutter/material.dart';
 
 class NoteState {
   final NoteModel note;
@@ -13,7 +13,7 @@ class NoteState {
           'selected': AppIcons.excellentSolid,
           'notSelected': AppIcons.excellentRegular
         },
-        color: Colors.green),
+        color: AppColors.excellentGrade),
     MoodModel(
         id: 1,
         title: 'Хорошо',
@@ -21,7 +21,7 @@ class NoteState {
           'selected': AppIcons.goodSolid,
           'notSelected': AppIcons.goodRegular
         },
-        color: Colors.green),
+        color: AppColors.goodGrade),
     MoodModel(
         id: 2,
         title: 'Нормально',
@@ -29,7 +29,7 @@ class NoteState {
           'selected': AppIcons.normalSolid,
           'notSelected': AppIcons.normalRegular
         },
-        color: Colors.green),
+        color: AppColors.normalGrade),
     MoodModel(
         id: 3,
         title: 'Плохо',
@@ -37,7 +37,7 @@ class NoteState {
           'selected': AppIcons.badSolid,
           'notSelected': AppIcons.badRegular
         },
-        color: Colors.green),
+        color: AppColors.badGrade),
     MoodModel(
         id: 4,
         title: 'Ужасно',
@@ -45,7 +45,7 @@ class NoteState {
           'selected': AppIcons.terribleSolid,
           'notSelected': AppIcons.terribleRegular
         },
-        color: Colors.green),
+        color: AppColors.terribleGrade),
   ];
   final int activeMoodId;
 

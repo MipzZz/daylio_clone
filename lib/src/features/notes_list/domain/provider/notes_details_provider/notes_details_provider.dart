@@ -1,5 +1,6 @@
 import 'package:daylio_clone/src/features/notes_list/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/entity/food_model.dart';
+import 'package:daylio_clone/src/features/notes_list/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/entity/sleep_model.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/entity/note_model.dart';
@@ -49,15 +50,6 @@ class NotesDetailsProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> setMood(String text) async {
-    // state = state.copyWith(note: state.note.copyWith(mood: text)); //TODO В настроение сохраняется текст, необходимо переделать так, чтобы сохранялся экзмемпляр класса MoodModel
-  }
-
-  Future<void> saveMood() async {
-    state = state.copyWith(
-        note: state.note.copyWith(mood: state.moods[state.activeMoodId]));
-  }
-
   Future<void> setDate(DateTime dateTime) async {
     day = DateFormat('dd.MM.yyyy').format(dateTime);
     updateDate();
@@ -68,6 +60,47 @@ class NotesDetailsProvider extends ChangeNotifier {
     updateDate();
   }
 
+  Future<void> updateFoodDescription(String text) async {
+    state = state.copyWith(
+        note: state.note
+            .copyWith(food: state.note.food.copyWith(description: text)));
+  }
+
+  Future<void> updateSleepDescription(String text) async {
+    state = state.copyWith(
+        note: state.note
+            .copyWith(sleep: state.note.sleep.copyWith(description: text)));
+  }
+
+  Future<void> updateSleepGrade(GradeLabel? value) async {
+    if (value != null) {
+      state = state.copyWith(
+          note: state.note
+              .copyWith(sleep: state.note.sleep.copyWith(id: value.index)));
+      state = state.copyWith(
+          note: state.note
+              .copyWith(sleep: state.note.sleep.copyWith(title: value.title)));
+
+      state = state.copyWith(
+          note: state.note
+              .copyWith(sleep: state.note.sleep.copyWith(color: value.color)));
+    }
+  }
+
+  Future<void> updateFoodGrade(GradeLabel? value) async {
+    if (value != null) {
+      state = state.copyWith(
+          note: state.note
+              .copyWith(food: state.note.food.copyWith(id: value.index)));
+      state = state.copyWith(
+          note: state.note
+              .copyWith(food: state.note.food.copyWith(title: value.title)));
+      state = state.copyWith(
+          note: state.note
+              .copyWith(food: state.note.food.copyWith(color: value.color)));
+    }
+  }
+
   Future<void> updateDate() async {
     DateFormat format = DateFormat('dd.MM.yyyy HH:mm');
     DateTime date = format.parse('$day $time');
@@ -76,6 +109,7 @@ class NotesDetailsProvider extends ChangeNotifier {
 
   Future<void> setActiveMood(int id) async {
     state = state.copyWith(activeMoodId: id);
-    saveMood();
+    state = state.copyWith(
+        note: state.note.copyWith(mood: state.moods[state.activeMoodId]));
   }
 }

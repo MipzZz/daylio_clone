@@ -1,17 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:flutter/material.dart';
 
-enum AppTextStyleEnum {
-  statisticText(
-    TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-  ),
-  addNoteText(TextStyle(
-    fontSize: 20,
-  )),
-  addNoteHintText(TextStyle(
-    fontSize: 15,
-  ));
-
-  const AppTextStyleEnum(this.style);
-
-  final TextStyle style;
+abstract class AppTextStyle{
+  static const TextStyle statisticText = TextStyle(fontSize: 20);
+  static const TextStyle noteListItemSub = TextStyle(fontSize: 13, color: AppColors.mainTextColor);
 }

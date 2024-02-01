@@ -1,10 +1,14 @@
+import 'dart:math';
+
+import 'package:daylio_clone/src/core/data/source/string_extension.dart';
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/features/more/presentation/more_widget.dart';
 import 'package:daylio_clone/src/features/notes_list/presentation/notes_widget.dart';
 import 'package:daylio_clone/src/features/sample_feature/domain/provider/notes_provider/notes_provider.dart';
-import 'package:daylio_clone/src/features/statistic/presentation/statistic_widget.dart';
+import 'package:daylio_clone/src/features/statistic/presentation/statistic_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
 import 'package:provider/provider.dart';
 
 class MainScreenWidget extends StatefulWidget {
@@ -16,6 +20,21 @@ class MainScreenWidget extends StatefulWidget {
 
 class _MainScreenWidgetState extends State<MainScreenWidget> {
   int _selectedTab = 0;
+
+
+
+  var _date = DateTime.now();
+
+  void _addDays(){
+    _date = DateTime(_date.year, _date.month + 1, _date.day);
+    setState(() {});
+  }
+
+  void _returnDays(){
+    _date = DateTime(_date.year, _date.month - 1, _date.day);
+    setState(() {});
+  }
+
 
   final List<Widget> _tabs = [
     const NotesWidget(),
@@ -47,7 +66,9 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
               Icons.search,
               color: Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () {
+
+            },
           ),
           const SizedBox(width: 10),
         ],
@@ -63,15 +84,15 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
                 Icons.chevron_left,
                 color: Colors.white,
               ),
-              onPressed: () {},
+              onPressed: _returnDays,
             ),
-            Text(DateFormat.yMMMM().format(DateTime.now())),
+            Text(DateFormat.yMMMM('ru-Ru').format(_date).capitalize()),
             IconButton(
               icon: const Icon(
                 Icons.chevron_right,
                 color: Colors.white,
               ),
-              onPressed: () {},
+              onPressed: _addDays,
             ),
           ],
         ),

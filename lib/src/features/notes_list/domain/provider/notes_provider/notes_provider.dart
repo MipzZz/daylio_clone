@@ -48,7 +48,6 @@ class NotesProvider extends ChangeNotifier {
     } on Object {
       rethrow;
     }
-
   }
 
   void _readNotes(Iterable<NoteModel> notes) {
@@ -56,5 +55,3 @@ class NotesProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-

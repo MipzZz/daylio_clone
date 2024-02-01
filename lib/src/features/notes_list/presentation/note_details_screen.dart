@@ -138,16 +138,16 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
   @override
   Widget build(BuildContext context) {
     List<MoodModel> moods = context.watch<NotesDetailsProvider>().state.moods;
-    final _activeMoodId = context.watch<NotesDetailsProvider>().state.activeMoodId;
+    final activeMoodId = context.watch<NotesDetailsProvider>().state.activeMoodId;
     return Row(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         GestureDetector(
           onTap: () {
-            selectMood(0, _activeMoodId);
+            selectMood(0, activeMoodId);
           },
           child: SvgPicture.asset(
-            _activeMoodId == 0
+            activeMoodId == 0
                 ? moods[0].icon['selected'] ?? AppIcons.badRegular
                 : moods[0].icon['notSelected'] ?? AppIcons.badRegular,
             width: 50,
@@ -156,10 +156,10 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
         ),
         GestureDetector(
           onTap: () {
-            selectMood(1, _activeMoodId);
+            selectMood(1, activeMoodId);
           },
           child: SvgPicture.asset(
-            _activeMoodId == 1
+            activeMoodId == 1
                 ? moods[1].icon['selected'] ?? AppIcons.badRegular
                 : moods[1].icon['notSelected'] ?? AppIcons.badRegular,
             width: 50,
@@ -168,10 +168,10 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
         ),
         GestureDetector(
           onTap: () {
-            selectMood(2,_activeMoodId);
+            selectMood(2,activeMoodId);
           },
           child: SvgPicture.asset(
-            _activeMoodId == 2
+            activeMoodId == 2
                 ? moods[2].icon['selected'] ?? AppIcons.badRegular
                 : moods[2].icon['notSelected'] ?? AppIcons.badRegular,
             width: 50,
@@ -180,10 +180,10 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
         ),
         GestureDetector(
           onTap: () {
-            selectMood(3, _activeMoodId);
+            selectMood(3, activeMoodId);
           },
           child: SvgPicture.asset(
-            _activeMoodId == 3
+            activeMoodId == 3
                 ? moods[3].icon['selected'] ?? AppIcons.goodRegular
                 : moods[3].icon['notSelected'] ?? AppIcons.goodRegular,
             width: 50,
@@ -192,10 +192,10 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
         ),
         GestureDetector(
           onTap: () {
-            selectMood(4, _activeMoodId);
+            selectMood(4, activeMoodId);
           },
           child: SvgPicture.asset(
-            _activeMoodId == 4
+            activeMoodId == 4
                 ? moods[4].icon['selected'] ?? AppIcons.badRegular
                 : moods[4].icon['notSelected'] ?? AppIcons.badRegular,
             width: 50,
@@ -214,15 +214,16 @@ class _SleepRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _sleepController = TextEditingController();
-
+    final description = context.watch<NotesDetailsProvider>().state.note.sleep.description;
+    final sleepDescriptionController = TextEditingController(text: description);
+    final id = context.watch<NotesDetailsProvider>().state.note.sleep.id;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
           child: DropdownMenu<GradeLabel>(
-            initialSelection: GradeLabel.good,
-            controller: _sleepController,
+            initialSelection: GradeLabel.values[id],
+            onSelected: (value) => context.read<NotesDetailsProvider>().updateSleepGrade(value),
             label: const Text('Оценка сна'),
             inputDecorationTheme: const InputDecorationTheme(
               contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -238,14 +239,16 @@ class _SleepRowWidget extends StatelessWidget {
             }).toList(),
           ),
         ),
-        const Expanded(
+        Expanded(
           child: TextField(
+            controller: sleepDescriptionController,
+            onChanged: (text) => context.read<NotesDetailsProvider>().updateSleepDescription(text),
             maxLines: 1,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Описание сна',
             ),
-            style: TextStyle(fontSize: 10),
+            style: const TextStyle(fontSize: 10),
           ),
         ),
       ],
@@ -255,16 +258,18 @@ class _SleepRowWidget extends StatelessWidget {
 
 class _FoodRowWidget extends StatelessWidget {
   const _FoodRowWidget({super.key});
-
   @override
   Widget build(BuildContext context) {
-    // final id = int.tryParse(context.watch<NotesDetailsProvider>().state.note.food); //TODO Взять id выбранной оценки еды
+    final description = context.watch<NotesDetailsProvider>().state.note.food.description;
+    final foodDescriptionController = TextEditingController(text: description);
+    final id = context.watch<NotesDetailsProvider>().state.note.food.id;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
           child: DropdownMenu<GradeLabel>(
-            // initialSelection: GradeLabel.values[id ?? 0],
+            initialSelection: GradeLabel.values[id],
+            onSelected: (value) => context.read<NotesDetailsProvider>().updateFoodGrade(value),
             label: const Text('Оценка сна'),
             inputDecorationTheme: const InputDecorationTheme(
               contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -280,14 +285,16 @@ class _FoodRowWidget extends StatelessWidget {
             }).toList(),
           ),
         ),
-        const Expanded(
+        Expanded(
           child: TextField(
+            controller: foodDescriptionController,
+            onChanged: (text) => context.read<NotesDetailsProvider>().updateFoodDescription(text),
             maxLines: 1,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Описание еды',
             ),
-            style: TextStyle(fontSize: 10),
+            style: const TextStyle(fontSize: 10),
           ),
         ),
       ],

@@ -1,5 +1,6 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/presentation/assets/res/app_icons.dart';
+import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes_list/domain/provider/notes_provider/notes_provider.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ class NotesWidget extends StatefulWidget {
 }
 
 class _NotesWidgetState extends State<NotesWidget> {
-
   void _onNoteTab(int index) {
     final id = index;
     Navigator.of(context).pushNamed(
@@ -25,20 +25,20 @@ class _NotesWidgetState extends State<NotesWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final _notes = context.select((NotesProvider vm) => vm.state.notes);
-    return Stack(
-      children: [
-        ListView.builder(
-          padding: const EdgeInsets.only(top: 5),
-          itemCount: _notes.length,
-          itemExtent: 90,
-          itemBuilder: (BuildContext context, int index) {
-            final _note = _notes[index];
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Stack(
-                children: [
-                  Container(
+    final notes = context.select((NotesProvider vm) => vm.state.notes);
+    return ListView.builder(
+      padding: const EdgeInsets.only(top: 5),
+      itemCount: notes.length,
+      itemBuilder: (BuildContext context, int index) {
+        final note = notes[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Stack(
+            children: [
+              Ink(
+                child: InkWell(
+                  onTap: () => _onNoteTab(note.id),
+                  child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: AppColors.listBackground,
@@ -49,10 +49,10 @@ class _NotesWidgetState extends State<NotesWidget> {
                         topRight: index == 0
                             ? const Radius.circular(20.0)
                             : Radius.zero,
-                        bottomLeft: index == _notes.length - 1
+                        bottomLeft: index == notes.length - 1
                             ? const Radius.circular(20.0)
                             : Radius.zero,
-                        bottomRight: index == _notes.length - 1
+                        bottomRight: index == notes.length - 1
                             ? const Radius.circular(20.0)
                             : Radius.zero,
                       ),
@@ -62,34 +62,31 @@ class _NotesWidgetState extends State<NotesWidget> {
                       child: Row(
                         children: [
                           SvgPicture.asset(
-                            _note.mood.icon['selected'] ?? AppIcons.badRegular,
+                            note.mood.icon['selected'] ?? AppIcons.badRegular,
                             height: 50,
                             width: 50,
                           ),
                           const SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _MoodRow(note: _note),
-                              _SleepAndFoodRow(note: _note),
-                            ],
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _MoodRow(note: note),
+                                _SleepAndFoodRow(note: note),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () => _onNoteTab(_note.id),
-                    ),
-                  )
-                ],
+                ),
               ),
-            );
-          },
-        ),
-      ],
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -105,14 +102,33 @@ class _SleepAndFoodRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(Icons.bed,
-            color: AppColors.mainGreen),
-        Text('${_note.sleep.title} поспал'),
-        const SizedBox(width: 10),
-        const Icon(Icons.emoji_food_beverage,
-            color: AppColors.mainGreen),
-        Text('${_note.food.title} покушал'),
+        Flexible(
+          child: ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            horizontalTitleGap: 7,
+            leading: Icon(Icons.bed, color: _note.sleep.color),
+            title: Text(
+              _note.sleep.title,
+              style: AppTextStyle.noteListItemSub,
+            ),
+          ),
+        ),
+        const SizedBox(width: 5),
+        Flexible(
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            horizontalTitleGap: 7,
+            dense: true,
+            leading: Icon(Icons.emoji_food_beverage, color: _note.food.color),
+            title: Text(
+              _note.food.title,
+              style: AppTextStyle.noteListItemSub,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -134,10 +150,12 @@ class _MoodRow extends StatelessWidget {
           _note.mood.title,
           maxLines: 1,
           textAlign: TextAlign.left,
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20, color: _note.mood.color),
         ),
         const SizedBox(width: 10),
-        Text('${_note.date.hour}:${_note.date.minute}',),
+        Text(
+          '${_note.date.hour}:${_note.date.minute}',
+        ),
       ],
     );
   }

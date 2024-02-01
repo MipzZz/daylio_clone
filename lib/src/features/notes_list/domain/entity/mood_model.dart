@@ -20,6 +20,20 @@ class MoodModel {
       _$MoodModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$MoodModelToJson(this);
+
+  MoodModel copyWith({
+    int? id,
+    String? title,
+    Map<String, String>? icon,
+    Color? color,
+  }) {
+    return MoodModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      icon: icon ?? this.icon,
+      color: color ?? this.color,
+    );
+  }
 }
 
 

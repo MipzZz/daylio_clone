@@ -67,6 +67,7 @@ class AddNoteProvider {
     if (value != null) {
       state = state.copyWith(note: state.note.copyWith(sleep: state.note.sleep.copyWith(id: value.index)));
       state = state.copyWith(note: state.note.copyWith(sleep: state.note.sleep.copyWith(title: value.title)));
+      state = state.copyWith(note: state.note.copyWith(sleep: state.note.sleep.copyWith(color: value.color)));
     }
   }
 
@@ -74,6 +75,7 @@ class AddNoteProvider {
     if (value != null) {
       state = state.copyWith(note: state.note.copyWith(food: state.note.food.copyWith(id: value.index)));
       state = state.copyWith(note: state.note.copyWith(food: state.note.food.copyWith(title: value.title)));
+      state = state.copyWith(note: state.note.copyWith(food: state.note.food.copyWith(color: value.color)));
     }
   }
 
