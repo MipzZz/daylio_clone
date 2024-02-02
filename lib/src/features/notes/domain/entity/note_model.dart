@@ -4,7 +4,7 @@ import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
 
 class NoteModel {
-  final int id;
+  final int? id;
   final MoodModel mood;
   final SleepModel sleep;
   final FoodModel food;
@@ -17,6 +17,14 @@ class NoteModel {
     required this.food,
     required this.date,
   });
+
+  NoteModel.empty() : this(
+    id: null,
+    mood: MoodModel.empty(),
+    sleep: SleepModel.empty(),
+    food: FoodModel.empty(),
+    date: DateTime.now(),
+  );
 
   factory NoteModel.fromNoteTableData(NoteTableData note) => NoteModel(
         id: note.id,

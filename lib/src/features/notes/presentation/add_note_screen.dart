@@ -195,6 +195,10 @@ class _TimePickerWidget extends StatefulWidget {
 class _TimePickerWidgetState extends State<_TimePickerWidget> {
   TimeOfDay selectedTime = TimeOfDay.now();
 
+  void saveTime(TimeOfDay timeOfDay) {
+    context.read<AddNoteProvider>().saveTime(timeOfDay);
+  }
+
   void setTime() async {
     final TimeOfDay? timeOfDay = await showTimePicker(
         context: context,
@@ -207,6 +211,7 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
           );
         });
     if (timeOfDay != null) {
+      saveTime(timeOfDay);
       setState(() {
         selectedTime = timeOfDay;
       });
@@ -215,8 +220,6 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<AddNoteProvider>().time =
-        '${selectedTime.hour}:${selectedTime.minute}';
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -253,6 +256,10 @@ class _DatePickerWidget extends StatefulWidget {
 class _DatePickerWidgetState extends State<_DatePickerWidget> {
   DateTime selectedDate = DateTime.now();
 
+  void saveDate(DateTime date) {
+    context.read<AddNoteProvider>().saveDate(date);
+  }
+
   void selectDate() async {
     final DateTime? date = await showDatePicker(
       context: context,
@@ -261,6 +268,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
       lastDate: DateTime(2030),
     );
     if (date != null) {
+      saveDate(date);
       setState(() {
         selectedDate = date;
       });
@@ -269,8 +277,6 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<AddNoteProvider>().day =
-        '${selectedDate.day}.${selectedDate.month}.${selectedDate.year}'; // Update the state.
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -284,7 +290,9 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
             backgroundColor: MaterialStateProperty.all<Color>(Colors.black45),
             foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
           ),
-          onPressed: selectDate,
+          onPressed: () => {
+            selectDate(),
+          },
           child: const Text(
             'Выбрать дату',
             style: TextStyle(fontSize: 12),
@@ -309,7 +317,7 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
 
   void selectMood(int index) {
     if (_activeMoodId == index) return;
-    Provider.of<AddNoteProvider>(context, listen: false).setActiveMood(index);
+    Provider.of<AddNoteProvider>(context, listen: false).saveMood(index);
     setState(() {
       _activeMoodId = index;
     });
@@ -317,7 +325,7 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
 
   @override
   Widget build(BuildContext context) {
-    List<MoodModel> moods = context.watch<AddNoteProvider>().state.moods;
+    List<MoodModel> moods = context.watch<AddNoteProvider>().moods;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [

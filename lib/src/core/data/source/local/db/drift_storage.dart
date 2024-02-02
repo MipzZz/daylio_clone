@@ -50,7 +50,7 @@ class AppDb extends _$AppDb {
 
   @override
   int get schemaVersion => 1;
-  final isInDebugMode = false;
+  final isInDebugMode = true;
 
   @override
   MigrationStrategy get migration {

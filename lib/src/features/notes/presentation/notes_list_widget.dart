@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-class NotesWidget extends StatefulWidget {
-  const NotesWidget({super.key});
+class NotesListWidget extends StatefulWidget {
+  const NotesListWidget({super.key});
 
   @override
-  State<NotesWidget> createState() => _NotesWidgetState();
+  State<NotesListWidget> createState() => _NotesListWidgetState();
 }
 
-class _NotesWidgetState extends State<NotesWidget> {
+class _NotesListWidgetState extends State<NotesListWidget> {
   void _onNoteTab(int index) {
     final id = index;
     Navigator.of(context).pushNamed(
@@ -37,7 +37,10 @@ class _NotesWidgetState extends State<NotesWidget> {
             children: [
               Ink(
                 child: InkWell(
-                  onTap: () => _onNoteTab(note.id),
+                  onTap: () {
+                    final noteId = note.id;
+                    if (noteId != null) _onNoteTab(noteId);
+                  },
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(

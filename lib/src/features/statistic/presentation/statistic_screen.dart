@@ -42,7 +42,7 @@ class _NotesCountCard extends StatelessWidget {
               style: AppTextStyle.statisticText,
             ),
             ListTile(
-              leading: Icon(Icons.sticky_note_2_rounded),
+              leading: Icon(Icons.sticky_note_2_rounded, color: Colors.blueAccent,),
               title: Text('Записи', style: TextStyle(color: Colors.white),),
               dense: true,
               contentPadding: EdgeInsets.zero,
@@ -71,12 +71,12 @@ class _AverageMoodCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              '12',
+              '3,1',
               style: AppTextStyle.statisticText,
             ),
             ListTile(
-              leading: Icon(Icons.sticky_note_2_rounded),
-              title: Text('Записи', style: TextStyle(color: Colors.white),),
+              leading: Icon(Icons.emoji_emotions, color: Colors.amberAccent,),
+              title: Text('Настроение', style: TextStyle(color: Colors.white),),
               dense: true,
               contentPadding: EdgeInsets.zero,
               horizontalTitleGap: 7,

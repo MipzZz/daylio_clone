@@ -39,17 +39,6 @@ class NotesProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteNote({required int id}) async {
-    try {
-      await _notesRepository.deleteNote(id);
-      final notes = await _notesRepository.readNotes();
-      state = state.copyWith(notes: notes.toList());
-      notifyListeners();
-    } on Object {
-      rethrow;
-    }
-  }
-
   void _readNotes(Iterable<NoteModel> notes) {
     state = state.copyWith(notes: notes.toList());
     notifyListeners();
