@@ -8,25 +8,80 @@ class StatisticWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.all(10.0),
-      child: Card(
-        color: AppColors.listBackground,
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FittedBox(
-                child: Text('Статистика настроения', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45),),
-              ),
-              SizedBox(height: 10),
-              Text('Отлично: 5', style: AppTextStyle.statisticText,),
-              Text('Хорошо: 6', style: AppTextStyle.statisticText,),
-              Text('Нормально: 1', style: AppTextStyle.statisticText,),
-              Text('Плохо: 2', style: AppTextStyle.statisticText,),
-            ],
-          ),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Flexible(flex: 1,child: _NotesCountCard()),
+          SizedBox(width: 35),
+          Flexible(flex: 1,child: _AverageMoodCard()),
+        ],
+      ),
+    );
+  }
+}
+
+class _NotesCountCard extends StatelessWidget {
+  const _NotesCountCard({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Card(
+      color: AppColors.listBackground,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '12',
+              style: AppTextStyle.statisticText,
+            ),
+            ListTile(
+              leading: Icon(Icons.sticky_note_2_rounded),
+              title: Text('Записи', style: TextStyle(color: Colors.white),),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              horizontalTitleGap: 7,
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AverageMoodCard extends StatelessWidget {
+  const _AverageMoodCard({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Card(
+      color: AppColors.listBackground,
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '12',
+              style: AppTextStyle.statisticText,
+            ),
+            ListTile(
+              leading: Icon(Icons.sticky_note_2_rounded),
+              title: Text('Записи', style: TextStyle(color: Colors.white),),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              horizontalTitleGap: 7,
+            )
+          ],
         ),
       ),
     );
