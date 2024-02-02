@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:daylio_clone/src/core/data/source/local/tables/note_table.dart';
-import 'package:daylio_clone/src/features/notes_list/data/converters/food_model_converter.dart';
-import 'package:daylio_clone/src/features/notes_list/data/converters/mood_model_converter.dart';
-import 'package:daylio_clone/src/features/notes_list/data/converters/sleep_model_converter.dart';
-import 'package:daylio_clone/src/features/notes_list/domain/entity/food_model.dart';
-import 'package:daylio_clone/src/features/notes_list/domain/entity/mood_model.dart';
-import 'package:daylio_clone/src/features/notes_list/domain/entity/sleep_model.dart';
+import 'package:daylio_clone/src/features/notes/data/converters/food_model_converter.dart';
+import 'package:daylio_clone/src/features/notes/data/converters/mood_model_converter.dart';
+import 'package:daylio_clone/src/features/notes/data/converters/sleep_model_converter.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/food_model.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';

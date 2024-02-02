@@ -16,7 +16,8 @@ void _runApp() {
     /// если вдруг не проинициализировалось что-то критичное, без
     /// чего запуск приложения не имеет смысла
 
-    initializeDateFormatting('ru_RU', null).then((_) =>runApp(AppView()));
+    initializeDateFormatting('ru_RU', null)
+        .then((_) => runApp(const AppView()));
   }, (error, stack) {
     /// хотя бы базовый вывод ошибок, которые ты пропустишь, но
     /// не стоит им давать прорываться буквально насквозь.

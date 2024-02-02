@@ -1,17 +1,17 @@
 import 'package:daylio_clone/src/core/data/source/local/db/drift_storage.dart';
 import 'package:daylio_clone/src/core/presentation/assets/themes/AppThemeData.dart';
-import 'package:daylio_clone/src/features/notes_list/presentation/add_note_screen.dart';
-import 'package:daylio_clone/src/features/main_screen/presentation/main_screen.dart';
-import 'package:daylio_clone/src/features/notes_list/presentation/note_details_screen.dart';
-import 'package:daylio_clone/src/features/notes_list/data/repository/notes_repository.dart';
-import 'package:daylio_clone/src/features/notes_list/domain/provider/notes_provider/notes_provider.dart';
+import 'package:daylio_clone/src/features/main/presentation/view/main_screen.dart';
+import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
+import 'package:daylio_clone/src/features/notes/domain/provider/notes_provider/notes_provider.dart';
+import 'package:daylio_clone/src/features/notes/presentation/add_note_screen.dart';
+import 'package:daylio_clone/src/features/notes/presentation/note_details_screen.dart';
 import 'package:daylio_clone/src/features/statistic/data/statistic_repository.dart';
 import 'package:daylio_clone/src/features/statistic/domain/provider/statistic_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AppView extends StatefulWidget {
-  AppView({super.key});
+  const AppView({super.key});
 
   @override
   State<AppView> createState() => _AppViewState();
@@ -54,7 +54,7 @@ class _AppViewState extends State<AppView> {
         title: 'Daylio Clone',
         // home: const MainScreenWidget(),
         routes: {
-          '/': (context) => const MainScreenWidget(),
+          '/': (context) => const MainScreen(),
           '/note_detail': (context) {
             final arguments = ModalRoute.of(context)?.settings.arguments;
             if (arguments is int) {
