@@ -1,3 +1,4 @@
+import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/presentation/assets/res/app_icons.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
@@ -83,17 +84,29 @@ class _DeleteButton extends StatelessWidget {
         final noteId = state.note?.id;
         if (noteId != null) {
           viewModel.deleteNote(id: noteId);
-          Navigator.pop(context);
+          Navigator.popUntil(context, ModalRoute.withName('/'));
         }
       case NoteDetailsStateError:
-        AlertDialog(
-          title: const Text('Smth went wrong'),
-          content: Text((state as NoteDetailsStateError).message),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Ok'))
-          ],
+        showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              backgroundColor: Colors.black,
+              title: const Text('Ошибочка'),
+              content: Text((viewModel.state as NoteDetailsStateError).message),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.popUntil(context, ModalRoute.withName('/'));
+                  },
+                  child: const Text(
+                    'Ok',
+                    style: TextStyle(color: AppColors.mainGreen),
+                  ),
+                ),
+              ],
+            );
+          },
         );
         break;
       default:
@@ -111,7 +124,7 @@ class _DeleteButton extends StatelessWidget {
           const BorderSide(color: Colors.redAccent, width: 2),
         ),
       ),
-      onPressed: () => onDeleteButton,
+      onPressed: () => onDeleteButton(context),
       child: const Text('Удалить запись', style: TextStyle(fontSize: 15)),
     );
   }

@@ -29,30 +29,18 @@ class AddNoteProvider {
     );
   }
 
-  // Future<void> saveDate() async {
-  //   DateFormat format = DateFormat('dd.MM.yyyy HH:mm');
-  //   DateTime date = format.parse('$day $time');
-  //   state = state.copyWith(note: state.note.copyWith(date: date));
-  // }
-
-  // Future<void> setActiveMood(int id) async {
-  //   state = state.copyWith(
-  //     note: state.note?.copyWith(
-  //       mood: moods[id],
-  //     ),
-  //   );
-  // }
-
   void saveDate(DateTime date) {
     state = state.copyWith(
-        note: state.note
-            ?.copyWith(date: state.note?.date.copyWith(day: date.day, month: date.month, year: date.year)));
+        note: state.note?.copyWith(
+            date: state.note?.date
+                .copyWith(day: date.day, month: date.month, year: date.year)));
   }
 
   Future<void> saveTime(TimeOfDay time) async {
     state = state.copyWith(
-        note: state.note
-            ?.copyWith(date: state.note?.date.copyWith(hour: time.hour, minute: time.minute)));
+        note: state.note?.copyWith(
+            date: state.note?.date
+                .copyWith(hour: time.hour, minute: time.minute)));
   }
 
   Future<void> saveNote() async {
@@ -61,8 +49,12 @@ class AddNoteProvider {
       if (note != null && note.id == null) {
         await _notesRepository.saveNote(note);
       }
-    } on Object {
-      rethrow;
+    } on Object catch (e, s) {
+      state = AddNoteStateError(
+        note: state.note,
+        message: 'При сохранении данных произошла ошибка',
+      );
+      Error.throwWithStackTrace(e, s);
     }
   }
 

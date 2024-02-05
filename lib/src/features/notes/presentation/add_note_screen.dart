@@ -4,6 +4,7 @@ import 'package:daylio_clone/src/features/notes/data/repository/notes_repository
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_provider.dart';
+import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,7 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
                 _FoodRowWidget(),
                 SizedBox(height: 50),
                 _AddNoteButton(),
+                //ToDO Добавить кнопку сброса
               ],
             ),
           ),
@@ -67,7 +69,35 @@ class _AddNoteButton extends StatelessWidget {
           )),
       onPressed: () {
         viewModel.saveNote();
-        Navigator.pop(context);
+        switch (viewModel.state.runtimeType) {
+          case AddNoteStateInitial:
+            Navigator.pop(context);
+          case AddNoteStateError:
+            showDialog(
+              context: context,
+              builder: (_) {
+                return AlertDialog(
+                  backgroundColor: Colors.black,
+                  title: const Text('Ошибочка'),
+                  content: Text((viewModel.state as AddNoteStateError).message),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.popUntil(context, ModalRoute.withName('/')); // Вернуться на главный экран
+                        Navigator.pop(context); // Вернуться на экран добавления записи
+                      },
+                      child: const Text(
+                        'Ok',
+                        style: TextStyle(color: AppColors.mainGreen),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          default:
+            break;
+        }
       },
       child: const Text('Добавить запись', style: TextStyle(fontSize: 15)),
     );
