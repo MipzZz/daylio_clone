@@ -8,11 +8,17 @@ part 'mood_model.g.dart';
 class MoodModel {
   final int id;
   final String title;
-  final Map<String, String> icon;
+  // final Map<String, String> icon;
+  final String selectedIcon;
+  final String unSelectedIcon;
   @ColorConverter()
   final Color color;
 
-  MoodModel({required this.title, required this.icon, required this.color, required this.id});
+  MoodModel(
+      {required this.title,
+      required this.icon,
+      required this.color,
+      required this.id});
 
   MoodModel.empty() : this(id: 0, title: '', icon: {}, color: Colors.white);
 
@@ -35,5 +41,3 @@ class MoodModel {
     );
   }
 }
-
-

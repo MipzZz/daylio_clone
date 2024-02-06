@@ -2,7 +2,6 @@ import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart
 import 'package:daylio_clone/src/core/presentation/assets/res/app_icons.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_provider.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_state.dart';
 import 'package:flutter/material.dart';
@@ -53,9 +52,7 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
 }
 
 class _AddNoteButton extends StatelessWidget {
-  const _AddNoteButton({
-    super.key,
-  });
+  const _AddNoteButton();
 
   @override
   Widget build(BuildContext context) {
@@ -68,14 +65,18 @@ class _AddNoteButton extends StatelessWidget {
           side: MaterialStateProperty.all<BorderSide>(
             const BorderSide(color: AppColors.mainGreen, width: 2),
           )),
-      onPressed: () { //TODO Не появляется окно с ошибкой
+      onPressed: () {
+        //TODO Не появляется окно с ошибкой
         viewModel.saveNote().then((_) {
           switch (viewModel.state) {
             case AddNoteStateError():
               showDialog(
                 context: context,
                 builder: (_) {
-                  return const _AlertFailureDialogWidget();
+                  return ChangeNotifierProvider.value(
+                    value: context.read<AddNoteProvider>(),
+                    child: const _AlertFailureDialogWidget(),
+                  );
                 },
               );
             default:
@@ -89,13 +90,11 @@ class _AddNoteButton extends StatelessWidget {
 }
 
 class _AlertFailureDialogWidget extends StatelessWidget {
-  const _AlertFailureDialogWidget({
-    super.key,
-  });
+  const _AlertFailureDialogWidget();
 
   @override
   Widget build(BuildContext context) {
-    // final state = context.watch<AddNoteProvider>().state;
+    final state = context.watch<AddNoteProvider>().state;
     return AlertDialog(
       backgroundColor: Colors.black,
       title: const Text('Ошибочка'),
@@ -133,9 +132,7 @@ class DateNTimeRow extends StatelessWidget {
 }
 
 class _SleepRowWidget extends StatelessWidget {
-  const _SleepRowWidget({
-    super.key,
-  });
+  const _SleepRowWidget();
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +177,7 @@ class _SleepRowWidget extends StatelessWidget {
 }
 
 class _FoodRowWidget extends StatelessWidget {
-  const _FoodRowWidget({super.key});
+  const _FoodRowWidget();
 
   @override
   Widget build(BuildContext context) {
@@ -225,9 +222,7 @@ class _FoodRowWidget extends StatelessWidget {
 }
 
 class _TimePickerWidget extends StatefulWidget {
-  const _TimePickerWidget({
-    super.key,
-  });
+  const _TimePickerWidget();
 
   @override
   State<_TimePickerWidget> createState() => _TimePickerWidgetState();
@@ -286,9 +281,7 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
 }
 
 class _DatePickerWidget extends StatefulWidget {
-  const _DatePickerWidget({
-    super.key,
-  });
+  const _DatePickerWidget();
 
   @override
   State<_DatePickerWidget> createState() => _DatePickerWidgetState();
@@ -327,9 +320,9 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
         ),
         const SizedBox(height: 10),
         OutlinedButton(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(Colors.black45),
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          style: OutlinedButton.styleFrom(
+            backgroundColor: Colors.black45,
+            foregroundColor: Colors.white,
           ),
           onPressed: () => {
             selectDate(),
@@ -345,92 +338,125 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
 }
 
 class _MoodFacesRow extends StatefulWidget {
-  const _MoodFacesRow({
-    super.key,
-  });
+  const _MoodFacesRow();
 
   @override
   State<_MoodFacesRow> createState() => _MoodFacesRowState();
 }
 
 class _MoodFacesRowState extends State<_MoodFacesRow> {
-  int _activeMoodId = 0;
-
-  void selectMood(int index) {
-    if (_activeMoodId == index) return;
-    context.read<AddNoteProvider>().saveMood(index);
-    setState(() {
-      _activeMoodId = index;
-    });
+  void selectMood(int moodId) {
+    context.read<AddNoteProvider>().saveMood(moodId);
   }
 
   @override
   Widget build(BuildContext context) {
-    List<MoodModel> moods = context.watch<AddNoteProvider>().moods;
+    final addNotesVM = context.watch<AddNoteProvider>();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        GestureDetector(
-          onTap: () {
-            selectMood(0);
-          },
-          child: SvgPicture.asset(
-            _activeMoodId == 0
-                ? moods[0].icon['selected'] ?? AppIcons.badRegular
-                : moods[0].icon['notSelected'] ?? AppIcons.badRegular,
-            width: 50,
-            height: 50,
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            selectMood(1);
-          },
-          child: SvgPicture.asset(
-            _activeMoodId == 1
-                ? moods[1].icon['selected'] ?? AppIcons.badRegular
-                : moods[1].icon['notSelected'] ?? AppIcons.badRegular,
-            width: 50,
-            height: 50,
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            selectMood(2);
-          },
-          child: SvgPicture.asset(
-            _activeMoodId == 2
-                ? moods[2].icon['selected'] ?? AppIcons.badRegular
-                : moods[2].icon['notSelected'] ?? AppIcons.badRegular,
-            width: 50,
-            height: 50,
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            selectMood(3);
-          },
-          child: SvgPicture.asset(
-            _activeMoodId == 3
-                ? moods[3].icon['selected'] ?? AppIcons.goodRegular
-                : moods[3].icon['notSelected'] ?? AppIcons.goodRegular,
-            width: 50,
-            height: 50,
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            selectMood(4);
-          },
-          child: SvgPicture.asset(
-            _activeMoodId == 4
-                ? moods[4].icon['selected'] ?? AppIcons.badRegular
-                : moods[4].icon['notSelected'] ?? AppIcons.badRegular,
-            width: 50,
-            height: 50,
-          ),
-        ),
-      ],
+      children: List.generate(
+        5,
+        (index) {
+          final mood = addNotesVM.moods[index];
+
+          return MoodIcon(
+            iconPath: mood.selectedIcon,
+            unselectedPath: mood.unSelectedIcon,
+            onTap: () => selectMood(index),
+            selected: mood.id == addNotesVM.state.note?.mood.id,
+          );
+        },
+      ),
+      // [
+      //   GestureDetector(
+      //     onTap: () {
+      //       selectMood(0);
+      //     },
+      //     child: SvgPicture.asset(
+      //       _activeMoodId == 0
+      //           ? moods[0].icon['selected'] ?? AppIcons.badRegular
+      //           : moods[0].icon['notSelected'] ?? AppIcons.badRegular,
+      //       width: 50,
+      //       height: 50,
+      //     ),
+      //   ),
+      //   GestureDetector(
+      //     onTap: () {
+      //       selectMood(1);
+      //     },
+      //     child: SvgPicture.asset(
+      //       _activeMoodId == 1
+      //           ? moods[1].icon['selected'] ?? AppIcons.badRegular
+      //           : moods[1].icon['notSelected'] ?? AppIcons.badRegular,
+      //       width: 50,
+      //       height: 50,
+      //     ),
+      //   ),
+      //   GestureDetector(
+      //     onTap: () {
+      //       selectMood(2);
+      //     },
+      //     child: SvgPicture.asset(
+      //       _activeMoodId == 2
+      //           ? moods[2].icon['selected'] ?? AppIcons.badRegular
+      //           : moods[2].icon['notSelected'] ?? AppIcons.badRegular,
+      //       width: 50,
+      //       height: 50,
+      //     ),
+      //   ),
+      //   GestureDetector(
+      //     onTap: () {
+      //       selectMood(3);
+      //     },
+      //     child: SvgPicture.asset(
+      //       _activeMoodId == 3
+      //           ? moods[3].icon['selected'] ?? AppIcons.goodRegular
+      //           : moods[3].icon['notSelected'] ?? AppIcons.goodRegular,
+      //       width: 50,
+      //       height: 50,
+      //     ),
+      //   ),
+      //   GestureDetector(
+      //     onTap: () {
+      //       selectMood(4);
+      //     },
+      //     child: SvgPicture.asset(
+      //       _activeMoodId == 4
+      //           ? moods[4].icon['selected'] ?? AppIcons.badRegular
+      //           : moods[4].icon['notSelected'] ?? AppIcons.badRegular,
+      //       width: 50,
+      //       height: 50,
+      //     ),
+      //   ),
+      // ],
+    );
+  }
+}
+
+class MoodIcon extends StatelessWidget {
+  final String? iconPath;
+  final String? unselectedPath;
+  final bool selected;
+
+  final VoidCallback onTap;
+
+  const MoodIcon({
+    super.key,
+    required this.iconPath,
+    required this.unselectedPath,
+    required this.onTap,
+    required this.selected,
+  });
+
+  String get _iconPath =>
+      (selected ? iconPath : unselectedPath) ?? AppIcons.badRegular;
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      _iconPath,
+      width: 50,
+      height: 50,
     );
   }
 }

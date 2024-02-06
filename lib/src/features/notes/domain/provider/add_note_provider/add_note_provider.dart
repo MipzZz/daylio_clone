@@ -1,6 +1,7 @@
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_state.dart';
 import 'package:flutter/material.dart';
 
@@ -22,11 +23,13 @@ class AddNoteProvider extends ChangeNotifier {
   }
 
   Future<void> saveMood(int id) async {
+    if (id == state.note?.mood.id) return;
     state = state.copyWith(
       note: state.note?.copyWith(
         mood: moods[id],
       ),
     );
+    notifyListeners();
   }
 
   void saveDate(DateTime date) {
@@ -61,17 +64,16 @@ class AddNoteProvider extends ChangeNotifier {
   }
 
   Future<void> saveSelectedSleep(GradeLabel? value) async {
-    if (value != null) {
-      state = state.copyWith(
-        note: state.note?.copyWith(
-          sleep: state.note?.sleep.copyWith(
-            id: value.index,
-            title: value.title,
-            color: value.color,
-          ),
+    if (value == null) return;
+    state = state.copyWith(
+      note: state.note?.copyWith(
+        sleep: state.note?.sleep.copyWith(
+          id: value.index,
+          title: value.title,
+          color: value.color,
         ),
-      );
-    }
+      ),
+    );
   }
 
   Future<void> saveSelectedFood(GradeLabel? value) async {
