@@ -26,6 +26,8 @@ class NoteModel {
     date: DateTime.now(),
   );
 
+  NoteModel.empt(this.id, this.date, this.mood, this.food, this.sleep);
+
   factory NoteModel.fromNoteTableData(NoteTableData note) => NoteModel(
         id: note.id,
         mood: note.mood,

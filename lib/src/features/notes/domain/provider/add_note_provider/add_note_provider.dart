@@ -4,7 +4,7 @@ import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_state.dart';
 import 'package:flutter/material.dart';
 
-class AddNoteProvider {
+class AddNoteProvider extends ChangeNotifier {
   final NotesRepository _notesRepository;
   AddNoteState state;
   List<MoodModel> moods;
@@ -49,12 +49,14 @@ class AddNoteProvider {
       if (note != null && note.id == null) {
         await _notesRepository.saveNote(note);
       }
+      notifyListeners();
     } on Object catch (e, s) {
       state = AddNoteStateError(
         note: state.note,
         message: 'При сохранении данных произошла ошибка',
       );
-      Error.throwWithStackTrace(e, s);
+      notifyListeners();
+      // Error.throwWithStackTrace(e, s);
     }
   }
 

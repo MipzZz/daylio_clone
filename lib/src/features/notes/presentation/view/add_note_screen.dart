@@ -19,7 +19,7 @@ class AddNoteWidget extends StatefulWidget {
 class _AddNoteWidgetState extends State<AddNoteWidget> {
   @override
   Widget build(BuildContext context) {
-    return Provider(
+    return ChangeNotifierProvider(
       create: (context) =>
           AddNoteProvider(notesRepository: context.read<NotesRepository>()),
       child: Scaffold(
@@ -27,6 +27,7 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
           title: const Text('Добавить запись'),
         ),
         body: const SingleChildScrollView(
+          //TODO Переделать в ListView
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 50),
             child: Column(
@@ -58,7 +59,7 @@ class _AddNoteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.read<AddNoteProvider>();
+    final viewModel = context.watch<AddNoteProvider>();
     return OutlinedButton(
       style: ButtonStyle(
           backgroundColor:
@@ -67,39 +68,49 @@ class _AddNoteButton extends StatelessWidget {
           side: MaterialStateProperty.all<BorderSide>(
             const BorderSide(color: AppColors.mainGreen, width: 2),
           )),
-      onPressed: () {
-        viewModel.saveNote();
-        switch (viewModel.state.runtimeType) {
-          case AddNoteStateInitial:
-            Navigator.pop(context);
-          case AddNoteStateError:
-            showDialog(
-              context: context,
-              builder: (_) {
-                return AlertDialog(
-                  backgroundColor: Colors.black,
-                  title: const Text('Ошибочка'),
-                  content: Text((viewModel.state as AddNoteStateError).message),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.popUntil(context, ModalRoute.withName('/')); // Вернуться на главный экран
-                        Navigator.pop(context); // Вернуться на экран добавления записи
-                      },
-                      child: const Text(
-                        'Ok',
-                        style: TextStyle(color: AppColors.mainGreen),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            );
-          default:
-            break;
-        }
+      onPressed: () { //TODO Не появляется окно с ошибкой
+        viewModel.saveNote().then((_) {
+          switch (viewModel.state) {
+            case AddNoteStateError():
+              showDialog(
+                context: context,
+                builder: (_) {
+                  return const _AlertFailureDialogWidget();
+                },
+              );
+            default:
+              Navigator.popUntil(context, ModalRoute.withName('/'));
+          }
+        });
       },
       child: const Text('Добавить запись', style: TextStyle(fontSize: 15)),
+    );
+  }
+}
+
+class _AlertFailureDialogWidget extends StatelessWidget {
+  const _AlertFailureDialogWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // final state = context.watch<AddNoteProvider>().state;
+    return AlertDialog(
+      backgroundColor: Colors.black,
+      title: const Text('Ошибочка'),
+      content: Text('(state as AddNoteStateError).message'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.popUntil(context, ModalRoute.withName('/'));
+          },
+          child: const Text(
+            'Ok',
+            style: TextStyle(color: AppColors.mainGreen),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -347,7 +358,7 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
 
   void selectMood(int index) {
     if (_activeMoodId == index) return;
-    Provider.of<AddNoteProvider>(context, listen: false).saveMood(index);
+    context.read<AddNoteProvider>().saveMood(index);
     setState(() {
       _activeMoodId = index;
     });

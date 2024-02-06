@@ -12,8 +12,7 @@ class NotesDetailsProvider extends ChangeNotifier {
   NotesDetailsProvider({
     required NotesRepository notesRepository,
     required int id,
-  })
-      : _notesRepository = notesRepository,
+  })  : _notesRepository = notesRepository,
         state = NoteDetailsStateInitial(),
         moods = notesRepository.getMoods() {
     readNote(id);
@@ -34,27 +33,20 @@ class NotesDetailsProvider extends ChangeNotifier {
     }
   }
 
-  // Future<void> readNote() async {
-  //   try {
-  //     final note = await _notesRepository.readNote(_id);
-  //     // throw Exception('Some error');
-  //     state = state.copyWith(note: note, activeMoodId: note.mood.id);
-  //     day = DateFormat('dd.MM.yyyy').format(state.note.date);
-  //     time = DateFormat('HH:mm').format(state.note.date);
-  //     notifyListeners();
-  //   } on Object {
-  //     rethrow;
-  //   }
-  // }
-
   Future<void> updateNote() async {
     try {
       final note = state.note;
       if (note != null && note.id != null) {
         await _notesRepository.updateNote(note);
       }
-    } on Object {
-      rethrow;
+      notifyListeners();
+    } on Object catch (e, s) {
+      state = NoteDetailsStateError(
+        note: state.note,
+        message: 'При сохранении данных произошла ошибка',
+      );
+      notifyListeners();
+      Error.throwWithStackTrace(e, s);
     }
   }
 
@@ -72,71 +64,71 @@ class NotesDetailsProvider extends ChangeNotifier {
     }
   }
 
+  void updateDate(DateTime date) {
+    state = state.copyWith(
+        note: state.note?.copyWith(
+            date: state.note?.date
+                .copyWith(day: date.day, month: date.month, year: date.year)));
+    notifyListeners();
+  }
 
-void updateDate(DateTime date) {
-  state = state.copyWith(
-      note: state.note
-          ?.copyWith(date: state.note?.date.copyWith(
-          day: date.day, month: date.month, year: date.year)));
-  notifyListeners();
-}
+  void updateTime(TimeOfDay time) {
+    state = state.copyWith(
+        note: state.note?.copyWith(
+            date: state.note?.date
+                .copyWith(hour: time.hour, minute: time.minute)));
+    notifyListeners();
+  }
 
-void updateTime(TimeOfDay time) {
-  state = state.copyWith(
-      note: state.note
-          ?.copyWith(date: state.note?.date.copyWith(
-          hour: time.hour, minute: time.minute)));
-  notifyListeners();
-}
-
-Future<void> updateFoodDescription(String text) async {
-  state = state.copyWith(
-    note: state.note?.copyWith(
-      food: state.note?.food.copyWith(description: text),
-    ),
-  );
-}
-
-Future<void> updateSleepDescription(String text) async {
-  state = state.copyWith(
-    note: state.note?.copyWith(
-      sleep: state.note?.sleep.copyWith(description: text),
-    ),
-  );
-}
-
-Future<void> updateSleepGrade(GradeLabel? value) async {
-  if (value != null) {
+  Future<void> updateFoodDescription(String text) async {
     state = state.copyWith(
       note: state.note?.copyWith(
-        sleep: state.note?.sleep.copyWith(
-          id: value.index,
-          title: value.title,
-          color: value.color,
+        food: state.note?.food.copyWith(description: text),
+      ),
+    );
+  }
+
+  Future<void> updateSleepDescription(String text) async {
+    state = state.copyWith(
+      note: state.note?.copyWith(
+        sleep: state.note?.sleep.copyWith(description: text),
+      ),
+    );
+  }
+
+  Future<void> updateSleepGrade(GradeLabel? value) async {
+    if (value != null) {
+      state = state.copyWith(
+        note: state.note?.copyWith(
+          sleep: state.note?.sleep.copyWith(
+            id: value.index,
+            title: value.title,
+            color: value.color,
+          ),
         ),
+      );
+    }
+  }
+
+  Future<void> updateFoodGrade(GradeLabel? value) async {
+    if (value != null) {
+      state = state.copyWith(
+        note: state.note?.copyWith(
+          food: state.note?.food.copyWith(
+            id: value.index,
+            title: value.title,
+            color: value.color,
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> setActiveMood(int id) async {
+    state = state.copyWith(
+      note: state.note?.copyWith(
+        mood: moods[id],
       ),
     );
   }
 }
-
-Future<void> updateFoodGrade(GradeLabel? value) async {
-  if (value != null) {
-    state = state.copyWith(
-      note: state.note?.copyWith(
-        food: state.note?.food.copyWith(
-          id: value.index,
-          title: value.title,
-          color: value.color,
-        ),
-      ),
-    );
-  }
-}
-
-Future<void> setActiveMood(int id) async {
-  state = state.copyWith(
-    note: state.note?.copyWith(
-      mood: moods[id],
-    ),
-  );
-}}

@@ -5,6 +5,7 @@ import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:drift/drift.dart';
+import 'package:intl/intl.dart';
 
 class NotesRepository {
   final AppDb _driftStorage;
@@ -30,6 +31,7 @@ class NotesRepository {
         food: Value(note.food),
         date: Value(note.date),
       );
+      throw Exception();
       await _driftStorage.saveNote(noteCompanion);
       final updateNotes = await _driftStorage.readNotes();
       final notes = updateNotes.map(NoteModel.fromNoteTableData);

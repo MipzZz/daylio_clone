@@ -10,7 +10,7 @@ class AddNoteStateInitial implements AddNoteState {
   @override
   final NoteModel? note;
 
-  AddNoteStateInitial._copy({required this.note}); // AddNoteStateInitial
+  AddNoteStateInitial._copy({required this.note});
 
   AddNoteStateInitial() : note = NoteModel.empty();
 

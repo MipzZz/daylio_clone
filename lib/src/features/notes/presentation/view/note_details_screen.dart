@@ -21,10 +21,9 @@ class NoteDetailsWidget extends StatefulWidget {
 class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
   @override
   Widget build(BuildContext context) {
-    final notesRepository = context.read<NotesRepository>();
     return ChangeNotifierProvider(
       create: (context) => NotesDetailsProvider(
-          notesRepository: notesRepository, id: widget.noteId),
+          notesRepository: context.read<NotesRepository>(), id: widget.noteId),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -34,24 +33,51 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
               child: _SaveButton(),
             )
           ],
-          title: Text('Запись ${widget.noteId}'), //TODO Сделать корректное название записи
+          title: Text(
+              'Запись ${widget.noteId}'), //TODO Сделать корректное название записи
         ),
-        body: const Padding(
-          padding: EdgeInsets.all(15.0),
-          child: Column(
-            children: [
-              _DateNTimeRow(),
-              SizedBox(height: 45),
-              _MoodFacesRow(),
-              SizedBox(height: 50),
-              _SleepRowWidget(),
-              SizedBox(height: 50),
-              _FoodRowWidget(),
-              SizedBox(height: 30),
-              _DeleteButton(),
-            ],
-          ),
-        ),
+        body: const _SwitchWidget(),
+      ),
+    );
+  }
+}
+
+class _SwitchWidget extends StatelessWidget {
+  const _SwitchWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (context.watch<NotesDetailsProvider>().state.runtimeType) {
+      NoteDetailsStateInitial => const Text('Инициализация'),
+      NoteDetailsStateError => const _AlertDialogFailureWidget(),
+      _ => const _DefaultBodyWidget(),
+    };
+  }
+}
+
+class _DefaultBodyWidget extends StatelessWidget {
+  const _DefaultBodyWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(15.0),
+      child: Column(
+        children: [
+          _DateNTimeRow(),
+          SizedBox(height: 45),
+          _MoodFacesRow(),
+          SizedBox(height: 50),
+          _SleepRowWidget(),
+          SizedBox(height: 50),
+          _FoodRowWidget(),
+          SizedBox(height: 30),
+          _DeleteButton(),
+        ],
       ),
     );
   }
@@ -64,8 +90,41 @@ class _SaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<NotesDetailsProvider>();
     return IconButton(
-      onPressed: () => context.read<NotesDetailsProvider>().updateNote(),
+      onPressed: () {
+        viewModel.updateNote().then((_) {
+          switch (viewModel.state.runtimeType) {
+            case NoteDetailsStateError:
+              showDialog(
+                context: context,
+                builder: (_) {
+                  return AlertDialog(
+                    //TODO Разобраться почему при выносе диалога в отдельный виджет все ломается
+                    backgroundColor: Colors.black,
+                    title: const Text('Ошибочка'),
+                    content: Text(
+                        (viewModel.state as NoteDetailsStateError).message),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.popUntil(context, ModalRoute.withName('/'));
+                        },
+                        child: const Text(
+                          'Ok',
+                          style: TextStyle(color: AppColors.mainGreen),
+                        ),
+                      ),
+                    ],
+                  );
+                  ;
+                },
+              );
+            default:
+              break;
+          }
+        });
+      },
       icon: const Icon(Icons.save),
     );
   }
@@ -76,46 +135,10 @@ class _DeleteButton extends StatelessWidget {
     super.key,
   });
 
-  void onDeleteButton(BuildContext context) {
-    final viewModel = context.read<NotesDetailsProvider>();
-    final state = viewModel.state;
-    switch (state.runtimeType) {
-      case NoteDetailsStateData:
-        final noteId = state.note?.id;
-        if (noteId != null) {
-          viewModel.deleteNote(id: noteId);
-          Navigator.popUntil(context, ModalRoute.withName('/'));
-        }
-      case NoteDetailsStateError:
-        showDialog(
-          context: context,
-          builder: (_) {
-            return AlertDialog(
-              backgroundColor: Colors.black,
-              title: const Text('Ошибочка'),
-              content: Text((viewModel.state as NoteDetailsStateError).message),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.popUntil(context, ModalRoute.withName('/'));
-                  },
-                  child: const Text(
-                    'Ok',
-                    style: TextStyle(color: AppColors.mainGreen),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-        break;
-      default:
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<NotesDetailsProvider>();
+    final noteId = viewModel.state.note?.id;
     return OutlinedButton(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(Colors.redAccent),
@@ -124,8 +147,51 @@ class _DeleteButton extends StatelessWidget {
           const BorderSide(color: Colors.redAccent, width: 2),
         ),
       ),
-      onPressed: () => onDeleteButton(context),
+      onPressed: () {
+        if (noteId != null) {
+          viewModel.deleteNote(id: noteId).then((_) {
+            switch (viewModel.state.runtimeType) {
+              case NoteDetailsStateError:
+                showDialog(
+                  context: context,
+                  builder: (_) {
+                    return const _AlertDialogFailureWidget();
+                  },
+                );
+              default:
+                Navigator.popUntil(context, ModalRoute.withName('/'));
+            }
+          });
+        }
+      },
       child: const Text('Удалить запись', style: TextStyle(fontSize: 15)),
+    );
+  }
+}
+
+class _AlertDialogFailureWidget extends StatelessWidget {
+  const _AlertDialogFailureWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<NotesDetailsProvider>().state;
+    return AlertDialog(
+      backgroundColor: Colors.black,
+      title: const Text('Ошибочка'),
+      content: Text((state as NoteDetailsStateError).message),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.popUntil(context, ModalRoute.withName('/'));
+          },
+          child: const Text(
+            'Ok',
+            style: TextStyle(color: AppColors.mainGreen),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -157,12 +223,10 @@ class _MoodFacesRow extends StatefulWidget {
 }
 
 class _MoodFacesRowState extends State<_MoodFacesRow> {
-
   void selectMood(int index) {
     var activeMoodId = context.read<NotesDetailsProvider>().state.note?.mood.id;
     if (activeMoodId == index) return;
-    Provider.of<NotesDetailsProvider>(context, listen: false)
-        .setActiveMood(index);
+    context.read<NotesDetailsProvider>().setActiveMood(index);
     setState(() {
       activeMoodId = index;
     });
@@ -317,13 +381,15 @@ class _FoodRowWidget extends StatelessWidget {
               border: OutlineInputBorder(),
             ),
             textStyle: const TextStyle(fontSize: 15),
-            dropdownMenuEntries: GradeLabel.values
-                .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
-              return DropdownMenuEntry<GradeLabel>(
-                value: grade,
-                label: grade.title,
-              );
-            }).toList(),
+            dropdownMenuEntries:
+                GradeLabel.values.map<DropdownMenuEntry<GradeLabel>>(
+              (GradeLabel grade) {
+                return DropdownMenuEntry<GradeLabel>(
+                  value: grade,
+                  label: grade.title,
+                );
+              },
+            ).toList(),
           ),
         ),
         Expanded(
@@ -355,7 +421,6 @@ class _DatePickerWidget extends StatefulWidget {
 }
 
 class _DatePickerWidgetState extends State<_DatePickerWidget> {
-
   void selectDate(DateTime? selectedDate) async {
     if (selectedDate == null) {
       return;
@@ -368,7 +433,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
     );
     if (date != null) {
       setState(() {
-        Provider.of<NotesDetailsProvider>(context, listen: false).updateDate(date);
+        context.read<NotesDetailsProvider>().updateDate(date);
         selectedDate = date;
       });
     }
@@ -425,8 +490,7 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
         });
     if (timeOfDay != null) {
       setState(() {
-        Provider.of<NotesDetailsProvider>(context, listen: false)
-            .updateTime(timeOfDay);
+        context.read<NotesDetailsProvider>().updateTime(timeOfDay);
         selectedTime = timeOfDay;
       });
     }
@@ -435,7 +499,8 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
   @override
   Widget build(BuildContext context) {
     TimeOfDay selectedTime = TimeOfDay.fromDateTime(
-        context.watch<NotesDetailsProvider>().state.note?.date ?? DateTime.now());
+        context.watch<NotesDetailsProvider>().state.note?.date ??
+            DateTime.now());
 
     return Column(
       mainAxisSize: MainAxisSize.min,
