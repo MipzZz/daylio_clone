@@ -8,7 +8,6 @@ part 'mood_model.g.dart';
 class MoodModel {
   final int id;
   final String title;
-  // final Map<String, String> icon;
   final String selectedIcon;
   final String unSelectedIcon;
   @ColorConverter()
@@ -16,11 +15,18 @@ class MoodModel {
 
   MoodModel(
       {required this.title,
-      required this.icon,
+      required this.selectedIcon,
+      required this.unSelectedIcon,
       required this.color,
       required this.id});
 
-  MoodModel.empty() : this(id: 0, title: '', icon: {}, color: Colors.white);
+  MoodModel.empty()
+      : this(
+            id: 0,
+            title: '',
+            selectedIcon: '',
+            unSelectedIcon: '',
+            color: Colors.white);
 
   factory MoodModel.fromJson(Map<String, dynamic> json) =>
       _$MoodModelFromJson(json);
@@ -30,13 +36,15 @@ class MoodModel {
   MoodModel copyWith({
     int? id,
     String? title,
-    Map<String, String>? icon,
+    String? selectedIcon,
+    String? unSelectedIcon,
     Color? color,
   }) {
     return MoodModel(
       id: id ?? this.id,
       title: title ?? this.title,
-      icon: icon ?? this.icon,
+      selectedIcon: selectedIcon ?? this.selectedIcon,
+      unSelectedIcon: unSelectedIcon ?? this.unSelectedIcon,
       color: color ?? this.color,
     );
   }

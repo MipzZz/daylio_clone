@@ -7,42 +7,32 @@ class MoodsStorage{
     MoodModel(
         id: 0,
         title: 'Отлично',
-        icon: {
-          'selected': AppIcons.excellentSolid,
-          'notSelected': AppIcons.excellentRegular
-        },
+        selectedIcon: AppIcons.excellentSolid,
+        unSelectedIcon: AppIcons.excellentRegular,
         color: AppColors.excellentGrade),
     MoodModel(
         id: 1,
         title: 'Хорошо',
-        icon: {
-          'selected': AppIcons.goodSolid,
-          'notSelected': AppIcons.goodRegular
-        },
+        selectedIcon: AppIcons.goodSolid,
+        unSelectedIcon: AppIcons.goodRegular,
         color: AppColors.goodGrade),
     MoodModel(
         id: 2,
         title: 'Нормально',
-        icon: {
-          'selected': AppIcons.normalSolid,
-          'notSelected': AppIcons.normalRegular
-        },
+        selectedIcon: AppIcons.normalSolid,
+        unSelectedIcon: AppIcons.normalRegular,
         color: AppColors.normalGrade),
     MoodModel(
         id: 3,
         title: 'Плохо',
-        icon: {
-          'selected': AppIcons.badSolid,
-          'notSelected': AppIcons.badRegular
-        },
+        selectedIcon: AppIcons.badSolid,
+        unSelectedIcon: AppIcons.badRegular,
         color: AppColors.badGrade),
     MoodModel(
         id: 4,
         title: 'Ужасно',
-        icon: {
-          'selected': AppIcons.terribleSolid,
-          'notSelected': AppIcons.terribleRegular
-        },
+        selectedIcon: AppIcons.terribleSolid,
+        unSelectedIcon: AppIcons.terribleRegular,
         color: AppColors.terribleGrade),
   ];
 }

@@ -4,6 +4,7 @@ import 'package:daylio_clone/src/features/notes/data/repository/notes_repository
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_provider.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_state.dart';
+import 'package:daylio_clone/src/features/notes/presentation/widgets/mood_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -345,6 +346,7 @@ class _MoodFacesRow extends StatefulWidget {
 }
 
 class _MoodFacesRowState extends State<_MoodFacesRow> {
+
   void selectMood(int moodId) {
     context.read<AddNoteProvider>().saveMood(moodId);
   }
@@ -358,7 +360,6 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
         5,
         (index) {
           final mood = addNotesVM.moods[index];
-
           return MoodIcon(
             iconPath: mood.selectedIcon,
             unselectedPath: mood.unSelectedIcon,
@@ -367,96 +368,8 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
           );
         },
       ),
-      // [
-      //   GestureDetector(
-      //     onTap: () {
-      //       selectMood(0);
-      //     },
-      //     child: SvgPicture.asset(
-      //       _activeMoodId == 0
-      //           ? moods[0].icon['selected'] ?? AppIcons.badRegular
-      //           : moods[0].icon['notSelected'] ?? AppIcons.badRegular,
-      //       width: 50,
-      //       height: 50,
-      //     ),
-      //   ),
-      //   GestureDetector(
-      //     onTap: () {
-      //       selectMood(1);
-      //     },
-      //     child: SvgPicture.asset(
-      //       _activeMoodId == 1
-      //           ? moods[1].icon['selected'] ?? AppIcons.badRegular
-      //           : moods[1].icon['notSelected'] ?? AppIcons.badRegular,
-      //       width: 50,
-      //       height: 50,
-      //     ),
-      //   ),
-      //   GestureDetector(
-      //     onTap: () {
-      //       selectMood(2);
-      //     },
-      //     child: SvgPicture.asset(
-      //       _activeMoodId == 2
-      //           ? moods[2].icon['selected'] ?? AppIcons.badRegular
-      //           : moods[2].icon['notSelected'] ?? AppIcons.badRegular,
-      //       width: 50,
-      //       height: 50,
-      //     ),
-      //   ),
-      //   GestureDetector(
-      //     onTap: () {
-      //       selectMood(3);
-      //     },
-      //     child: SvgPicture.asset(
-      //       _activeMoodId == 3
-      //           ? moods[3].icon['selected'] ?? AppIcons.goodRegular
-      //           : moods[3].icon['notSelected'] ?? AppIcons.goodRegular,
-      //       width: 50,
-      //       height: 50,
-      //     ),
-      //   ),
-      //   GestureDetector(
-      //     onTap: () {
-      //       selectMood(4);
-      //     },
-      //     child: SvgPicture.asset(
-      //       _activeMoodId == 4
-      //           ? moods[4].icon['selected'] ?? AppIcons.badRegular
-      //           : moods[4].icon['notSelected'] ?? AppIcons.badRegular,
-      //       width: 50,
-      //       height: 50,
-      //     ),
-      //   ),
-      // ],
     );
   }
 }
 
-class MoodIcon extends StatelessWidget {
-  final String? iconPath;
-  final String? unselectedPath;
-  final bool selected;
 
-  final VoidCallback onTap;
-
-  const MoodIcon({
-    super.key,
-    required this.iconPath,
-    required this.unselectedPath,
-    required this.onTap,
-    required this.selected,
-  });
-
-  String get _iconPath =>
-      (selected ? iconPath : unselectedPath) ?? AppIcons.badRegular;
-
-  @override
-  Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      _iconPath,
-      width: 50,
-      height: 50,
-    );
-  }
-}

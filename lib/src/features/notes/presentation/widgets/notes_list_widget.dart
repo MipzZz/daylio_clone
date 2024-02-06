@@ -65,7 +65,7 @@ class _NotesListWidgetState extends State<NotesListWidget> {
                       child: Row(
                         children: [
                           SvgPicture.asset(
-                            note.mood.selectedIcon ?? AppIcons.badRegular,
+                            note.mood.selectedIcon,
                             height: 50,
                             width: 50,
                           ),
