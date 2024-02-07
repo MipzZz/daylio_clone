@@ -31,7 +31,6 @@ class NotesRepository {
         food: Value(note.food),
         date: Value(note.date),
       );
-      throw Exception();
       await _driftStorage.saveNote(noteCompanion);
       final updateNotes = await _driftStorage.readNotes();
       final notes = updateNotes.map(NoteModel.fromNoteTableData);

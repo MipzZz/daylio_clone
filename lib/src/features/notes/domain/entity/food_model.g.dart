@@ -7,10 +7,10 @@ part of 'food_model.dart';
 // **************************************************************************
 
 FoodModel _$FoodModelFromJson(Map<String, dynamic> json) => FoodModel(
-      id: json['id'] as int,
-      title: json['title'] as String,
+      id: json['id'] as int?,
+      title: json['title'] as String?,
       icon: json['icon'] as String,
-      description: json['description'] as String,
+      description: json['description'] as String?,
       color: const ColorConverter().fromJson(json['color'] as int),
     );
 

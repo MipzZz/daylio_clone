@@ -1,12 +1,11 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
-import 'package:daylio_clone/src/core/presentation/assets/res/app_icons.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_provider.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_state.dart';
+import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/mood_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class AddNoteWidget extends StatefulWidget {
@@ -22,17 +21,17 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
     return ChangeNotifierProvider(
       create: (context) =>
           AddNoteProvider(notesRepository: context.read<NotesRepository>()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Добавить запись'),
-        ),
-        body: const SingleChildScrollView(
-          //TODO Переделать в ListView
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 50),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Новая запись'),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
+            child: ListView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              children: const [
                 DateNTimeRow(),
                 SizedBox(height: 30),
                 _MoodFacesRow(),
@@ -40,9 +39,9 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
                 _SleepRowWidget(),
                 SizedBox(height: 50),
                 _FoodRowWidget(),
-                SizedBox(height: 50),
+                SizedBox(height: 35),
                 _AddNoteButton(),
-                //ToDO Добавить кнопку сброса
+                //ToDo Добавить кнопку сброса
               ],
             ),
           ),
@@ -58,59 +57,36 @@ class _AddNoteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<AddNoteProvider>();
-    return OutlinedButton(
-      style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(AppColors.mainGreen),
-          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-          side: MaterialStateProperty.all<BorderSide>(
-            const BorderSide(color: AppColors.mainGreen, width: 2),
-          )),
-      onPressed: () {
-        //TODO Не появляется окно с ошибкой
-        viewModel.saveNote().then((_) {
-          switch (viewModel.state) {
-            case AddNoteStateError():
-              showDialog(
-                context: context,
-                builder: (_) {
-                  return ChangeNotifierProvider.value(
-                    value: context.read<AddNoteProvider>(),
-                    child: const _AlertFailureDialogWidget(),
-                  );
-                },
-              );
-            default:
-              Navigator.popUntil(context, ModalRoute.withName('/'));
-          }
-        });
-      },
-      child: const Text('Добавить запись', style: TextStyle(fontSize: 15)),
-    );
-  }
-}
-
-class _AlertFailureDialogWidget extends StatelessWidget {
-  const _AlertFailureDialogWidget();
-
-  @override
-  Widget build(BuildContext context) {
-    final state = context.watch<AddNoteProvider>().state;
-    return AlertDialog(
-      backgroundColor: Colors.black,
-      title: const Text('Ошибочка'),
-      content: Text('(state as AddNoteStateError).message'),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.popUntil(context, ModalRoute.withName('/'));
-          },
-          child: const Text(
-            'Ok',
-            style: TextStyle(color: AppColors.mainGreen),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 100),
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          backgroundColor: AppColors.mainGreen,
+          foregroundColor: Colors.white,
+          side: const BorderSide(
+            color: AppColors.mainGreen,
+            width: 2,
           ),
         ),
-      ],
+        onPressed: () {
+          viewModel.saveNote().then((_) {
+            switch (viewModel.state) {
+              case AddNoteStateError(message: final message):
+                showDialog(
+                  context: context,
+                  builder: (_) {
+                    return AlertFailureDialogWidget(
+                      message: message,
+                    );
+                  },
+                );
+              default:
+                Navigator.popUntil(context, ModalRoute.withName('/'));
+            }
+          });
+        },
+        child: const Text('Добавить запись', style: TextStyle(fontSize: 15)),
+      ),
     );
   }
 }
@@ -135,13 +111,17 @@ class DateNTimeRow extends StatelessWidget {
 class _SleepRowWidget extends StatelessWidget {
   const _SleepRowWidget();
 
+  final initialSelect = GradeLabel.excellent;
+
   @override
   Widget build(BuildContext context) {
+    context.read<AddNoteProvider>().saveSelectedSleep(initialSelect);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
           child: DropdownMenu(
+            initialSelection: initialSelect,
             onSelected: (value) {
               context.read<AddNoteProvider>().saveSelectedSleep(value);
             },
@@ -180,13 +160,17 @@ class _SleepRowWidget extends StatelessWidget {
 class _FoodRowWidget extends StatelessWidget {
   const _FoodRowWidget();
 
+  final initialSelect = GradeLabel.excellent;
   @override
   Widget build(BuildContext context) {
+    context.read<AddNoteProvider>().saveSelectedFood(initialSelect);
     return Row(
+
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
           child: DropdownMenu<GradeLabel>(
+            initialSelection: initialSelect,
             onSelected: (value) {
               context.read<AddNoteProvider>().saveSelectedFood(value);
             },
@@ -346,7 +330,6 @@ class _MoodFacesRow extends StatefulWidget {
 }
 
 class _MoodFacesRowState extends State<_MoodFacesRow> {
-
   void selectMood(int moodId) {
     context.read<AddNoteProvider>().saveMood(moodId);
   }
@@ -363,7 +346,7 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
           return MoodIcon(
             iconPath: mood.selectedIcon,
             unselectedPath: mood.unSelectedIcon,
-            onTap: () => selectMood(index),
+            onTap: () => selectMood(index), //???
             selected: mood.id == addNotesVM.state.note?.mood.id,
           );
         },
@@ -371,5 +354,3 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
     );
   }
 }
-
-

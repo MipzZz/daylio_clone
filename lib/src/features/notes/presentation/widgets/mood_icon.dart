@@ -22,10 +22,13 @@ class MoodIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      _iconPath,
-      width: 50,
-      height: 50,
+    return GestureDetector(
+      onTap: onTap,
+      child: SvgPicture.asset(
+        _iconPath,
+        width: 50,
+        height: 50,
+      ),
     );
   }
 }

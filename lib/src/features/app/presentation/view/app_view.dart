@@ -5,7 +5,6 @@ import 'package:daylio_clone/src/features/notes/data/repository/notes_repository
 import 'package:daylio_clone/src/features/notes/domain/provider/notes_provider/notes_provider.dart';
 import 'package:daylio_clone/src/features/notes/presentation/view/add_note_screen.dart';
 import 'package:daylio_clone/src/features/notes/presentation/view/note_details_screen.dart';
-import 'package:daylio_clone/src/features/statistic/data/statistic_repository.dart';
 import 'package:daylio_clone/src/features/statistic/domain/provider/statistic_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,14 +20,12 @@ class _AppViewState extends State<AppView> {
   late final AppDb _driftStorage;
 
   late final NotesRepository _notesRepository;
-  late final StatisticRepository _statisticRepository;
 
   @override
   void initState() {
     super.initState();
     _driftStorage = AppDb();
     _notesRepository = NotesRepository(database: _driftStorage);
-    _statisticRepository = StatisticRepository(database: _driftStorage);
   }
 
   @override
@@ -38,15 +35,12 @@ class _AppViewState extends State<AppView> {
         Provider(
           create: (context) => _notesRepository,
         ),
-        Provider(
-          create: (context) => _statisticRepository,
-        ),
         ChangeNotifierProvider(
           create: (context) => NotesProvider(notesRepository: _notesRepository),
         ),
         ChangeNotifierProvider(
           create: (context) =>
-              StatisticProvider(statisticRepository: _statisticRepository),
+              StatisticProvider(notesRepository: _notesRepository),
         ),
 
       ],

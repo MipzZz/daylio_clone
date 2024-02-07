@@ -1,5 +1,4 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
-import 'package:daylio_clone/src/core/presentation/assets/res/app_icons.dart';
 import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/notes_provider/notes_provider.dart';
@@ -69,7 +68,7 @@ class _NotesListWidgetState extends State<NotesListWidget> {
                             height: 50,
                             width: 50,
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 13), //Расстояние между иконко и информацией
                           Expanded(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -112,9 +111,9 @@ class _SleepAndFoodRow extends StatelessWidget {
             dense: true,
             contentPadding: EdgeInsets.zero,
             horizontalTitleGap: 7,
-            leading: Icon(Icons.bed, color: _note.sleep.color),
+            leading: Icon(Icons.bed, color: _note.sleep?.color),
             title: Text(
-              _note.sleep.title,
+              _note.sleep?.title ?? '',
               style: AppTextStyle.noteListItemSub,
             ),
           ),
@@ -125,9 +124,9 @@ class _SleepAndFoodRow extends StatelessWidget {
             contentPadding: EdgeInsets.zero,
             horizontalTitleGap: 7,
             dense: true,
-            leading: Icon(Icons.emoji_food_beverage, color: _note.food.color),
+            leading: Icon(Icons.emoji_food_beverage, color: _note.food?.color),
             title: Text(
-              _note.food.title,
+              _note.food?.title ?? '',
               style: AppTextStyle.noteListItemSub,
             ),
           ),

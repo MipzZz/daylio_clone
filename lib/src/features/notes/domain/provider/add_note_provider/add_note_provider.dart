@@ -1,7 +1,6 @@
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_state.dart';
 import 'package:flutter/material.dart';
 
@@ -67,7 +66,7 @@ class AddNoteProvider extends ChangeNotifier {
     if (value == null) return;
     state = state.copyWith(
       note: state.note?.copyWith(
-        sleep: state.note?.sleep.copyWith(
+        sleep: state.note?.sleep?.copyWith(
           id: value.index,
           title: value.title,
           color: value.color,
@@ -80,7 +79,7 @@ class AddNoteProvider extends ChangeNotifier {
     if (value != null) {
       state = state.copyWith(
         note: state.note?.copyWith(
-          food: state.note?.food.copyWith(
+          food: state.note?.food?.copyWith(
             id: value.index,
             title: value.title,
             color: value.color,
@@ -93,12 +92,12 @@ class AddNoteProvider extends ChangeNotifier {
   Future<void> saveFoodDescription(String text) async {
     state = state.copyWith(
         note: state.note
-            ?.copyWith(food: state.note?.food.copyWith(description: text)));
+            ?.copyWith(food: state.note?.food?.copyWith(description: text)));
   }
 
   Future<void> saveSleepDescription(String text) async {
     state = state.copyWith(
         note: state.note
-            ?.copyWith(sleep: state.note?.sleep.copyWith(description: text)));
+            ?.copyWith(sleep: state.note?.sleep?.copyWith(description: text)));
   }
 }

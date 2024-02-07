@@ -26,16 +26,16 @@ class $NoteTableTable extends NoteTable
           .withConverter<MoodModel>($NoteTableTable.$convertermood);
   static const VerificationMeta _foodMeta = const VerificationMeta('food');
   @override
-  late final GeneratedColumnWithTypeConverter<FoodModel, String> food =
-      GeneratedColumn<String>('food', aliasedName, false,
-              type: DriftSqlType.string, requiredDuringInsert: true)
-          .withConverter<FoodModel>($NoteTableTable.$converterfood);
+  late final GeneratedColumnWithTypeConverter<FoodModel?, String> food =
+      GeneratedColumn<String>('food', aliasedName, true,
+              type: DriftSqlType.string, requiredDuringInsert: false)
+          .withConverter<FoodModel?>($NoteTableTable.$converterfoodn);
   static const VerificationMeta _sleepMeta = const VerificationMeta('sleep');
   @override
-  late final GeneratedColumnWithTypeConverter<SleepModel, String> sleep =
-      GeneratedColumn<String>('sleep', aliasedName, false,
-              type: DriftSqlType.string, requiredDuringInsert: true)
-          .withConverter<SleepModel>($NoteTableTable.$convertersleep);
+  late final GeneratedColumnWithTypeConverter<SleepModel?, String> sleep =
+      GeneratedColumn<String>('sleep', aliasedName, true,
+              type: DriftSqlType.string, requiredDuringInsert: false)
+          .withConverter<SleepModel?>($NoteTableTable.$convertersleepn);
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
   late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
@@ -78,11 +78,11 @@ class $NoteTableTable extends NoteTable
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       mood: $NoteTableTable.$convertermood.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}mood'])!),
-      food: $NoteTableTable.$converterfood.fromSql(attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}food'])!),
-      sleep: $NoteTableTable.$convertersleep.fromSql(attachedDatabase
+      food: $NoteTableTable.$converterfoodn.fromSql(attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}food'])),
+      sleep: $NoteTableTable.$convertersleepn.fromSql(attachedDatabase
           .typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}sleep'])!),
+          .read(DriftSqlType.string, data['${effectivePrefix}sleep'])),
       date: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
     );
@@ -97,21 +97,25 @@ class $NoteTableTable extends NoteTable
       const MoodModelConverter();
   static TypeConverter<FoodModel, String> $converterfood =
       const FoodModelConverter();
+  static TypeConverter<FoodModel?, String?> $converterfoodn =
+      NullAwareTypeConverter.wrap($converterfood);
   static TypeConverter<SleepModel, String> $convertersleep =
       const SleepModelConverter();
+  static TypeConverter<SleepModel?, String?> $convertersleepn =
+      NullAwareTypeConverter.wrap($convertersleep);
 }
 
 class NoteTableData extends DataClass implements Insertable<NoteTableData> {
   final int id;
   final MoodModel mood;
-  final FoodModel food;
-  final SleepModel sleep;
+  final FoodModel? food;
+  final SleepModel? sleep;
   final DateTime date;
   const NoteTableData(
       {required this.id,
       required this.mood,
-      required this.food,
-      required this.sleep,
+      this.food,
+      this.sleep,
       required this.date});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -121,13 +125,13 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
       map['mood'] =
           Variable<String>($NoteTableTable.$convertermood.toSql(mood));
     }
-    {
+    if (!nullToAbsent || food != null) {
       map['food'] =
-          Variable<String>($NoteTableTable.$converterfood.toSql(food));
+          Variable<String>($NoteTableTable.$converterfoodn.toSql(food));
     }
-    {
+    if (!nullToAbsent || sleep != null) {
       map['sleep'] =
-          Variable<String>($NoteTableTable.$convertersleep.toSql(sleep));
+          Variable<String>($NoteTableTable.$convertersleepn.toSql(sleep));
     }
     map['date'] = Variable<DateTime>(date);
     return map;
@@ -137,8 +141,9 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
     return NoteTableCompanion(
       id: Value(id),
       mood: Value(mood),
-      food: Value(food),
-      sleep: Value(sleep),
+      food: food == null && nullToAbsent ? const Value.absent() : Value(food),
+      sleep:
+          sleep == null && nullToAbsent ? const Value.absent() : Value(sleep),
       date: Value(date),
     );
   }
@@ -149,8 +154,8 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
     return NoteTableData(
       id: serializer.fromJson<int>(json['id']),
       mood: serializer.fromJson<MoodModel>(json['mood']),
-      food: serializer.fromJson<FoodModel>(json['food']),
-      sleep: serializer.fromJson<SleepModel>(json['sleep']),
+      food: serializer.fromJson<FoodModel?>(json['food']),
+      sleep: serializer.fromJson<SleepModel?>(json['sleep']),
       date: serializer.fromJson<DateTime>(json['date']),
     );
   }
@@ -160,8 +165,8 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'mood': serializer.toJson<MoodModel>(mood),
-      'food': serializer.toJson<FoodModel>(food),
-      'sleep': serializer.toJson<SleepModel>(sleep),
+      'food': serializer.toJson<FoodModel?>(food),
+      'sleep': serializer.toJson<SleepModel?>(sleep),
       'date': serializer.toJson<DateTime>(date),
     };
   }
@@ -169,14 +174,14 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
   NoteTableData copyWith(
           {int? id,
           MoodModel? mood,
-          FoodModel? food,
-          SleepModel? sleep,
+          Value<FoodModel?> food = const Value.absent(),
+          Value<SleepModel?> sleep = const Value.absent(),
           DateTime? date}) =>
       NoteTableData(
         id: id ?? this.id,
         mood: mood ?? this.mood,
-        food: food ?? this.food,
-        sleep: sleep ?? this.sleep,
+        food: food.present ? food.value : this.food,
+        sleep: sleep.present ? sleep.value : this.sleep,
         date: date ?? this.date,
       );
   @override
@@ -207,8 +212,8 @@ class NoteTableData extends DataClass implements Insertable<NoteTableData> {
 class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
   final Value<int> id;
   final Value<MoodModel> mood;
-  final Value<FoodModel> food;
-  final Value<SleepModel> sleep;
+  final Value<FoodModel?> food;
+  final Value<SleepModel?> sleep;
   final Value<DateTime> date;
   const NoteTableCompanion({
     this.id = const Value.absent(),
@@ -220,12 +225,10 @@ class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
   NoteTableCompanion.insert({
     this.id = const Value.absent(),
     required MoodModel mood,
-    required FoodModel food,
-    required SleepModel sleep,
+    this.food = const Value.absent(),
+    this.sleep = const Value.absent(),
     required DateTime date,
   })  : mood = Value(mood),
-        food = Value(food),
-        sleep = Value(sleep),
         date = Value(date);
   static Insertable<NoteTableData> custom({
     Expression<int>? id,
@@ -246,8 +249,8 @@ class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
   NoteTableCompanion copyWith(
       {Value<int>? id,
       Value<MoodModel>? mood,
-      Value<FoodModel>? food,
-      Value<SleepModel>? sleep,
+      Value<FoodModel?>? food,
+      Value<SleepModel?>? sleep,
       Value<DateTime>? date}) {
     return NoteTableCompanion(
       id: id ?? this.id,
@@ -270,11 +273,11 @@ class NoteTableCompanion extends UpdateCompanion<NoteTableData> {
     }
     if (food.present) {
       map['food'] =
-          Variable<String>($NoteTableTable.$converterfood.toSql(food.value));
+          Variable<String>($NoteTableTable.$converterfoodn.toSql(food.value));
     }
     if (sleep.present) {
       map['sleep'] =
-          Variable<String>($NoteTableTable.$convertersleep.toSql(sleep.value));
+          Variable<String>($NoteTableTable.$convertersleepn.toSql(sleep.value));
     }
     if (date.present) {
       map['date'] = Variable<DateTime>(date.value);

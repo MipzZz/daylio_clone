@@ -83,7 +83,7 @@ class NotesDetailsProvider extends ChangeNotifier {
   Future<void> updateFoodDescription(String text) async {
     state = state.copyWith(
       note: state.note?.copyWith(
-        food: state.note?.food.copyWith(description: text),
+        food: state.note?.food?.copyWith(description: text),
       ),
     );
   }
@@ -91,7 +91,7 @@ class NotesDetailsProvider extends ChangeNotifier {
   Future<void> updateSleepDescription(String text) async {
     state = state.copyWith(
       note: state.note?.copyWith(
-        sleep: state.note?.sleep.copyWith(description: text),
+        sleep: state.note?.sleep?.copyWith(description: text),
       ),
     );
   }
@@ -100,7 +100,7 @@ class NotesDetailsProvider extends ChangeNotifier {
     if (value != null) {
       state = state.copyWith(
         note: state.note?.copyWith(
-          sleep: state.note?.sleep.copyWith(
+          sleep: state.note?.sleep?.copyWith(
             id: value.index,
             title: value.title,
             color: value.color,
@@ -114,7 +114,7 @@ class NotesDetailsProvider extends ChangeNotifier {
     if (value != null) {
       state = state.copyWith(
         note: state.note?.copyWith(
-          food: state.note?.food.copyWith(
+          food: state.note?.food?.copyWith(
             id: value.index,
             title: value.title,
             color: value.color,
@@ -124,11 +124,13 @@ class NotesDetailsProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> setActiveMood(int id) async {
+  Future<void> updateMood(int id) async {
+    if (id == state.note?.mood.id) return;
     state = state.copyWith(
       note: state.note?.copyWith(
         mood: moods[id],
       ),
     );
+    notifyListeners();
   }
 }

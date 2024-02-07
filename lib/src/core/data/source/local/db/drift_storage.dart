@@ -56,8 +56,8 @@ class AppDb extends _$AppDb {
   MigrationStrategy get migration {
     return MigrationStrategy(
       beforeOpen: (openingDetails) async {
-        if (isInDebugMode /* or some other flag */) {
-          final m = createMigrator(); // changed to this
+        if (isInDebugMode) {
+          final m = createMigrator();
           for (final table in allTables) {
             await m.deleteTable(table.actualTableName);
             await m.createTable(table);
