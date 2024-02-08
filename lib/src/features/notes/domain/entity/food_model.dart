@@ -8,10 +8,10 @@ part 'food_model.g.dart';
 
 @JsonSerializable()
 class FoodModel {
-  final int? id;
-  final String? title;
+  final int id;
+  final String title;
   final String icon;
-  final String? description;
+  final String description;
   @ColorConverter()
   final Color color;
 
@@ -23,7 +23,7 @@ class FoodModel {
       required this.color});
 
   FoodModel.empty()
-      : this(id: 0, title: null, icon: '', description: null, color: Colors.white);
+      : this(id: 0, title: '', icon: '', description: '', color: Colors.white);
 
   factory FoodModel.fromJson(Map<String, dynamic> json) =>
       _$FoodModelFromJson(json);

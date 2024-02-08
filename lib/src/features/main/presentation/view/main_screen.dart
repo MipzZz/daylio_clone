@@ -44,10 +44,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> _addNote() async {
-    final res = await Navigator.pushNamed(context, '/add_note');
-    if (res == true && mounted) {
-      context.read<NotesProvider>().readNotes();
-    }
+    Navigator.pushNamed(context, '/add_note');
+  }
+
+  Future<void> _onDebug() async {
+    Navigator.pushNamed(context, '/debug');
   }
 
   @override
@@ -56,7 +57,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.bug_report),
-          onPressed: () {},
+          onPressed: _onDebug,
         ),
         actions: [
           IconButton(
@@ -72,20 +73,29 @@ class _MainScreenState extends State<MainScreen> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(
-              icon: const Icon(
-                Icons.chevron_left,
-                color: Colors.white,
+            Flexible(
+              child: IconButton(
+                icon: const Icon(
+                  Icons.chevron_left,
+                  color: Colors.white,
+                ),
+                onPressed: _returnDays,
               ),
-              onPressed: _returnDays,
             ),
-            Text(DateFormat.yMMMM('ru-Ru').format(_date).capitalize()),
-            IconButton(
-              icon: const Icon(
-                Icons.chevron_right,
-                color: Colors.white,
+            Flexible(
+              flex: 4,
+              child: Text(
+                DateFormat.yMMMM('ru-Ru').format(_date).capitalize(),
               ),
-              onPressed: _addDays,
+            ),
+            Flexible(
+              child: IconButton(
+                icon: const Icon(
+                  Icons.chevron_right,
+                  color: Colors.white,
+                ),
+                onPressed: _addDays,
+              ),
             ),
           ],
         ),
@@ -117,9 +127,7 @@ class _MainScreenState extends State<MainScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  onPressed: () {
-                    onSelectTab(0);
-                  },
+                  onPressed: () => onSelectTab(0),
                   icon: const Icon(Icons.notes),
                   color: _selectedTab == 0
                       ? AppColors.bottomNavigationBarSelectedItemColor
@@ -142,9 +150,7 @@ class _MainScreenState extends State<MainScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  onPressed: () {
-                    onSelectTab(1);
-                  },
+                  onPressed: () => onSelectTab(1),
                   icon: const Icon(Icons.stacked_bar_chart),
                   color: _selectedTab == 1
                       ? AppColors.bottomNavigationBarSelectedItemColor
@@ -167,9 +173,7 @@ class _MainScreenState extends State<MainScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  onPressed: () {
-                    onSelectTab(2);
-                  },
+                  onPressed: () => onSelectTab(2),
                   icon: const Icon(Icons.more_horiz),
                   color: _selectedTab == 2
                       ? AppColors.bottomNavigationBarSelectedItemColor

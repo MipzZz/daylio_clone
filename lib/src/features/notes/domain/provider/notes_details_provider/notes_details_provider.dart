@@ -1,7 +1,7 @@
+import 'package:daylio_clone/src/core/utils/exceptions/note_null_exception.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_provider/note_details_state.dart';
 import 'package:flutter/material.dart';
 
@@ -22,18 +22,14 @@ class NotesDetailsProvider extends ChangeNotifier {
   Future<void> readNote(int id) async {
     try {
       final note = await _notesRepository.readNote(id);
-      //Из базы данных не может придти запись с null id
-      if (note.id == null) throw Exception();
       state = NoteDetailsStateData(
         note: note,
         date: note.date,
         moodId: note.mood.id,
-        // TODO(fix): bad
-        sleepId: note.sleep?.id ?? 0,
-        sleepDescription: note.sleep?.description ?? '',
-        // TODO(fix): bad
-        foodId: note.food?.id ?? 0,
-        foodDescription: note.food?.description ?? '',
+        sleepId: note.sleep.id,
+        sleepDescription: note.sleep.description,
+        foodId: note.food.id,
+        foodDescription: note.food.description,
       );
       notifyListeners();
     } on Object catch (e, s) {
@@ -98,15 +94,19 @@ class NotesDetailsProvider extends ChangeNotifier {
     try {
       final note = state.note?.copyWith(
         date: state.date,
-        mood: state.note?.mood.copyWith(
-          id: state.moodId,
-        ),
-        sleep: state.note?.sleep
-            ?.copyWith(id: state.sleepId, description: state.sleepDescription),
-        food: state.note?.food
-            ?.copyWith(id: state.foodId, description: state.foodDescription),
+        mood: moods[state.moodId],
+        sleep: state.note?.sleep.copyWith(
+            id: state.sleepId,
+            title: GradeLabel.values[state.sleepId].title,
+            color: GradeLabel.values[state.sleepId].color,
+            description: state.sleepDescription),
+        food: state.note?.food.copyWith(
+            id: state.foodId,
+            title: GradeLabel.values[state.foodId].title,
+            color: GradeLabel.values[state.foodId].color,
+            description: state.foodDescription),
       );
-      if (note == null) throw Exception('Note is null');
+      if (note == null) throw NoteNullException();
       await _notesRepository.updateNote(note);
       notifyListeners();
     } on Object catch (e, s) {
@@ -127,7 +127,7 @@ class NotesDetailsProvider extends ChangeNotifier {
   Future<void> deleteNote() async {
     try {
       final id = state.note?.id;
-      if (id == null) throw Exception('Note id is null');
+      if (id == null) throw NoteNullException();
       await _notesRepository.deleteNote(id);
       notifyListeners();
     } on Object catch (e, s) {

@@ -3,6 +3,7 @@ import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.da
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/notes_provider/notes_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -14,18 +15,32 @@ class NotesListWidget extends StatefulWidget {
 }
 
 class _NotesListWidgetState extends State<NotesListWidget> {
-  void _onNoteTab(int index) {
-    final id = index;
+  final ScrollController _scrollController = ScrollController();
+
+
+  void _onNoteTab(int? id) {
+    if (id == null) return;
     Navigator.of(context).pushNamed(
       '/note_detail',
       arguments: id,
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     final notes = context.select((NotesProvider vm) => vm.state.notes);
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _scrollController.jumpTo(
+        _scrollController.position.maxScrollExtent,
+        );
+    });
+
     return ListView.builder(
+      controller: _scrollController,
+      shrinkWrap: true,
+      reverse: true,
       padding: const EdgeInsets.only(top: 5),
       itemCount: notes.length,
       itemBuilder: (BuildContext context, int index) {
@@ -36,10 +51,7 @@ class _NotesListWidgetState extends State<NotesListWidget> {
             children: [
               Ink(
                 child: InkWell(
-                  onTap: () {
-                    final noteId = note.id;
-                    if (noteId != null) _onNoteTab(noteId);
-                  },
+                  onTap: () => _onNoteTab(note.id),
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
@@ -93,52 +105,8 @@ class _NotesListWidgetState extends State<NotesListWidget> {
   }
 }
 
-class _SleepAndFoodRow extends StatelessWidget {
-  const _SleepAndFoodRow({
-    super.key,
-    required NoteModel note,
-  }) : _note = note;
-
-  final NoteModel _note;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: ListTile(
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            horizontalTitleGap: 7,
-            leading: Icon(Icons.bed, color: _note.sleep?.color),
-            title: Text(
-              _note.sleep?.title ?? '',
-              style: AppTextStyle.noteListItemSub,
-            ),
-          ),
-        ),
-        const SizedBox(width: 5),
-        Flexible(
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            horizontalTitleGap: 7,
-            dense: true,
-            leading: Icon(Icons.emoji_food_beverage, color: _note.food?.color),
-            title: Text(
-              _note.food?.title ?? '',
-              style: AppTextStyle.noteListItemSub,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _MoodRow extends StatelessWidget {
   const _MoodRow({
-    super.key,
     required NoteModel note,
   }) : _note = note;
 
@@ -157,6 +125,48 @@ class _MoodRow extends StatelessWidget {
         const SizedBox(width: 10),
         Text(
           '${_note.date.hour}:${_note.date.minute}',
+        ),
+      ],
+    );
+  }
+}
+
+class _SleepAndFoodRow extends StatelessWidget {
+  const _SleepAndFoodRow({
+    required NoteModel note,
+  }) : _note = note;
+
+  final NoteModel _note;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            horizontalTitleGap: 7,
+            leading: Icon(Icons.bed, color: _note.sleep.color),
+            title: Text(
+              _note.sleep.title,
+              style: AppTextStyle.noteListItemSub,
+            ),
+          ),
+        ),
+        const SizedBox(width: 5),
+        Flexible(
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            horizontalTitleGap: 7,
+            dense: true,
+            leading: Icon(Icons.emoji_food_beverage, color: _note.food.color),
+            title: Text(
+              _note.food.title,
+              style: AppTextStyle.noteListItemSub,
+            ),
+          ),
         ),
       ],
     );

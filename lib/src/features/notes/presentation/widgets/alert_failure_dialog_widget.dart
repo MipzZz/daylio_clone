@@ -6,6 +6,10 @@ class AlertFailureDialogWidget extends StatelessWidget {
 
   final String message;
 
+  void _goBack(BuildContext context) {
+    Navigator.popUntil(context, ModalRoute.withName('/'));
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -14,9 +18,7 @@ class AlertFailureDialogWidget extends StatelessWidget {
       content: Text(message),
       actions: [
         TextButton(
-          onPressed: () {
-            Navigator.popUntil(context, ModalRoute.withName('/'));
-          },
+          onPressed: () => _goBack(context),
           child: const Text(
             'Ок',
             style: TextStyle(color: AppColors.mainGreen),

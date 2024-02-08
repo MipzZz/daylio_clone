@@ -6,10 +6,10 @@ part 'sleep_model.g.dart';
 
 @JsonSerializable()
 class SleepModel {
-  final int? id;
-  final String? title;
+  final int id;
+  final String title;
   final String icon;
-  final String? description;
+  final String description;
   @ColorConverter()
   final Color color;
 
@@ -24,9 +24,9 @@ class SleepModel {
   SleepModel.empty()
       : this(
           id: 0,
-          title: null,
+          title: '',
           icon: '',
-          description: null,
+          description: '',
           color: Colors.white,
         );
 

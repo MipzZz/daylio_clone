@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
 
-extension NOtesDateTime on DateTime {
-  String dmyyyy() => DateFormat('dd.MM.yyyy').format(this);
+extension NotesDateTime on DateTime {
+  String dateOnly() => DateFormat('dd.MM.yyyy').format(this);
 }

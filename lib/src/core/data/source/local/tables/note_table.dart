@@ -6,8 +6,8 @@ import 'package:drift/drift.dart';
 class NoteTable extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get mood => text().map(const MoodModelConverter()).named('mood')();
-  TextColumn get food => text().map(const FoodModelConverter()).named('food').nullable()();
+  TextColumn get food => text().map(const FoodModelConverter()).named('food')();
   TextColumn get sleep =>
-      text().map(const SleepModelConverter()).named('sleep').nullable()();
+      text().map(const SleepModelConverter()).named('sleep')();
   DateTimeColumn get date => dateTime().named('date')();
 }

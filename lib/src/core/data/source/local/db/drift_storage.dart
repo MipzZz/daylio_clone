@@ -48,6 +48,14 @@ class AppDb extends _$AppDb {
     return await update(noteTable).replace(entity);
   }
 
+  Future createAllTablesAgain() async {
+    final migrator = createMigrator();
+    for (var table in allTables) {
+      await customStatement('DROP TABLE ${table.actualTableName};');
+      await migrator.createTable(table);
+    }
+  }
+
   @override
   int get schemaVersion => 1;
   final isInDebugMode = false;

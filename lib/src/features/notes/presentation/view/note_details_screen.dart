@@ -1,3 +1,5 @@
+import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
+import 'package:daylio_clone/src/core/utils/extensions/time_of_day_extension.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_provider/note_details_state.dart';
@@ -35,9 +37,9 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
               )
             ],
             title: Text(
-                'Запись ${widget.noteId}'), //TODO Сделать корректное название записи
+                'Запись от ${widget.noteId}'),
           ),
-          body: const _SwitchWidget(),
+          body: const _SwitchWidget(), //TODO убрать виджет и вставить нормально его содержимое
         ),
       ),
     );
@@ -131,7 +133,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              '${vm.state.date.day}.${vm.state.date.month}.${vm.state.date.year}',
+              vm.state.date.dateOnly(),
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
@@ -159,6 +161,7 @@ class _TimePickerWidget extends StatefulWidget {
 }
 
 class _TimePickerWidgetState extends State<_TimePickerWidget> {
+
   void setTime(TimeOfDay selectedTime) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
         context: context,
@@ -181,13 +184,13 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
   @override
   Widget build(BuildContext context) {
     TimeOfDay selectedTime = TimeOfDay.fromDateTime(
-        context.watch<NotesDetailsProvider>().state.date ?? DateTime.now());
+        context.watch<NotesDetailsProvider>().state.date);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '${selectedTime.hour}:${selectedTime.minute}',
+          selectedTime.timeOnly(),
           style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 10),
@@ -311,27 +314,45 @@ class _SleepRowWidgetState extends State<_SleepRowWidget> {
   }
 }
 
-class _FoodRowWidget extends StatelessWidget {
+class _FoodRowWidget extends StatefulWidget {
   const _FoodRowWidget();
+
+  @override
+  State<_FoodRowWidget> createState() => _FoodRowWidgetState();
+}
+
+class _FoodRowWidgetState extends State<_FoodRowWidget> {
+  late final TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialFoodDescription =
+        context.read<NotesDetailsProvider>().state.foodDescription;
+    _textController = TextEditingController(text: initialFoodDescription);
+  }
+
+  void _onFoodSelect(GradeLabel? gradeLabel) {
+    if (gradeLabel == null) return;
+    context.read<NotesDetailsProvider>().updateFoodGrade(gradeLabel.index);
+  }
+
+  void _onFoodDescriptionChanged(String v) {
+    context.read<NotesDetailsProvider>().updateFoodDescription(v);
+  }
 
   @override
   Widget build(BuildContext context) {
     final noteDetailsState = context.watch<NotesDetailsProvider>().state;
-    final foodDescriptionController =
-        TextEditingController(text: noteDetailsState.foodDescription);
-    GradeLabel? initSelect =
-        GradeLabel.values.elementAtOrNull(noteDetailsState.foodId);
+    GradeLabel? initSelect = GradeLabel.values[noteDetailsState.foodId];
+    GradeLabel.values.elementAtOrNull(noteDetailsState.foodId);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
           child: DropdownMenu<GradeLabel>(
             initialSelection: initSelect,
-            onSelected: (value) => value == null
-                ? null
-                : context
-                    .read<NotesDetailsProvider>()
-                    .updateFoodGrade(value.index),
+            onSelected: _onFoodSelect,
             label: const Text('Оценка еды'),
             inputDecorationTheme: const InputDecorationTheme(
               contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -351,10 +372,8 @@ class _FoodRowWidget extends StatelessWidget {
         ),
         Expanded(
           child: TextField(
-            controller: foodDescriptionController,
-            onChanged: (text) => context
-                .read<NotesDetailsProvider>()
-                .updateFoodDescription(text),
+            controller: _textController,
+            onChanged: _onFoodDescriptionChanged,
             maxLines: 1,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
@@ -411,23 +430,22 @@ class _DeleteButton extends StatelessWidget {
 class _SaveButton extends StatelessWidget {
   const _SaveButton();
 
-  void _onSaveButton(BuildContext context) {
-    final viewModel = context.read<NotesDetailsProvider>();
-    viewModel.updateNote().then((_) {
-      switch (viewModel.state.runtimeType) {
-        case NoteDetailsStateError:
-          showDialog(
-            context: context,
-            builder: (_) {
-              return AlertFailureDialogWidget(
-                message: (viewModel.state as NoteDetailsStateError).message,
-              );
-            },
-          );
-        default:
-          break;
-      }
-    });
+  void _onSaveButton(BuildContext context) async {
+    await context.read<NotesDetailsProvider>().updateNote();
+    if (!context.mounted) return;
+    switch (context.read<NotesDetailsProvider>().state) {
+      case NoteDetailsStateError(message: final message):
+        showDialog(
+          context: context,
+          builder: (_) {
+            return AlertFailureDialogWidget(
+              message: message,
+            );
+          },
+        );
+      default:
+        break;
+    }
   }
 
   @override

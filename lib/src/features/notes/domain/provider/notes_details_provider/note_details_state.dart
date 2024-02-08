@@ -1,8 +1,5 @@
-import 'package:daylio_clone/src/features/notes/domain/entity/food_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
 
 sealed class NoteDetailsState {
   NoteModel? get note;

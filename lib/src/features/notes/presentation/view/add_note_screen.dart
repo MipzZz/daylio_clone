@@ -1,4 +1,6 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
+import 'package:daylio_clone/src/core/utils/extensions/time_of_day_extension.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_provider/add_note_provider.dart';
@@ -51,46 +53,6 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
   }
 }
 
-class _AddNoteButton extends StatelessWidget {
-  const _AddNoteButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final viewModel = context.watch<AddNoteProvider>();
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 100),
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          backgroundColor: AppColors.mainGreen,
-          foregroundColor: Colors.white,
-          side: const BorderSide(
-            color: AppColors.mainGreen,
-            width: 2,
-          ),
-        ),
-        onPressed: () {
-          viewModel.saveNote().then((_) {
-            switch (viewModel.state) {
-              case AddNoteStateError(message: final message):
-                showDialog(
-                  context: context,
-                  builder: (_) {
-                    return AlertFailureDialogWidget(
-                      message: message,
-                    );
-                  },
-                );
-              default:
-                Navigator.popUntil(context, ModalRoute.withName('/'));
-            }
-          });
-        },
-        child: const Text('Добавить запись', style: TextStyle(fontSize: 15)),
-      ),
-    );
-  }
-}
-
 class DateNTimeRow extends StatelessWidget {
   const DateNTimeRow({
     super.key,
@@ -103,163 +65,6 @@ class DateNTimeRow extends StatelessWidget {
       children: [
         Expanded(child: _DatePickerWidget()),
         Expanded(child: _TimePickerWidget()),
-      ],
-    );
-  }
-}
-
-class _SleepRowWidget extends StatelessWidget {
-  const _SleepRowWidget();
-
-  final initialSelect = GradeLabel.excellent;
-
-  @override
-  Widget build(BuildContext context) {
-    context.read<AddNoteProvider>().saveSelectedSleep(initialSelect);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Expanded(
-          child: DropdownMenu(
-            initialSelection: initialSelect,
-            onSelected: (value) {
-              context.read<AddNoteProvider>().saveSelectedSleep(value);
-            },
-            inputDecorationTheme: const InputDecorationTheme(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              border: OutlineInputBorder(),
-            ),
-            label: const Text('Оценка сна'),
-            textStyle: const TextStyle(fontSize: 15),
-            dropdownMenuEntries: GradeLabel.values
-                .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
-              return DropdownMenuEntry<GradeLabel>(
-                value: grade,
-                label: grade.title,
-              );
-            }).toList(),
-          ),
-        ),
-        Expanded(
-          child: TextField(
-            onChanged: (text) =>
-                context.read<AddNoteProvider>().saveSleepDescription(text),
-            maxLines: 1,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Описание сна',
-            ),
-            style: const TextStyle(fontSize: 10),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _FoodRowWidget extends StatelessWidget {
-  const _FoodRowWidget();
-
-  final initialSelect = GradeLabel.excellent;
-  @override
-  Widget build(BuildContext context) {
-    context.read<AddNoteProvider>().saveSelectedFood(initialSelect);
-    return Row(
-
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Expanded(
-          child: DropdownMenu<GradeLabel>(
-            initialSelection: initialSelect,
-            onSelected: (value) {
-              context.read<AddNoteProvider>().saveSelectedFood(value);
-            },
-            inputDecorationTheme: const InputDecorationTheme(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              border: OutlineInputBorder(),
-            ),
-            label: const Text('Оценка еды'),
-            textStyle: const TextStyle(fontSize: 15),
-            dropdownMenuEntries: GradeLabel.values
-                .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
-              return DropdownMenuEntry<GradeLabel>(
-                value: grade,
-                label: grade.title,
-              );
-            }).toList(),
-          ),
-        ),
-        Expanded(
-          child: TextField(
-            onChanged: (text) =>
-                context.read<AddNoteProvider>().saveFoodDescription(text),
-            maxLines: 1,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Описание еды',
-            ),
-            style: const TextStyle(fontSize: 10),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _TimePickerWidget extends StatefulWidget {
-  const _TimePickerWidget();
-
-  @override
-  State<_TimePickerWidget> createState() => _TimePickerWidgetState();
-}
-
-class _TimePickerWidgetState extends State<_TimePickerWidget> {
-  TimeOfDay selectedTime = TimeOfDay.now();
-
-  void saveTime(TimeOfDay timeOfDay) {
-    context.read<AddNoteProvider>().saveTime(timeOfDay);
-  }
-
-  void setTime() async {
-    final TimeOfDay? timeOfDay = await showTimePicker(
-        context: context,
-        initialTime: selectedTime,
-        initialEntryMode: TimePickerEntryMode.dial,
-        builder: (BuildContext context, Widget? child) {
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child!,
-          );
-        });
-    if (timeOfDay != null) {
-      saveTime(timeOfDay);
-      setState(() {
-        selectedTime = timeOfDay;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '${selectedTime.hour}:${selectedTime.minute}',
-          style: const TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 10),
-        OutlinedButton(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(Colors.black45),
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-          ),
-          onPressed: setTime,
-          child: const Text(
-            'Выбрать время',
-            style: TextStyle(fontSize: 12),
-          ),
-        )
       ],
     );
   }
@@ -300,7 +105,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '${selectedDate.day}.${selectedDate.month}.${selectedDate.year}',
+          selectedDate.dateOnly(),
           style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 10),
@@ -309,14 +114,72 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
             backgroundColor: Colors.black45,
             foregroundColor: Colors.white,
           ),
-          onPressed: () => {
-            selectDate(),
-          },
+          onPressed: () => selectDate(),
           child: const Text(
             'Выбрать дату',
             style: TextStyle(fontSize: 12),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _TimePickerWidget extends StatefulWidget {
+  const _TimePickerWidget();
+
+  @override
+  State<_TimePickerWidget> createState() => _TimePickerWidgetState();
+}
+
+class _TimePickerWidgetState extends State<_TimePickerWidget> {
+  TimeOfDay selectedTime = TimeOfDay.now();
+
+  void saveTime(TimeOfDay timeOfDay) {
+    context.read<AddNoteProvider>().saveTime(timeOfDay);
+  }
+
+  void setTime() async {
+    final TimeOfDay? timeOfDay = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+      initialEntryMode: TimePickerEntryMode.dial,
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
+    );
+    if (timeOfDay != null) {
+      saveTime(timeOfDay);
+      setState(() {
+        selectedTime = timeOfDay;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          selectedTime.timeOnly(),
+          style: const TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.black45),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          ),
+          onPressed: setTime,
+          child: const Text(
+            'Выбрать время',
+            style: TextStyle(fontSize: 12),
+          ),
+        )
       ],
     );
   }
@@ -335,21 +198,190 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
   }
 
   @override
+  Widget build(BuildContext context) => Consumer<AddNoteProvider>(
+        builder: (context, addNotesVM, child) => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(
+            5,
+            (index) {
+              final mood = addNotesVM.moods[index];
+              return MoodIcon(
+                iconPath: mood.selectedIcon,
+                unselectedPath: mood.unSelectedIcon,
+                onTap: () => selectMood(index),
+                selected: mood.id == addNotesVM.state.moodId,
+              );
+            },
+          ),
+        ),
+      );
+}
+
+class _SleepRowWidget extends StatefulWidget {
+  const _SleepRowWidget();
+
+  @override
+  State<_SleepRowWidget> createState() => _SleepRowWidgetState();
+}
+
+class _SleepRowWidgetState extends State<_SleepRowWidget> {
+  final initialSelect = GradeLabel.excellent;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<AddNoteProvider>().saveSelectedSleep(initialSelect.index);
+  }
+
+  void _onSleepSelect(GradeLabel? gradeLabel) {
+    if (gradeLabel == null) return;
+    context.read<AddNoteProvider>().saveSelectedSleep(gradeLabel.index);
+  }
+
+  void _onSleepDescriptionChanged(String v) {
+    context.read<AddNoteProvider>().saveSleepDescription(v);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final addNotesVM = context.watch<AddNoteProvider>();
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(
-        5,
-        (index) {
-          final mood = addNotesVM.moods[index];
-          return MoodIcon(
-            iconPath: mood.selectedIcon,
-            unselectedPath: mood.unSelectedIcon,
-            onTap: () => selectMood(index), //???
-            selected: mood.id == addNotesVM.state.note?.mood.id,
-          );
-        },
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+          child: DropdownMenu(
+            initialSelection: initialSelect,
+            onSelected: _onSleepSelect,
+            inputDecorationTheme: const InputDecorationTheme(
+              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              border: OutlineInputBorder(),
+            ),
+            label: const Text('Оценка сна'),
+            textStyle: const TextStyle(fontSize: 15),
+            dropdownMenuEntries: GradeLabel.values
+                .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
+              return DropdownMenuEntry<GradeLabel>(
+                value: grade,
+                label: grade.title,
+              );
+            }).toList(),
+          ),
+        ),
+        Expanded(
+          child: TextField(
+            onChanged: _onSleepDescriptionChanged,
+            maxLines: 1,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Описание сна',
+            ),
+            style: const TextStyle(fontSize: 10),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FoodRowWidget extends StatefulWidget {
+  const _FoodRowWidget();
+
+  @override
+  State<_FoodRowWidget> createState() => _FoodRowWidgetState();
+}
+
+class _FoodRowWidgetState extends State<_FoodRowWidget> {
+  final initialSelect = GradeLabel.excellent;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<AddNoteProvider>().saveSelectedFood(initialSelect.index);
+  }
+
+  void _onFoodSelect(GradeLabel? gradeLabel) {
+    if (gradeLabel == null) return;
+    context.read<AddNoteProvider>().saveSelectedFood(gradeLabel.index);
+  }
+
+  void _onFoodDescriptionChanged(String v) {
+    context.read<AddNoteProvider>().saveFoodDescription(v);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+          child: DropdownMenu<GradeLabel>(
+            initialSelection: initialSelect,
+            onSelected: _onFoodSelect,
+            inputDecorationTheme: const InputDecorationTheme(
+              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              border: OutlineInputBorder(),
+            ),
+            label: const Text('Оценка еды'),
+            textStyle: const TextStyle(fontSize: 15),
+            dropdownMenuEntries: GradeLabel.values
+                .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
+              return DropdownMenuEntry<GradeLabel>(
+                value: grade,
+                label: grade.title,
+              );
+            }).toList(),
+          ),
+        ),
+        Expanded(
+          child: TextField(
+            onChanged: _onFoodDescriptionChanged,
+            maxLines: 1,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Описание еды',
+            ),
+            style: const TextStyle(fontSize: 10),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AddNoteButton extends StatelessWidget {
+  const _AddNoteButton();
+
+  void _onAddButton(BuildContext context) async {
+    await context.read<AddNoteProvider>().saveNote();
+    if (!context.mounted) return;
+    switch (context.read<AddNoteProvider>().state) {
+      case AddNoteStateError(message: final message):
+        showDialog(
+            context: context,
+            builder: (_) {
+              return AlertFailureDialogWidget(
+                message: message,
+              );
+            });
+      default:
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 100),
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          backgroundColor: AppColors.mainGreen,
+          foregroundColor: Colors.white,
+          side: const BorderSide(
+            color: AppColors.mainGreen,
+            width: 2,
+          ),
+        ),
+        onPressed: () => _onAddButton(context),
+        child: const Text('Добавить запись', style: TextStyle(fontSize: 15)),
       ),
     );
   }
