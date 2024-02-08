@@ -126,7 +126,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
   @override
   Widget build(BuildContext context) {
     DateTime? selectedDate =
-        context.watch<NotesDetailsProvider>().state.note?.date;
+        context.watch<NotesDetailsProvider>().state.date;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -181,7 +181,7 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
   @override
   Widget build(BuildContext context) {
     TimeOfDay selectedTime = TimeOfDay.fromDateTime(
-        context.watch<NotesDetailsProvider>().state.note?.date ??
+        context.watch<NotesDetailsProvider>().state.date ??
             DateTime.now());
 
     return Column(
@@ -233,7 +233,7 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
             iconPath: mood.selectedIcon,
             unselectedPath: mood.unSelectedIcon,
             onTap: () => selectMood(index),
-            selected: mood.id == noteDetailsVM.state.note?.mood.id,
+            selected: mood.id == noteDetailsVM.state.mood?.id,
           );
         },
       ),
@@ -247,9 +247,9 @@ class _SleepRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description =
-        context.watch<NotesDetailsProvider>().state.note?.sleep?.description;
+        context.watch<NotesDetailsProvider>().state.sleep?.description;
     final sleepDescriptionController = TextEditingController(text: description);
-    final id = context.watch<NotesDetailsProvider>().state.note?.sleep?.id;
+    final id = context.watch<NotesDetailsProvider>().state.sleep?.id;
     GradeLabel? initSelect = id == null ? null : GradeLabel.values[id];
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -299,9 +299,9 @@ class _FoodRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description =
-        context.watch<NotesDetailsProvider>().state.note?.food?.description;
+        context.watch<NotesDetailsProvider>().state.food?.description;
     final foodDescriptionController = TextEditingController(text: description);
-    final id = context.watch<NotesDetailsProvider>().state.note?.food?.id;
+    final id = context.watch<NotesDetailsProvider>().state.food?.id;
     GradeLabel? initSelect = id == null ? null : GradeLabel.values[id];
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -352,7 +352,7 @@ class _DeleteButton extends StatelessWidget {
 
   void _onDeleteButton(BuildContext context) {
     final viewModel = context.read<NotesDetailsProvider>();
-    final noteId = viewModel.state.note?.id;
+    final noteId = viewModel.state.id;
     if (noteId != null) {
       viewModel.deleteNote(id: noteId).then((_) {
         switch (viewModel.state) {
