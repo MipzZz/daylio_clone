@@ -21,7 +21,9 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => NotesDetailsProvider(
-          notesRepository: context.read<NotesRepository>(), id: widget.noteId),
+        notesRepository: context.read<NotesRepository>(),
+        id: widget.noteId,
+      ),
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
@@ -124,31 +126,29 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    DateTime? selectedDate =
-        context.watch<NotesDetailsProvider>().state.date;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '${selectedDate?.day}.${selectedDate?.month}.${selectedDate?.year}',
-          style: const TextStyle(fontSize: 16),
+  Widget build(BuildContext context) => Consumer<NotesDetailsProvider>(
+        builder: (context, vm, child) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${vm.state.date.day}.${vm.state.date.month}.${vm.state.date.year}',
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                backgroundColor: Colors.black45,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () => selectDate(vm.state.date),
+              child: const Text(
+                'Выбрать дату',
+                style: TextStyle(fontSize: 12),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
-        OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            backgroundColor: Colors.black45,
-            foregroundColor: Colors.white,
-          ),
-          onPressed: () => selectDate(selectedDate),
-          child: const Text(
-            'Выбрать дату',
-            style: TextStyle(fontSize: 12),
-          ),
-        ),
-      ],
-    );
-  }
+      );
 }
 
 class _TimePickerWidget extends StatefulWidget {
@@ -181,8 +181,7 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
   @override
   Widget build(BuildContext context) {
     TimeOfDay selectedTime = TimeOfDay.fromDateTime(
-        context.watch<NotesDetailsProvider>().state.date ??
-            DateTime.now());
+        context.watch<NotesDetailsProvider>().state.date ?? DateTime.now());
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -233,7 +232,7 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
             iconPath: mood.selectedIcon,
             unselectedPath: mood.unSelectedIcon,
             onTap: () => selectMood(index),
-            selected: mood.id == noteDetailsVM.state.mood?.id,
+            selected: mood.id == noteDetailsVM.state.moodId,
           );
         },
       ),
@@ -241,24 +240,45 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
   }
 }
 
-class _SleepRowWidget extends StatelessWidget {
+class _SleepRowWidget extends StatefulWidget {
   const _SleepRowWidget();
 
   @override
+  State<_SleepRowWidget> createState() => _SleepRowWidgetState();
+}
+
+class _SleepRowWidgetState extends State<_SleepRowWidget> {
+  late final TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialSleepDescription =
+        context.read<NotesDetailsProvider>().state.sleepDescription;
+    _textController = TextEditingController(text: initialSleepDescription);
+  }
+
+  void _onSleepSelect(GradeLabel? gradeLabel) {
+    if (gradeLabel == null) return;
+    context.read<NotesDetailsProvider>().updateSleepGrade(gradeLabel.index);
+  }
+
+  void _onSleepDescriptionChanged(String v) {
+    context.read<NotesDetailsProvider>().updateSleepDescription(v);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final description =
-        context.watch<NotesDetailsProvider>().state.sleep?.description;
-    final sleepDescriptionController = TextEditingController(text: description);
-    final id = context.watch<NotesDetailsProvider>().state.sleep?.id;
-    GradeLabel? initSelect = id == null ? null : GradeLabel.values[id];
+    final noteDetailsState = context.watch<NotesDetailsProvider>().state;
+    GradeLabel? initSelect =
+        GradeLabel.values.elementAtOrNull(noteDetailsState.sleepId);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
           child: DropdownMenu<GradeLabel>(
             initialSelection: initSelect,
-            onSelected: (value) =>
-                context.read<NotesDetailsProvider>().updateSleepGrade(value),
+            onSelected: _onSleepSelect,
             label: const Text('Оценка сна'),
             inputDecorationTheme: const InputDecorationTheme(
               contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -276,10 +296,8 @@ class _SleepRowWidget extends StatelessWidget {
         ),
         Expanded(
           child: TextField(
-            controller: sleepDescriptionController,
-            onChanged: (text) => context
-                .read<NotesDetailsProvider>()
-                .updateSleepDescription(text),
+            controller: _textController,
+            onChanged: _onSleepDescriptionChanged,
             maxLines: 1,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
@@ -298,19 +316,22 @@ class _FoodRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final description =
-        context.watch<NotesDetailsProvider>().state.food?.description;
-    final foodDescriptionController = TextEditingController(text: description);
-    final id = context.watch<NotesDetailsProvider>().state.food?.id;
-    GradeLabel? initSelect = id == null ? null : GradeLabel.values[id];
+    final noteDetailsState = context.watch<NotesDetailsProvider>().state;
+    final foodDescriptionController =
+        TextEditingController(text: noteDetailsState.foodDescription);
+    GradeLabel? initSelect =
+        GradeLabel.values.elementAtOrNull(noteDetailsState.foodId);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
           child: DropdownMenu<GradeLabel>(
             initialSelection: initSelect,
-            onSelected: (value) =>
-                context.read<NotesDetailsProvider>().updateFoodGrade(value),
+            onSelected: (value) => value == null
+                ? null
+                : context
+                    .read<NotesDetailsProvider>()
+                    .updateFoodGrade(value.index),
             label: const Text('Оценка еды'),
             inputDecorationTheme: const InputDecorationTheme(
               contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -350,25 +371,21 @@ class _FoodRowWidget extends StatelessWidget {
 class _DeleteButton extends StatelessWidget {
   const _DeleteButton();
 
-  void _onDeleteButton(BuildContext context) {
-    final viewModel = context.read<NotesDetailsProvider>();
-    final noteId = viewModel.state.id;
-    if (noteId != null) {
-      viewModel.deleteNote(id: noteId).then((_) {
-        switch (viewModel.state) {
-          case NoteDetailsStateError(message: final message):
-            showDialog(
-              context: context,
-              builder: (_) {
-                return AlertFailureDialogWidget(
-                  message: message,
-                );
-              },
+  Future<void> _onDeleteButton(BuildContext context) async {
+    await context.read<NotesDetailsProvider>().deleteNote();
+    if (!context.mounted) return;
+    switch (context.read<NotesDetailsProvider>().state) {
+      case NoteDetailsStateError(message: final message):
+        showDialog(
+          context: context,
+          builder: (_) {
+            return AlertFailureDialogWidget(
+              message: message,
             );
-          default:
-            Navigator.popUntil(context, ModalRoute.withName('/'));
-        }
-      });
+          },
+        );
+      default:
+        Navigator.popUntil(context, ModalRoute.withName('/'));
     }
   }
 

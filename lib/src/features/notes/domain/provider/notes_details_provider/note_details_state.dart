@@ -1,130 +1,160 @@
 import 'package:daylio_clone/src/features/notes/domain/entity/food_model.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
 
 sealed class NoteDetailsState {
-  int? get id;
-
-  MoodModel? get mood;
-
-  FoodModel? get food;
-
-  SleepModel? get sleep;
-
-  DateTime? get date;
+  NoteModel? get note;
+  DateTime get date;
+  int get moodId;
+  int get sleepId;
+  String get sleepDescription;
+  int get foodId;
+  String get foodDescription;
 
   NoteDetailsState copyWith({
-    int? id,
-    MoodModel? mood,
-    FoodModel? food,
-    SleepModel? sleep,
     DateTime? date,
+    int? moodId,
+    int? sleepId,
+    String? sleepDescription,
+    int? foodId,
+    String? foodDescription,
   });
 }
 
 final class NoteDetailsStateInitial implements NoteDetailsState {
   @override
-  int? get id => null;
+  DateTime get date => DateTime.now();
 
   @override
-  MoodModel? get mood => null;
+  String get foodDescription => '';
 
   @override
-  FoodModel? get food => null;
+  int get foodId => GradeLabel.values.first.index;
 
   @override
-  SleepModel? get sleep => null;
+  // TODO(fix): ref to enum
+  int get moodId => 0;
 
   @override
-  DateTime? get date => null;
+  NoteModel? get note => null;
 
   @override
-  NoteDetailsState copyWith(
-      {int? id,
-      MoodModel? mood,
-      FoodModel? food,
-      SleepModel? sleep,
-      DateTime? date}) {
-    return NoteDetailsStateInitial();
-  }
-}
-
-final class NoteDetailsStateError implements NoteDetailsState {
-  @override
-  final int? id;
-  @override
-  final MoodModel? mood;
-  @override
-  final FoodModel? food;
-  @override
-  final SleepModel? sleep;
-  @override
-  final DateTime? date;
-  final String message;
-
-  const NoteDetailsStateError({
-    required this.id,
-    required this.mood,
-    required this.food,
-    required this.sleep,
-    required this.date,
-    required this.message,
-  });
+  String get sleepDescription => throw UnimplementedError();
 
   @override
-  NoteDetailsStateError copyWith({
-    int? id,
-    MoodModel? mood,
-    FoodModel? food,
-    SleepModel? sleep,
+  // TODO: implement sleepId
+  int get sleepId => throw UnimplementedError();
+
+  @override
+  NoteDetailsStateInitial copyWith({
     DateTime? date,
-    String? message,
+    String? foodDescription,
+    int? foodId,
+    int? moodId,
+    String? sleepDescription,
+    int? sleepId,
   }) {
-    return NoteDetailsStateError(
-      id: id ?? this.id,
-      mood: mood ?? this.mood,
-      food: food ?? this.food,
-      sleep: sleep ?? this.sleep,
-      date: date ?? this.date,
-      message: message ?? this.message,
-    );
+    return NoteDetailsStateInitial();
   }
 }
 
 final class NoteDetailsStateData implements NoteDetailsState {
   @override
-  final int id;
-  @override
-  final MoodModel mood;
-  @override
-  final FoodModel? food;
-  @override
-  final SleepModel? sleep;
+  final NoteModel note;
   @override
   final DateTime date;
+  @override
+  final int moodId;
+  @override
+  final int sleepId;
+  @override
+  final String sleepDescription;
+  @override
+  final int foodId;
+  @override
+  final String foodDescription;
 
   const NoteDetailsStateData({
-    required this.id,
-    required this.mood,
-    required this.food,
-    required this.sleep,
+    required this.note,
     required this.date,
+    required this.moodId,
+    required this.sleepId,
+    required this.sleepDescription,
+    required this.foodId,
+    required this.foodDescription,
   });
 
   @override
   NoteDetailsStateData copyWith({
-    int? id,
-    MoodModel? mood,
-    FoodModel? food,
-    SleepModel? sleep,
+    NoteModel? note,
     DateTime? date,
+    int? moodId,
+    int? sleepId,
+    String? sleepDescription,
+    int? foodId,
+    String? foodDescription,
   }) {
     return NoteDetailsStateData(
-      id: id ?? this.id,
-      mood: mood ?? this.mood,
-      food: food ?? this.food,
-      sleep: sleep ?? this.sleep,
+      note: note ?? this.note,
       date: date ?? this.date,
+      moodId: moodId ?? this.moodId,
+      sleepId: sleepId ?? this.sleepId,
+      sleepDescription: sleepDescription ?? this.sleepDescription,
+      foodId: foodId ?? this.foodId,
+      foodDescription: foodDescription ?? this.foodDescription,
+    );
+  }
+}
+
+final class NoteDetailsStateError implements NoteDetailsState {
+  @override
+  final NoteModel? note;
+  @override
+  final DateTime date;
+  @override
+  final int moodId;
+  @override
+  final int sleepId;
+  @override
+  final String sleepDescription;
+  @override
+  final int foodId;
+  @override
+  final String foodDescription;
+  final String message;
+  const NoteDetailsStateError({
+    this.note,
+    required this.date,
+    required this.moodId,
+    required this.sleepId,
+    required this.sleepDescription,
+    required this.foodId,
+    required this.foodDescription,
+    required this.message,
+  });
+
+  @override
+  NoteDetailsStateError copyWith({
+    NoteModel? note,
+    DateTime? date,
+    int? moodId,
+    int? sleepId,
+    String? sleepDescription,
+    int? foodId,
+    String? foodDescription,
+    String? message,
+  }) {
+    return NoteDetailsStateError(
+      note: note ?? this.note,
+      date: date ?? this.date,
+      moodId: moodId ?? this.moodId,
+      sleepId: sleepId ?? this.sleepId,
+      sleepDescription: sleepDescription ?? this.sleepDescription,
+      foodId: foodId ?? this.foodId,
+      foodDescription: foodDescription ?? this.foodDescription,
+      message: message ?? this.message,
     );
   }
 }

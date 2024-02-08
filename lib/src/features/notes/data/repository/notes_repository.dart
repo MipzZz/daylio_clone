@@ -5,7 +5,6 @@ import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:drift/drift.dart';
-import 'package:intl/intl.dart';
 
 class NotesRepository {
   final AppDb _driftStorage;

@@ -13,12 +13,13 @@ class MoodModel {
   @ColorConverter()
   final Color color;
 
-  MoodModel(
-      {required this.title,
-      required this.selectedIcon,
-      required this.unSelectedIcon,
-      required this.color,
-      required this.id});
+  MoodModel({
+    required this.title,
+    required this.selectedIcon,
+    required this.unSelectedIcon,
+    required this.color,
+    required this.id,
+  });
 
   MoodModel.empty()
       : this(
