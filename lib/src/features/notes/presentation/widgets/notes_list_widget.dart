@@ -55,18 +55,18 @@ class _NotesListWidgetState extends State<NotesListWidget> {
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: AppColors.listBackground,
+                      color: AppColors.mainGreen,
                       borderRadius: BorderRadius.only(
-                        topLeft: index == 0
+                        topLeft: index == notes.length - 1
                             ? const Radius.circular(20.0)
                             : Radius.zero,
-                        topRight: index == 0
+                        topRight: index == notes.length - 1
                             ? const Radius.circular(20.0)
                             : Radius.zero,
-                        bottomLeft: index == notes.length - 1
+                        bottomLeft: index == 0
                             ? const Radius.circular(20.0)
                             : Radius.zero,
-                        bottomRight: index == notes.length - 1
+                        bottomRight: index == 0
                             ? const Radius.circular(20.0)
                             : Radius.zero,
                       ),

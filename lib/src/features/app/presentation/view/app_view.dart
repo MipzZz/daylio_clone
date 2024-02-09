@@ -59,7 +59,7 @@ class _AppViewState extends State<AppView> {
               return const NoteDetailsWidget(noteId: 1);
             }
           },
-          '/add_note': (context) => const AddNoteWidget(),
+          // '/add_note': (context) => const AddNoteWidget(), //TODO FixHome
         },
         initialRoute: '/',
         onGenerateRoute: (RouteSettings settings) {
