@@ -7,11 +7,11 @@ part of 'mood_model.dart';
 // **************************************************************************
 
 MoodModel _$MoodModelFromJson(Map<String, dynamic> json) => MoodModel(
+      id: json['id'] as int,
       title: json['title'] as String,
       selectedIcon: json['selectedIcon'] as String,
       unSelectedIcon: json['unSelectedIcon'] as String,
       color: const ColorConverter().fromJson(json['color'] as int),
-      id: json['id'] as int,
     );
 
 Map<String, dynamic> _$MoodModelToJson(MoodModel instance) => <String, dynamic>{

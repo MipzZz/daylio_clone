@@ -146,7 +146,7 @@ class AddNoteBloc extends Bloc<AddNoteEvents, AddNoteState> {
         date: state.date,
       );
       await _notesRepository.saveNote(note);
-    } catch (e) {
+    } catch (e,s) {
       emitter(
         AddNoteStateError(
           date: state.date,
@@ -158,6 +158,7 @@ class AddNoteBloc extends Bloc<AddNoteEvents, AddNoteState> {
           message: 'При сохранении данных произошла ошибка',
         ),
       );
+      Error.throwWithStackTrace(e, s);
     }
   }
 }

@@ -3,11 +3,13 @@ import 'package:daylio_clone/src/core/utils/extensions/time_of_day_extension.dar
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
+import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_provider/note_details_events.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_provider/note_details_state.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_provider/notes_details_provider.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/mood_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class NoteDetailsWidget extends StatefulWidget {
@@ -22,11 +24,10 @@ class NoteDetailsWidget extends StatefulWidget {
 class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => NotesDetailsProvider(
+    return BlocProvider(
+      create: (context) => NotesDetailsBloc(
         notesRepository: context.read<NotesRepository>(),
-        id: widget.noteId,
-      ),
+      )..add(NoteDetailsLoadNoteEvent(widget.noteId)),
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
@@ -37,10 +38,10 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
                 child: _SaveButton(),
               )
             ],
-            title: Text(
-                'Запись от ${widget.noteId}'),
+            title: Text('Запись от ${widget.noteId}'),
           ),
-          body: const _SwitchWidget(), //TODO убрать виджет и вставить нормально его содержимое
+          body:
+              const _SwitchWidget(), //TODO убрать виджет и вставить нормально его содержимое
         ),
       ),
     );
@@ -52,7 +53,7 @@ class _SwitchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<NotesDetailsProvider>();
+    final viewModel = context.watch<NotesDetailsBloc>();
     return switch (viewModel.state) {
       NoteDetailsStateInitial() => const Text('Инициализация'),
       NoteDetailsStateError(message: final message) =>
@@ -122,14 +123,14 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
     );
     if (date != null) {
       setState(() {
-        context.read<NotesDetailsProvider>().updateDate(date);
+        context.read<NotesDetailsBloc>().add(NoteDetailsDateChangeEvent(date));
         selectedDate = date;
       });
     }
   }
 
   @override
-  Widget build(BuildContext context) => Consumer<NotesDetailsProvider>(
+  Widget build(BuildContext context) => Consumer<NotesDetailsBloc>(
         builder: (context, vm, child) => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -162,7 +163,6 @@ class _TimePickerWidget extends StatefulWidget {
 }
 
 class _TimePickerWidgetState extends State<_TimePickerWidget> {
-
   void setTime(TimeOfDay selectedTime) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
         context: context,
@@ -176,7 +176,9 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
         });
     if (timeOfDay != null) {
       setState(() {
-        context.read<NotesDetailsProvider>().updateTime(timeOfDay);
+        context.read<NotesDetailsBloc>().add(
+              NoteDetailsTimeChangeEvent(timeOfDay),
+            );
         selectedTime = timeOfDay;
       });
     }
@@ -184,8 +186,8 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    TimeOfDay selectedTime = TimeOfDay.fromDateTime(
-        context.watch<NotesDetailsProvider>().state.date);
+    TimeOfDay selectedTime =
+        TimeOfDay.fromDateTime(context.watch<NotesDetailsBloc>().state.date);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -220,12 +222,12 @@ class _MoodFacesRow extends StatefulWidget {
 
 class _MoodFacesRowState extends State<_MoodFacesRow> {
   void selectMood(int moodId) {
-    context.read<NotesDetailsProvider>().updateMood(moodId);
+    context.read<NotesDetailsBloc>().add(NoteDetailsMoodChangeEvent(moodId));
   }
 
   @override
   Widget build(BuildContext context) {
-    final noteDetailsVM = context.watch<NotesDetailsProvider>();
+    final noteDetailsVM = context.watch<NotesDetailsBloc>();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(
@@ -258,22 +260,26 @@ class _SleepRowWidgetState extends State<_SleepRowWidget> {
   void initState() {
     super.initState();
     final initialSleepDescription =
-        context.read<NotesDetailsProvider>().state.sleepDescription;
+        context.read<NotesDetailsBloc>().state.sleepDescription;
     _textController = TextEditingController(text: initialSleepDescription);
   }
 
   void _onSleepSelect(GradeLabel? gradeLabel) {
     if (gradeLabel == null) return;
-    context.read<NotesDetailsProvider>().updateSleepGrade(gradeLabel.index);
+    context
+        .read<NotesDetailsBloc>()
+        .add(NoteDetailsSleepChangeGradeEvent(gradeLabel.index));
   }
 
   void _onSleepDescriptionChanged(String v) {
-    context.read<NotesDetailsProvider>().updateSleepDescription(v);
+    context
+        .read<NotesDetailsBloc>()
+        .add(NoteDetailsSleepChangeDescriptionEvent(v));
   }
 
   @override
   Widget build(BuildContext context) {
-    final noteDetailsState = context.watch<NotesDetailsProvider>().state;
+    final noteDetailsState = context.watch<NotesDetailsBloc>().state;
     GradeLabel? initSelect =
         GradeLabel.values.elementAtOrNull(noteDetailsState.sleepId);
     return Row(
@@ -329,22 +335,24 @@ class _FoodRowWidgetState extends State<_FoodRowWidget> {
   void initState() {
     super.initState();
     final initialFoodDescription =
-        context.read<NotesDetailsProvider>().state.foodDescription;
+        context.read<NotesDetailsBloc>().state.foodDescription;
     _textController = TextEditingController(text: initialFoodDescription);
   }
 
   void _onFoodSelect(GradeLabel? gradeLabel) {
     if (gradeLabel == null) return;
-    context.read<NotesDetailsProvider>().updateFoodGrade(gradeLabel.index);
+    context
+        .read<NotesDetailsBloc>()
+        .add(NoteDetailsFoodChangeGradeEvent(gradeLabel.index));
   }
 
   void _onFoodDescriptionChanged(String v) {
-    context.read<NotesDetailsProvider>().updateFoodDescription(v);
+    context.read<NotesDetailsBloc>().add(NoteDetailsFoodChangeDescriptionEvent(v));
   }
 
   @override
   Widget build(BuildContext context) {
-    final noteDetailsState = context.watch<NotesDetailsProvider>().state;
+    final noteDetailsState = context.watch<NotesDetailsBloc>().state;
     GradeLabel? initSelect = GradeLabel.values[noteDetailsState.foodId];
     GradeLabel.values.elementAtOrNull(noteDetailsState.foodId);
     return Row(
@@ -391,10 +399,10 @@ class _FoodRowWidgetState extends State<_FoodRowWidget> {
 class _DeleteButton extends StatelessWidget {
   const _DeleteButton();
 
-  Future<void> _onDeleteButton(BuildContext context) async {
-    await context.read<NotesDetailsProvider>().deleteNote();
+  void _onDeleteButton(BuildContext context) {
+    context.read<NotesDetailsBloc>().add(const NoteDetailsDeleteEvent());
     if (!context.mounted) return;
-    switch (context.read<NotesDetailsProvider>().state) {
+    switch (context.read<NotesDetailsBloc>().state) {
       case NoteDetailsStateError(message: final message):
         showDialog(
           context: context,
@@ -431,10 +439,10 @@ class _DeleteButton extends StatelessWidget {
 class _SaveButton extends StatelessWidget {
   const _SaveButton();
 
-  void _onSaveButton(BuildContext context) async {
-    await context.read<NotesDetailsProvider>().updateNote();
+  void _onSaveButton(BuildContext context) {
+    context.read<NotesDetailsBloc>().add(const NoteDetailsSaveEvent());
     if (!context.mounted) return;
-    switch (context.read<NotesDetailsProvider>().state) {
+    switch (context.read<NotesDetailsBloc>().state) {
       case NoteDetailsStateError(message: final message):
         showDialog(
           context: context,

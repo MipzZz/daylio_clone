@@ -59,6 +59,20 @@ class _NotesListWidgetState extends State<NotesListWidget> {
                   children: [
                     Ink(
                       child: InkWell(
+                        borderRadius: BorderRadius.only(
+                          topLeft: index == state.notes.length - 1
+                              ? const Radius.circular(20.0)
+                              : Radius.zero,
+                          topRight: index == state.notes.length - 1
+                              ? const Radius.circular(20.0)
+                              : Radius.zero,
+                          bottomLeft: index == 0
+                              ? const Radius.circular(20.0)
+                              : Radius.zero,
+                          bottomRight: index == 0
+                              ? const Radius.circular(20.0)
+                              : Radius.zero,
+                        ),
                         onTap: () => _onNoteTab(note.id),
                         child: Container(
                           width: double.infinity,
