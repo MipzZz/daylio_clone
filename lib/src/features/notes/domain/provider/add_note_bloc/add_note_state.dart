@@ -1,4 +1,4 @@
-import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
+
 
 sealed class AddNoteState {
   DateTime get date;
@@ -28,7 +28,6 @@ class AddNoteStateNew implements AddNoteState {
   final DateTime date;
 
   @override
-  // TODO(fix): ref to enum
   final int moodId;
 
   @override

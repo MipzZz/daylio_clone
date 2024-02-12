@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/field_converter/color_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -24,6 +25,18 @@ class FoodModel {
 
   FoodModel.empty()
       : this(id: 0, title: '', icon: '', description: '', color: Colors.white);
+
+  factory FoodModel.fromGradeAndDesc({
+    required int id,
+    required String description,
+  }) {
+    return FoodModel(
+        id: id,
+        title: GradeLabel.values[id].title,
+        icon: '',
+        description: description,
+        color: GradeLabel.values[id].color);
+  }
 
   factory FoodModel.fromJson(Map<String, dynamic> json) =>
       _$FoodModelFromJson(json);

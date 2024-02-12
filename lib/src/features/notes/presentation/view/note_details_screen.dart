@@ -2,6 +2,7 @@ import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart'
 import 'package:daylio_clone/src/core/utils/extensions/time_of_day_extension.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_provider/note_details_state.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_provider/notes_details_provider.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
@@ -230,7 +231,7 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
       children: List.generate(
         5,
         (index) {
-          final mood = noteDetailsVM.moods[index];
+          final mood = MoodsStorage.values[index];
           return MoodIcon(
             iconPath: mood.selectedIcon,
             unselectedPath: mood.unSelectedIcon,
@@ -444,7 +445,7 @@ class _SaveButton extends StatelessWidget {
           },
         );
       default:
-        break;
+        Navigator.popUntil(context, ModalRoute.withName('/'));
     }
   }
 

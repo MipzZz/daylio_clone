@@ -26,6 +26,8 @@ class NoteModel {
         date: note.date,
       );
 
+
+
   NoteModel copyWith({
     int? id,
     MoodModel? mood,

@@ -31,18 +31,16 @@ final class NoteDetailsStateInitial implements NoteDetailsState {
   int get foodId => GradeLabel.values.first.index;
 
   @override
-  // TODO(fix): ref to enum
   int get moodId => 0;
 
   @override
   NoteModel? get note => null;
 
   @override
-  String get sleepDescription => throw UnimplementedError();
+  String get sleepDescription => '';
 
   @override
-  // TODO: implement sleepId
-  int get sleepId => throw UnimplementedError();
+  int get sleepId => 0;
 
   @override
   NoteDetailsStateInitial copyWith({

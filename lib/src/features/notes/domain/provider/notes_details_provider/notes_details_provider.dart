@@ -1,15 +1,12 @@
 import 'package:daylio_clone/src/core/utils/exceptions/note_null_exception.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_provider/note_details_state.dart';
 import 'package:flutter/material.dart';
 
 class NotesDetailsProvider extends ChangeNotifier {
   final NotesRepository _notesRepository;
   NoteDetailsState state;
-
-  List<MoodModel> get moods => _notesRepository.getMoods();
 
   NotesDetailsProvider({
     required NotesRepository notesRepository,
@@ -94,7 +91,7 @@ class NotesDetailsProvider extends ChangeNotifier {
     try {
       final note = state.note?.copyWith(
         date: state.date,
-        mood: moods[state.moodId],
+        // mood: moods[state.moodId],
         sleep: state.note?.sleep.copyWith(
             id: state.sleepId,
             title: GradeLabel.values[state.sleepId].title,

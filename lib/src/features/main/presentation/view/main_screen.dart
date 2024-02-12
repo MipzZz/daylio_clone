@@ -1,12 +1,10 @@
 import 'package:daylio_clone/src/core/utils/extensions/string_extension.dart';
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/features/more/presentation/more_widget.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/notes_provider/notes_provider.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/notes_list_widget.dart';
 import 'package:daylio_clone/src/features/statistic/presentation/view/statistic_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

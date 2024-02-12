@@ -3,11 +3,13 @@ import 'package:daylio_clone/src/core/presentation/assets/themes/AppThemeData.da
 import 'package:daylio_clone/src/features/debug/presentation/view/debug_screen.dart';
 import 'package:daylio_clone/src/features/main/presentation/view/main_screen.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/notes_provider/notes_provider.dart';
+import 'package:daylio_clone/src/features/notes/domain/provider/notes_bloc/notes_events.dart';
+import 'package:daylio_clone/src/features/notes/domain/provider/notes_bloc/notes_bloc.dart';
 import 'package:daylio_clone/src/features/notes/presentation/view/add_note_screen.dart';
 import 'package:daylio_clone/src/features/notes/presentation/view/note_details_screen.dart';
 import 'package:daylio_clone/src/features/statistic/domain/provider/statistic_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class AppView extends StatefulWidget {
@@ -35,8 +37,8 @@ class _AppViewState extends State<AppView> {
         Provider(
           create: (context) => _notesRepository,
         ),
-        ChangeNotifierProvider(
-          create: (context) => NotesProvider(notesRepository: _notesRepository),
+        BlocProvider(
+          create: (context) => NotesBloc(notesRepository: _notesRepository)..add(NoteEventsSubscriptionRequestEvent()),
         ),
         ChangeNotifierProvider(
           create: (context) =>
@@ -47,7 +49,6 @@ class _AppViewState extends State<AppView> {
       child: MaterialApp(
         theme: AppThemeData.darkMainTheme,
         title: 'Daylio Clone',
-        // home: const MainScreenWidget(),
         routes: {
           '/': (context) => const MainScreen(),
           '/debug': (context) => const DebugScreen(),
@@ -59,7 +60,7 @@ class _AppViewState extends State<AppView> {
               return const NoteDetailsWidget(noteId: 1);
             }
           },
-          // '/add_note': (context) => const AddNoteWidget(), //TODO FixHome
+          '/add_note': (context) => const AddNoteWidget(),
         },
         initialRoute: '/',
         onGenerateRoute: (RouteSettings settings) {

@@ -1,3 +1,4 @@
+import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/field_converter/color_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -14,11 +15,11 @@ class MoodModel {
   final Color color;
 
   MoodModel({
+    required this.id,
     required this.title,
     required this.selectedIcon,
     required this.unSelectedIcon,
     required this.color,
-    required this.id,
   });
 
   MoodModel.empty()
@@ -31,6 +32,16 @@ class MoodModel {
 
   factory MoodModel.fromJson(Map<String, dynamic> json) =>
       _$MoodModelFromJson(json);
+
+  factory MoodModel.fromEnum(MoodsStorage moodEnum) {
+    return MoodModel(
+      id: moodEnum.id,
+      title: moodEnum.title,
+      selectedIcon: moodEnum.selectedIcon,
+      unSelectedIcon: moodEnum.unSelectedIcon,
+      color: moodEnum.color,
+    );
+  }
 
   Map<String, dynamic> toJson() => _$MoodModelToJson(this);
 
