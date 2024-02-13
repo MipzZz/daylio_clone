@@ -1,5 +1,3 @@
-
-
 sealed class AddNoteState {
   DateTime get date;
 
@@ -51,7 +49,6 @@ final class AddNoteStateNew implements AddNoteState {
     this.sleepDescription = '',
   });
 
-
   @override
   AddNoteStateNew copyWith({
     DateTime? date,
@@ -70,6 +67,28 @@ final class AddNoteStateNew implements AddNoteState {
       sleepDescription: sleepDescription ?? this.sleepDescription,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AddNoteStateNew &&
+          runtimeType == other.runtimeType &&
+          date == other.date &&
+          moodId == other.moodId &&
+          foodId == other.foodId &&
+          foodDescription == other.foodDescription &&
+          sleepId == other.sleepId &&
+          sleepDescription == other.sleepDescription;
+
+  @override
+  int get hashCode => Object.hash(
+        date,
+        moodId,
+        foodId,
+        foodDescription,
+        sleepId,
+        sleepDescription,
+      );
 }
 
 final class AddNoteStateError implements AddNoteState {
@@ -117,4 +136,20 @@ final class AddNoteStateError implements AddNoteState {
       message: message ?? this.message,
     );
   }
+}
+
+sealed class AddNoteState$Another {}
+
+final class AddNoteState$Idle implements AddNoteState$Another {}
+
+final class AddNoteState$Progress implements AddNoteState$Another {}
+
+final class AddNoteState$Created implements AddNoteState$Another {}
+
+final class AddNoteState$Failure implements AddNoteState$Another {
+  final String message;
+
+  const AddNoteState$Failure({
+    required this.message,
+  });
 }

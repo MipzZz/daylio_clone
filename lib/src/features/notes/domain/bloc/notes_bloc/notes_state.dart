@@ -13,9 +13,7 @@ final class NotesStateInitialize implements NotesState {
   List<NoteModel> get notes => [];
 
   @override
-  NotesState copyWith({List<NoteModel>? notes}) {
-    return NotesStateInitialize();
-  }
+  NotesState copyWith({List<NoteModel>? notes}) => NotesStateInitialize();
 }
 
 final class NotesStateData implements NotesState {
@@ -34,7 +32,7 @@ final class NotesStateData implements NotesState {
   }
 }
 
-final class NotesStateError implements NotesState{
+final class NotesStateError implements NotesState {
   @override
   final List<NoteModel>? notes;
   final String message;

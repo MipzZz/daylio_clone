@@ -5,8 +5,8 @@ import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/add_note_bloc/add_note_events.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/add_note_bloc/add_note_state.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_events.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
@@ -14,11 +14,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
 
   AddNoteBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
-        super(
-          AddNoteStateNew(
-            date: DateTime.now(),
-          ),
-        ) {
+        super(AddNoteStateNew(date: DateTime.now())) {
     on<AddNoteEvent>(
       (event, emitter) => switch (event) {
         AddNoteDateChangeEvent event => _onDateChange(event, emitter),

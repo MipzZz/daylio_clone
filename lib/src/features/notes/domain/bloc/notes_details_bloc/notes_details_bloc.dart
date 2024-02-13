@@ -6,8 +6,8 @@ import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_bloc/note_details_events.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_bloc/note_details_state.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_events.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NotesDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {

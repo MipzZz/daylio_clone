@@ -18,6 +18,7 @@ class NotesRepository {
 
   Future<void> _init() async {
     final updateNotes = await _driftStorage.readNotes();
+    // await Future.delayed(const Duration(seconds: 3));
     final notes = updateNotes.map(NoteModel.fromNoteTableData);
     _notesController.add(notes);
   }

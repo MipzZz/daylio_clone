@@ -3,8 +3,8 @@ import 'package:daylio_clone/src/core/presentation/assets/themes/app_theme_data.
 import 'package:daylio_clone/src/features/debug/presentation/view/debug_screen.dart';
 import 'package:daylio_clone/src/features/main/presentation/view/main_screen.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/notes_bloc/notes_events.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/notes_bloc/notes_bloc.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_events.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_bloc.dart';
 import 'package:daylio_clone/src/features/notes/presentation/view/add_note_screen.dart';
 import 'package:daylio_clone/src/features/notes/presentation/view/note_details_screen.dart';
 import 'package:daylio_clone/src/features/statistic/domain/provider/statistic_provider.dart';
@@ -38,13 +38,12 @@ class _AppViewState extends State<AppView> {
           create: (context) => _notesRepository,
         ),
         BlocProvider(
-          create: (context) => NotesBloc(notesRepository: _notesRepository)..add(NoteEventsSubscriptionRequestEvent()),
+          create: (context) => NotesBloc(notesRepository: _notesRepository),
         ),
         ChangeNotifierProvider(
           create: (context) =>
               StatisticProvider(notesRepository: _notesRepository),
         ),
-
       ],
       child: MaterialApp(
         theme: AppThemeData.darkMainTheme,

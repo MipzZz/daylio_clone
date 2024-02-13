@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:daylio_clone/src/core/domain/bloc/app_bloc_observer.dart';
 import 'package:daylio_clone/src/features/app/presentation/view/app_view.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 /// метод доступа к запуску прилы
@@ -16,6 +19,8 @@ void _runApp() {
     /// если вдруг не проинициализировалось что-то критичное, без
     /// чего запуск приложения не имеет смысла
 
+    Bloc.observer = AppBlocObserver.instance();
+    Bloc.transformer = sequential<Object?>();
     initializeDateFormatting('ru_RU', null)
         .then((_) => runApp(const AppView()));
   }, (error, stack) {

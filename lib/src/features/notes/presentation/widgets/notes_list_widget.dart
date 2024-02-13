@@ -1,8 +1,8 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/notes_bloc/notes_bloc.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/notes_bloc/notes_state.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_bloc.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_state.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
