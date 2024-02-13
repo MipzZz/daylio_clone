@@ -32,12 +32,16 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
 
   void _addNoteListener(BuildContext context, AddNoteState state) {
     switch (state) {
-      case AddNoteState$Created:
-        Navigator.of(context).popUntil((route) => false);
+      case AddNoteState$Created():
+        Navigator.of(context).pop();
         break;
-      case AddNoteState$Failure f:
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(backgroundColor: Colors.red, content: Text(f.message)));
+      case AddNoteState$Error errorState:
+        showDialog(
+          context: context,
+          builder: (_) => AlertFailureDialogWidget(
+            message: errorState.message,
+          ),
+        );
         break;
       default:
         break;
@@ -51,6 +55,7 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: BlocListener<AddNoteBloc, AddNoteState>(
+          listenWhen: (previous, current) => previous.runtimeType != current.runtimeType,
           listener: _addNoteListener,
           child: Scaffold(
             appBar: AppBar(
@@ -378,30 +383,36 @@ class _AddNoteButton extends StatelessWidget {
 
   void _onAddButton(BuildContext context) async {
     context.read<AddNoteBloc>().add(AddNoteSubmitEvent());
-    if (!context.mounted) return;
-    switch (context.read<AddNoteBloc>().state) {
-      case AddNoteStateError f:
-        showDialog(
-            context: context,
-            builder: (_) {
-              return AlertFailureDialogWidget(
-                message: f.message,
-              );
-            });
-      default:
-        Navigator.popUntil(context, ModalRoute.withName('/'));
-    }
+    // if (!context.mounted) return;
+    // switch (context.read<AddNoteBloc>().state) {
+    //   case AddNoteState$Error f:
+    //     showDialog(
+    //         context: context,
+    //         builder: (_) {
+    //           return AlertFailureDialogWidget(
+    //             message: f.message,
+    //           );
+    //         });
+    //   default:
+    //     break;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 100),
-      child: OutlinedButton(
-        style: AppButtonStyle.addNoteButtonStyle,
-        onPressed: () => _onAddButton(context),
-        child: const Text('Добавить запись', style: TextStyle(fontSize: 15)),
-      ),
+    return BlocBuilder<AddNoteBloc, AddNoteState>(
+      builder: (context, addNoteState) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 100),
+          child: switch (addNoteState) {
+            AddNoteState$Progress() => const CircularProgressIndicator(),
+            _ => OutlinedButton(
+                style: AppButtonStyle.addNoteButtonStyle,
+                onPressed: () => _onAddButton(context),
+                child: const Text(
+                  'Добавить запись',
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
+          }),
     );
   }
 }

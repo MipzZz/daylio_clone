@@ -32,6 +32,7 @@ class NotesRepository {
         date: Value(note.date),
       );
       await _driftStorage.saveNote(noteCompanion);
+      await Future.delayed(const Duration(seconds: 5));
       final updateNotes = await _driftStorage.readNotes();
       final notes = updateNotes.map(NoteModel.fromNoteTableData);
       _notesController.add(notes);

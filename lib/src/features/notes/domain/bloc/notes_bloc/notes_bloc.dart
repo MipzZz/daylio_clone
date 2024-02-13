@@ -13,7 +13,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
           NotesEvent$Initialize event => _initialize(event, emitter),
           NotesEvent$Update event => _updateNotes(event, emitter),
         });
-    _notesRepository.notesStream.listen((e) => add(NotesEvent$Update(e)));
+    _notesRepository.notesStream.listen((notes) => add(NotesEvent$Update(notes)));
   }
 
   Future<void> _initialize(
@@ -22,7 +22,6 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
   ) async {
     try {
       final notes = await _notesRepository.readNotes();
-
       emitter(NotesStateData(notes: notes.toList()));
     } on Object {
       emitter(

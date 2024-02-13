@@ -14,7 +14,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
 
   AddNoteBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
-        super(AddNoteStateNew(date: DateTime.now())) {
+        super(AddNoteState$Idle(date: DateTime.now())) {
     on<AddNoteEvent>(
       (event, emitter) => switch (event) {
         AddNoteDateChangeEvent event => _onDateChange(event, emitter),
@@ -122,6 +122,16 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
     Emitter<AddNoteState> emitter,
   ) async {
     try {
+      emitter(
+        AddNoteState$Progress(
+            date: state.date,
+            moodId: state.moodId,
+            sleepId: state.sleepId,
+            sleepDescription: state.sleepDescription,
+            foodId: state.foodId,
+            foodDescription: state.foodDescription),
+      );
+
       final note = NoteModel(
         id: null,
         mood: MoodModel.fromEnum(MoodsStorage.values[state.moodId]),
@@ -134,9 +144,19 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
         date: state.date,
       );
       await _notesRepository.saveNote(note);
+
+      emitter(
+        AddNoteState$Created(
+            date: state.date,
+            moodId: state.moodId,
+            sleepId: state.sleepId,
+            sleepDescription: state.sleepDescription,
+            foodId: state.foodId,
+            foodDescription: state.foodDescription),
+      );
     } on Object catch (e, s) {
       emitter(
-        AddNoteStateError(
+        AddNoteState$Error(
           date: state.date,
           moodId: state.moodId,
           sleepId: state.sleepId,
