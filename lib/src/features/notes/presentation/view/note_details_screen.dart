@@ -1,11 +1,12 @@
+import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
 import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
 import 'package:daylio_clone/src/core/utils/extensions/time_of_day_extension.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_provider/note_details_events.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_provider/note_details_state.dart';
-import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_provider/notes_details_provider.dart';
+import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_bloc/note_details_events.dart';
+import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_bloc/note_details_state.dart';
+import 'package:daylio_clone/src/features/notes/domain/provider/notes_details_bloc/notes_details_bloc.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/mood_icon.dart';
 import 'package:flutter/material.dart';
@@ -25,41 +26,36 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => NotesDetailsBloc(
-        notesRepository: context.read<NotesRepository>(),
-      )..add(NoteDetailsLoadNoteEvent(widget.noteId)),
-      child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Scaffold(
-          appBar: AppBar(
-            actions: const [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: _SaveButton(),
-              )
-            ],
-            title: Text('Запись от ${widget.noteId}'),
+        create: (context) => NotesDetailsBloc(
+              notesRepository: context.read<NotesRepository>(),
+            )..add(NoteDetailsLoadNoteEvent(widget.noteId)),
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Scaffold(
+            appBar: AppBar(
+              actions: const [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: _SaveButton(),
+                )
+              ],
+              title: Text('Запись от ${widget.noteId}'),
+            ),
+            body: BlocBuilder<NotesDetailsBloc, NoteDetailsState>(
+              //Можно ли использовать BlocListen?
+              buildWhen: (prev, curr) => prev.runtimeType != curr.runtimeType,
+              //ToDO спросить обязательно ли использовать runtimeType
+              builder: (context, state) {
+                return switch (state) {
+                  NoteDetailsStateInitial() => const Text('Инициализация'),
+                  NoteDetailsStateError(message: final message) =>
+                    AlertFailureDialogWidget(message: message),
+                  _ => const _DefaultBodyWidget(),
+                };
+              },
+            ),
           ),
-          body:
-              const _SwitchWidget(), //TODO убрать виджет и вставить нормально его содержимое
-        ),
-      ),
-    );
-  }
-}
-
-class _SwitchWidget extends StatelessWidget {
-  const _SwitchWidget();
-
-  @override
-  Widget build(BuildContext context) {
-    final viewModel = context.watch<NotesDetailsBloc>();
-    return switch (viewModel.state) {
-      NoteDetailsStateInitial() => const Text('Инициализация'),
-      NoteDetailsStateError(message: final message) =>
-        AlertFailureDialogWidget(message: message),
-      _ => const _DefaultBodyWidget(),
-    };
+        ));
   }
 }
 
@@ -111,6 +107,10 @@ class _DatePickerWidget extends StatefulWidget {
 }
 
 class _DatePickerWidgetState extends State<_DatePickerWidget> {
+  void _updateDate(DateTime date) {
+    context.read<NotesDetailsBloc>().add(NoteDetailsDateChangeEvent(date));
+  }
+
   void selectDate(DateTime? selectedDate) async {
     if (selectedDate == null) {
       return;
@@ -120,31 +120,43 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
       initialDate: selectedDate,
       firstDate: DateTime(2022),
       lastDate: DateTime(2030),
+      builder: (context, child) {
+        if (child == null) {
+          return const SizedBox(
+            child: Text('Непердвиденная ошибка'),
+          );
+        }
+        return Theme(
+            data: Theme.of(context).copyWith(
+                colorScheme: const ColorScheme.light(
+                  onSurface: Colors.white,
+                ),
+                textButtonTheme: TextButtonThemeData(
+                    style: TextButton.styleFrom(
+                        foregroundColor:
+                            const Color.fromARGB(255, 180, 135, 218)))),
+            child: child);
+      },
     );
     if (date != null) {
-      setState(() {
-        context.read<NotesDetailsBloc>().add(NoteDetailsDateChangeEvent(date));
-        selectedDate = date;
-      });
+      _updateDate(date);
     }
   }
 
   @override
-  Widget build(BuildContext context) => Consumer<NotesDetailsBloc>(
-        builder: (context, vm, child) => Column(
+  Widget build(BuildContext context) =>
+      BlocBuilder<NotesDetailsBloc, NoteDetailsState>(
+        builder: (context, state) => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              vm.state.date.dateOnly(),
+              state.date.dateOnly(),
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
             OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                backgroundColor: Colors.black45,
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () => selectDate(vm.state.date),
+              style: AppButtonStyle.buttonDateTimeStyle,
+              onPressed: () => selectDate(state.date),
               child: const Text(
                 'Выбрать дату',
                 style: TextStyle(fontSize: 12),
@@ -198,10 +210,7 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
         ),
         const SizedBox(height: 10),
         OutlinedButton(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(Colors.black45),
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-          ),
+          style: AppButtonStyle.buttonDateTimeStyle,
           onPressed: () => setTime(selectedTime),
           child: const Text(
             'Выбрать время',
@@ -347,7 +356,9 @@ class _FoodRowWidgetState extends State<_FoodRowWidget> {
   }
 
   void _onFoodDescriptionChanged(String v) {
-    context.read<NotesDetailsBloc>().add(NoteDetailsFoodChangeDescriptionEvent(v));
+    context
+        .read<NotesDetailsBloc>()
+        .add(NoteDetailsFoodChangeDescriptionEvent(v));
   }
 
   @override
@@ -422,13 +433,7 @@ class _DeleteButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 100),
       child: OutlinedButton(
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(Colors.redAccent),
-          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-          side: MaterialStateProperty.all<BorderSide>(
-            const BorderSide(color: Colors.redAccent, width: 2),
-          ),
-        ),
+        style: AppButtonStyle.deleteNoteButtonStyle,
         onPressed: () => _onDeleteButton(context),
         child: const Text('Удалить запись', style: TextStyle(fontSize: 15)),
       ),

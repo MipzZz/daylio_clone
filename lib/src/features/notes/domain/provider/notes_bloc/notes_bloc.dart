@@ -24,7 +24,7 @@ class NotesBloc extends Bloc<NotesEvents, NotesState> {
           notes: notes.toList(),
         ),
       );
-    } catch (e, s) {
+    } on Object catch (e, s) {
       emitter(
         NotesStateError(
           notes: state.notes,

@@ -1,3 +1,3 @@
 sealed class NotesEvents{}
 
-class NoteEventsSubscriptionRequestEvent implements NotesEvents{}
+final class NoteEventsSubscriptionRequestEvent implements NotesEvents{}

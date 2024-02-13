@@ -23,7 +23,7 @@ sealed class AddNoteState {
   });
 }
 
-class AddNoteStateNew implements AddNoteState {
+final class AddNoteStateNew implements AddNoteState {
   @override
   final DateTime date;
 
@@ -44,11 +44,11 @@ class AddNoteStateNew implements AddNoteState {
 
   const AddNoteStateNew({
     required this.date,
-    required this.moodId,
-    required this.foodId,
-    required this.foodDescription,
-    required this.sleepId,
-    required this.sleepDescription,
+    this.moodId = 0,
+    this.foodId = 0,
+    this.foodDescription = '',
+    this.sleepId = 0,
+    this.sleepDescription = '',
   });
 
 
@@ -72,7 +72,7 @@ class AddNoteStateNew implements AddNoteState {
   }
 }
 
-class AddNoteStateError implements AddNoteState {
+final class AddNoteStateError implements AddNoteState {
   @override
   final DateTime date;
   @override

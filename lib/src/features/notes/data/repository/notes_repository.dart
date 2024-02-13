@@ -12,7 +12,15 @@ class NotesRepository {
 
   NotesRepository({required AppDb database})
       : _notesController = StreamController.broadcast(),
-        _driftStorage = database;
+        _driftStorage = database {
+    _init();
+  }
+
+  Future<void> _init() async {
+    final updateNotes = await _driftStorage.readNotes();
+    final notes = updateNotes.map(NoteModel.fromNoteTableData);
+    _notesController.add(notes);
+  }
 
   Future<void> saveNote(NoteModel note) async {
     try {
@@ -26,7 +34,6 @@ class NotesRepository {
       final updateNotes = await _driftStorage.readNotes();
       final notes = updateNotes.map(NoteModel.fromNoteTableData);
       _notesController.add(notes);
-      print('Запись сохранена');
     } on Object {
       rethrow;
     }

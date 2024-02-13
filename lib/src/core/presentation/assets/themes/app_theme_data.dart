@@ -5,12 +5,16 @@ import '../colors/app_colors.dart';
 abstract class AppThemeData {
   static final darkMainTheme = ThemeData(
     datePickerTheme: const DatePickerThemeData(
+      surfaceTintColor: Colors.white,
       backgroundColor: AppColors.background,
       rangePickerHeaderForegroundColor: AppColors.mainTextColor,
       weekdayStyle: TextStyle(color: AppColors.mainTextColor),
       headerForegroundColor: AppColors.mainTextColor,
+
       dayForegroundColor: MaterialStatePropertyAll(AppColors.mainTextColor),
       yearForegroundColor: MaterialStatePropertyAll(AppColors.mainTextColor),
+      yearOverlayColor: MaterialStatePropertyAll(AppColors.mainGreen),
+      yearStyle: TextStyle(color: Colors.green),
       todayForegroundColor: MaterialStatePropertyAll(AppColors.mainTextColor),
     ),
     timePickerTheme: const TimePickerThemeData(
@@ -29,4 +33,5 @@ abstract class AppThemeData {
     ),
     textTheme: Typography.whiteRedmond,
   );
+
 }

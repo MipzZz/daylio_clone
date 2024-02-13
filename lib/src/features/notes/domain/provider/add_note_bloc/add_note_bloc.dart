@@ -1,3 +1,4 @@
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/food_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
@@ -8,7 +9,7 @@ import 'package:daylio_clone/src/features/notes/domain/provider/add_note_bloc/ad
 import 'package:daylio_clone/src/features/notes/domain/provider/add_note_bloc/add_note_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AddNoteBloc extends Bloc<AddNoteEvents, AddNoteState> {
+class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
   final NotesRepository _notesRepository;
 
   AddNoteBloc({required NotesRepository notesRepository})
@@ -16,33 +17,24 @@ class AddNoteBloc extends Bloc<AddNoteEvents, AddNoteState> {
         super(
           AddNoteStateNew(
             date: DateTime.now(),
-            moodId: 0,
-            foodId: 0,
-            foodDescription: '',
-            sleepId: 0,
-            sleepDescription: '',
           ),
         ) {
-    on<AddNoteEvents>((event, emitter) {
-      switch (event) {
-        case AddNoteDateChangeEvent():
-          _onDateChange(event, emitter);
-        case AddNoteTimeChangeEvent():
-          _onTimeChange(event, emitter);
-        case AddNoteMoodChangeEvent():
-          _onMoodChange(event, emitter);
-        case AddNoteSleepChangeGradeEvent():
-          _onSleepGradeChange(event, emitter);
-        case AddNoteSleepChangeDescriptionEvent():
-          _onSleepDescriptionChange(event, emitter);
-        case AddNoteFoodChangeGradeEvent():
-          _onFoodGradeChange(event, emitter);
-        case AddNoteFoodChangeDescriptionEvent():
-          _onFoodDescriptionChange(event, emitter);
-        case AddNoteSubmitEvent():
-          _onAddNoteSubmit(event, emitter);
-      }
-    });
+    on<AddNoteEvent>(
+      (event, emitter) => switch (event) {
+        AddNoteDateChangeEvent event => _onDateChange(event, emitter),
+        AddNoteTimeChangeEvent event => _onTimeChange(event, emitter),
+        AddNoteMoodChangeEvent event => _onMoodChange(event, emitter),
+        AddNoteSleepChangeGradeEvent event =>
+          _onSleepGradeChange(event, emitter),
+        AddNoteSleepChangeDescriptionEvent event =>
+          _onSleepDescriptionChange(event, emitter),
+        AddNoteFoodChangeGradeEvent event => _onFoodGradeChange(event, emitter),
+        AddNoteFoodChangeDescriptionEvent event =>
+          _onFoodDescriptionChange(event, emitter),
+        AddNoteSubmitEvent event => _onAddNoteSubmit(event, emitter)
+      },
+      transformer: sequential(),
+    );
   }
 
   void _onDateChange(
@@ -53,7 +45,7 @@ class AddNoteBloc extends Bloc<AddNoteEvents, AddNoteState> {
       state.copyWith(
         date: state.date.copyWith(
           day: event.date.day,
-          month: event.date.day,
+          month: event.date.month,
           year: event.date.year,
         ),
       ),
@@ -146,7 +138,7 @@ class AddNoteBloc extends Bloc<AddNoteEvents, AddNoteState> {
         date: state.date,
       );
       await _notesRepository.saveNote(note);
-    } catch (e,s) {
+    } on Object catch (e, s) {
       emitter(
         AddNoteStateError(
           date: state.date,

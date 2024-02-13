@@ -1,5 +1,5 @@
 import 'package:daylio_clone/src/core/data/source/local/db/drift_storage.dart';
-import 'package:daylio_clone/src/core/presentation/assets/themes/AppThemeData.dart';
+import 'package:daylio_clone/src/core/presentation/assets/themes/app_theme_data.dart';
 import 'package:daylio_clone/src/features/debug/presentation/view/debug_screen.dart';
 import 'package:daylio_clone/src/features/main/presentation/view/main_screen.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';

@@ -1,45 +1,45 @@
 import 'package:flutter/material.dart';
 
-sealed class AddNoteEvents {
-  const AddNoteEvents();
+sealed class AddNoteEvent {
+  const AddNoteEvent();
 }
 
-class AddNoteDateChangeEvent implements AddNoteEvents {
+final class AddNoteDateChangeEvent implements AddNoteEvent {
   final DateTime date;
   const AddNoteDateChangeEvent(this.date);
 }
 
-class AddNoteTimeChangeEvent implements AddNoteEvents {
+final class AddNoteTimeChangeEvent implements AddNoteEvent {
   final TimeOfDay time;
   const AddNoteTimeChangeEvent(this.time);
 }
 
-class AddNoteMoodChangeEvent implements AddNoteEvents {
+final class AddNoteMoodChangeEvent implements AddNoteEvent {
   final int moodId;
   const AddNoteMoodChangeEvent(this.moodId);
 }
 
-class AddNoteSleepChangeGradeEvent implements AddNoteEvents {
+final class AddNoteSleepChangeGradeEvent implements AddNoteEvent {
   final int sleepId;
   const AddNoteSleepChangeGradeEvent(this.sleepId);
 }
 
-class AddNoteSleepChangeDescriptionEvent implements AddNoteEvents {
+final class AddNoteSleepChangeDescriptionEvent implements AddNoteEvent {
   final String sleepDescription;
 
   const AddNoteSleepChangeDescriptionEvent(this.sleepDescription);
 }
 
-class AddNoteFoodChangeGradeEvent implements AddNoteEvents {
+final class AddNoteFoodChangeGradeEvent implements AddNoteEvent {
   final int foodId;
   const AddNoteFoodChangeGradeEvent(this.foodId);
 }
 
-class AddNoteFoodChangeDescriptionEvent implements AddNoteEvents {
+final class AddNoteFoodChangeDescriptionEvent implements AddNoteEvent {
   final String foodDescription;
 
   const AddNoteFoodChangeDescriptionEvent(this.foodDescription);
 }
 
-class AddNoteSubmitEvent implements AddNoteEvents {}
+final class AddNoteSubmitEvent implements AddNoteEvent {}
 

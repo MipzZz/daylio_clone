@@ -42,7 +42,7 @@ class _NotesListWidgetState extends State<NotesListWidget> {
       return switch (state) {
         NotesStateInitialize() => state.notes.isNotEmpty
             ? const Center(child: Text('Загрузка данных'))
-            : const Center(child: Text('Пока что нет загруженных записей')),
+            : const Center(child: Text('Пока что нет созданных записей')),
         NotesStateError(message: final message) =>
           AlertFailureDialogWidget(message: message),
         NotesStateData() => ListView.builder(

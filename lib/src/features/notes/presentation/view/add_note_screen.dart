@@ -1,3 +1,4 @@
+import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
 import 'package:daylio_clone/src/core/utils/extensions/time_of_day_extension.dart';
@@ -82,49 +83,62 @@ class _DatePickerWidget extends StatefulWidget {
 }
 
 class _DatePickerWidgetState extends State<_DatePickerWidget> {
-  DateTime selectedDate = DateTime.now();
 
-  void saveDate(DateTime date) {
+
+  void _saveDate(DateTime date) {
     context.read<AddNoteBloc>().add(AddNoteDateChangeEvent(date));
   }
 
   void selectDate() async {
     final DateTime? date = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
+      initialDate: context.read<AddNoteBloc>().state.date,
       firstDate: DateTime(2022),
       lastDate: DateTime(2030),
+      builder: (context, child) {
+        if (child == null) {
+          return const SizedBox(
+            child: Text('Непердвиденная ошибка'),
+          );
+        }
+        return Theme(
+            data: Theme.of(context).copyWith(
+                colorScheme: const ColorScheme.light(
+                  onSurface: Colors.white,
+                ),
+                textButtonTheme: TextButtonThemeData(
+                    style: TextButton.styleFrom(
+                        foregroundColor:
+                        const Color.fromARGB(255, 180, 135, 218)))),
+            child: child);
+      },
     );
     if (date != null) {
-      saveDate(date);
-      setState(() {
-        selectedDate = date;
-      });
+      _saveDate(date);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          selectedDate.dateOnly(),
-          style: const TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 10),
-        OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            backgroundColor: Colors.black45,
-            foregroundColor: Colors.white,
+    return BlocBuilder<AddNoteBloc, AddNoteState>(
+      builder: (context,state) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            state.date.dateOnly(),
+            style: const TextStyle(fontSize: 16),
           ),
-          onPressed: () => selectDate(),
-          child: const Text(
-            'Выбрать дату',
-            style: TextStyle(fontSize: 12),
+          const SizedBox(height: 10),
+          OutlinedButton(
+            style: AppButtonStyle.buttonDateTimeStyle,
+            onPressed: () => selectDate(),
+            child: const Text(
+              'Выбрать дату',
+              style: TextStyle(fontSize: 12),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -139,14 +153,14 @@ class _TimePickerWidget extends StatefulWidget {
 class _TimePickerWidgetState extends State<_TimePickerWidget> {
   TimeOfDay selectedTime = TimeOfDay.now();
 
-  void saveTime(TimeOfDay timeOfDay) {
+  void _saveTime(TimeOfDay timeOfDay) {
     context.read<AddNoteBloc>().add(AddNoteTimeChangeEvent(timeOfDay));
   }
 
   void setTime() async {
     final TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
-      initialTime: selectedTime,
+      initialTime: context.read<AddNoteBloc>().state.date.toTimeOfDay(),
       initialEntryMode: TimePickerEntryMode.dial,
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
@@ -156,35 +170,31 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
       },
     );
     if (timeOfDay != null) {
-      saveTime(timeOfDay);
-      setState(() {
-        selectedTime = timeOfDay;
-      });
+      _saveTime(timeOfDay);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          selectedTime.timeOnly(),
-          style: const TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 10),
-        OutlinedButton(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(Colors.black45),
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+    return BlocBuilder<AddNoteBloc, AddNoteState>(
+      builder: (context,state) =>  Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            state.date.toTimeOfDay().timeOnly(),
+            style: const TextStyle(fontSize: 16),
           ),
-          onPressed: setTime,
-          child: const Text(
-            'Выбрать время',
-            style: TextStyle(fontSize: 12),
-          ),
-        )
-      ],
+          const SizedBox(height: 10),
+          OutlinedButton(
+            style: AppButtonStyle.buttonDateTimeStyle,
+            onPressed: setTime,
+            child: const Text(
+              'Выбрать время',
+              style: TextStyle(fontSize: 12),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -377,14 +387,7 @@ class _AddNoteButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 100),
       child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          backgroundColor: AppColors.mainGreen,
-          foregroundColor: Colors.white,
-          side: const BorderSide(
-            color: AppColors.mainGreen,
-            width: 2,
-          ),
-        ),
+        style: AppButtonStyle.addNoteButtonStyle,
         onPressed: () => _onAddButton(context),
         child: const Text('Добавить запись', style: TextStyle(fontSize: 15)),
       ),

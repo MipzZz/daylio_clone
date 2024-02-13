@@ -8,7 +8,7 @@ sealed class NotesState {
   });
 }
 
-class NotesStateInitialize implements NotesState {
+final class NotesStateInitialize implements NotesState {
   @override
   List<NoteModel> get notes => [];
 
@@ -18,7 +18,7 @@ class NotesStateInitialize implements NotesState {
   }
 }
 
-class NotesStateData implements NotesState {
+final class NotesStateData implements NotesState {
   @override
   final List<NoteModel> notes;
 
@@ -34,7 +34,7 @@ class NotesStateData implements NotesState {
   }
 }
 
-class NotesStateError implements NotesState{
+final class NotesStateError implements NotesState{
   @override
   final List<NoteModel>? notes;
   final String message;
