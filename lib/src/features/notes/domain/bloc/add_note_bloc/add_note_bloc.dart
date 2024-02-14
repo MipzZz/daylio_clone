@@ -27,7 +27,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
         AddNoteFoodChangeGradeEvent event => _onFoodGradeChange(event, emitter),
         AddNoteFoodChangeDescriptionEvent event =>
           _onFoodDescriptionChange(event, emitter),
-        AddNoteSubmitEvent event => _onAddNoteSubmit(event, emitter)
+        AddNoteSubmitEvent event => _onAddNoteSubmit(event, emitter),
       },
       transformer: sequential(),
     );
@@ -152,9 +152,9 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
             sleepId: state.sleepId,
             sleepDescription: state.sleepDescription,
             foodId: state.foodId,
-            foodDescription: state.foodDescription),
+            foodDescription: state.foodDescription), //ToDo можно сделать поля null
       );
-    } on Object catch (e, s) {
+    } on Object{
       emitter(
         AddNoteState$Error(
           date: state.date,
@@ -166,7 +166,18 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
           message: 'При сохранении данных произошла ошибка',
         ),
       );
-      Error.throwWithStackTrace(e, s);
+
+      rethrow;
+
+    } finally {
+      emitter(AddNoteState$Idle(
+        date: state.date,
+        moodId: state.moodId,
+        sleepId: state.sleepId,
+        sleepDescription: state.sleepDescription,
+        foodId: state.foodId,
+        foodDescription: state.foodDescription,
+      ));
     }
   }
 }

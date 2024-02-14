@@ -42,4 +42,3 @@ final class AddNoteFoodChangeDescriptionEvent implements AddNoteEvent {
 }
 
 final class AddNoteSubmitEvent implements AddNoteEvent {}
-

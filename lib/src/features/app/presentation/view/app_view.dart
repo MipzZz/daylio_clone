@@ -38,7 +38,8 @@ class _AppViewState extends State<AppView> {
           create: (context) => _notesRepository,
         ),
         BlocProvider(
-          create: (context) => NotesBloc(notesRepository: _notesRepository),
+          create: (context) => NotesBloc(notesRepository: _notesRepository)
+            ..add(NotesEvent$Initialize()),
         ),
         ChangeNotifierProvider(
           create: (context) =>

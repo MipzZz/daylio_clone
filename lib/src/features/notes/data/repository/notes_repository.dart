@@ -12,16 +12,8 @@ class NotesRepository {
 
   NotesRepository({required AppDb database})
       : _notesController = StreamController.broadcast(),
-        _driftStorage = database {
-    _init();
-  }
+        _driftStorage = database;
 
-  Future<void> _init() async {
-    final updateNotes = await _driftStorage.readNotes();
-    // await Future.delayed(const Duration(seconds: 3));
-    final notes = updateNotes.map(NoteModel.fromNoteTableData);
-    _notesController.add(notes);
-  }
 
   Future<void> saveNote(NoteModel note) async {
     try {
@@ -32,7 +24,8 @@ class NotesRepository {
         date: Value(note.date),
       );
       await _driftStorage.saveNote(noteCompanion);
-      await Future.delayed(const Duration(seconds: 5));
+      // await Future.delayed(const Duration(seconds: 3));
+      // throw Exception('SaveNote exception');
       final updateNotes = await _driftStorage.readNotes();
       final notes = updateNotes.map(NoteModel.fromNoteTableData);
       _notesController.add(notes);
@@ -42,12 +35,16 @@ class NotesRepository {
   }
 
   Future<Iterable<NoteModel>> readNotes() async {
+    // await Future.delayed(const Duration(seconds: 3));
+    // throw Exception('Read Note exception');
     final updateNotes = await _driftStorage.readNotes();
     final notes = updateNotes.map(NoteModel.fromNoteTableData);
     return notes;
   }
 
   Future<NoteModel> readNote(int id) async {
+    // await Future.delayed(const Duration(seconds: 3));
+    // throw Exception('Read Note exception');
     final updateNote = await _driftStorage.readNote(id);
     final note = NoteModel.fromNoteTableData(updateNote);
     return note;
@@ -64,6 +61,8 @@ class NotesRepository {
           food: Value(note.food),
           date: Value(note.date),
         );
+        // await Future.delayed(Duration(seconds: 3));
+        // throw Exception('Update Note exception');
         await _driftStorage.updateNote(noteCompanion);
         final updateNotes = await _driftStorage.readNotes();
         final notes = updateNotes.map(NoteModel.fromNoteTableData);
@@ -76,6 +75,8 @@ class NotesRepository {
 
   Future<void> deleteNote(int id) async {
     try {
+      // await Future.delayed(const Duration(seconds: 3));
+      // throw Exception('Delete Note exception');
       await _driftStorage.deleteNote(id);
       final updateNotes = await _driftStorage.readNotes();
       final notes = updateNotes.map(NoteModel.fromNoteTableData);

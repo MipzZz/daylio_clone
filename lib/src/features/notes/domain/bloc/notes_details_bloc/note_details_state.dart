@@ -20,7 +20,7 @@ sealed class NoteDetailsState {
   });
 }
 
-final class NoteDetailsStateInitial implements NoteDetailsState {
+final class NoteDetailsState$Initial implements NoteDetailsState {
   @override
   DateTime get date => DateTime.now();
 
@@ -43,7 +43,7 @@ final class NoteDetailsStateInitial implements NoteDetailsState {
   int get sleepId => 0;
 
   @override
-  NoteDetailsStateInitial copyWith({
+  NoteDetailsState$Initial copyWith({
     DateTime? date,
     String? foodDescription,
     int? foodId,
@@ -51,11 +51,11 @@ final class NoteDetailsStateInitial implements NoteDetailsState {
     String? sleepDescription,
     int? sleepId,
   }) {
-    return NoteDetailsStateInitial();
+    return NoteDetailsState$Initial();
   }
 }
 
-final class NoteDetailsStateData implements NoteDetailsState {
+final class NoteDetailsState$Progress implements NoteDetailsState {
   @override
   final NoteModel note;
   @override
@@ -71,7 +71,7 @@ final class NoteDetailsStateData implements NoteDetailsState {
   @override
   final String foodDescription;
 
-  const NoteDetailsStateData({
+  const NoteDetailsState$Progress({
     required this.note,
     required this.date,
     required this.moodId,
@@ -82,7 +82,7 @@ final class NoteDetailsStateData implements NoteDetailsState {
   });
 
   @override
-  NoteDetailsStateData copyWith({
+  NoteDetailsState$Progress copyWith({
     NoteModel? note,
     DateTime? date,
     int? moodId,
@@ -91,7 +91,7 @@ final class NoteDetailsStateData implements NoteDetailsState {
     int? foodId,
     String? foodDescription,
   }) {
-    return NoteDetailsStateData(
+    return NoteDetailsState$Progress(
       note: note ?? this.note,
       date: date ?? this.date,
       moodId: moodId ?? this.moodId,
@@ -103,7 +103,103 @@ final class NoteDetailsStateData implements NoteDetailsState {
   }
 }
 
-final class NoteDetailsStateError implements NoteDetailsState {
+final class NoteDetailsState$Data implements NoteDetailsState {
+  @override
+  final NoteModel note;
+  @override
+  final DateTime date;
+  @override
+  final int moodId;
+  @override
+  final int sleepId;
+  @override
+  final String sleepDescription;
+  @override
+  final int foodId;
+  @override
+  final String foodDescription;
+
+  const NoteDetailsState$Data({
+    required this.note,
+    required this.date,
+    required this.moodId,
+    required this.sleepId,
+    required this.sleepDescription,
+    required this.foodId,
+    required this.foodDescription,
+  });
+
+  @override
+  NoteDetailsState$Data copyWith({
+    NoteModel? note,
+    DateTime? date,
+    int? moodId,
+    int? sleepId,
+    String? sleepDescription,
+    int? foodId,
+    String? foodDescription,
+  }) {
+    return NoteDetailsState$Data(
+      note: note ?? this.note,
+      date: date ?? this.date,
+      moodId: moodId ?? this.moodId,
+      sleepId: sleepId ?? this.sleepId,
+      sleepDescription: sleepDescription ?? this.sleepDescription,
+      foodId: foodId ?? this.foodId,
+      foodDescription: foodDescription ?? this.foodDescription,
+    );
+  }
+}
+
+final class NoteDetailsState$Completed implements NoteDetailsState {
+  @override
+  final NoteModel note;
+  @override
+  final DateTime date;
+  @override
+  final int moodId;
+  @override
+  final int sleepId;
+  @override
+  final String sleepDescription;
+  @override
+  final int foodId;
+  @override
+  final String foodDescription;
+
+  const NoteDetailsState$Completed({
+    required this.note,
+    required this.date,
+    required this.moodId,
+    required this.sleepId,
+    required this.sleepDescription,
+    required this.foodId,
+    required this.foodDescription,
+  });
+
+  @override
+  NoteDetailsState$Completed copyWith({
+    NoteModel? note,
+    DateTime? date,
+    int? moodId,
+    int? sleepId,
+    String? sleepDescription,
+    int? foodId,
+    String? foodDescription,
+  }) {
+    return NoteDetailsState$Completed(
+      note: note ?? this.note,
+      date: date ?? this.date,
+      moodId: moodId ?? this.moodId,
+      sleepId: sleepId ?? this.sleepId,
+      sleepDescription: sleepDescription ?? this.sleepDescription,
+      foodId: foodId ?? this.foodId,
+      foodDescription: foodDescription ?? this.foodDescription,
+    );
+  }
+}
+
+final class NoteDetailsState$Error implements NoteDetailsState {
   @override
   final NoteModel? note;
   @override
@@ -119,7 +215,7 @@ final class NoteDetailsStateError implements NoteDetailsState {
   @override
   final String foodDescription;
   final String message;
-  const NoteDetailsStateError({
+  const NoteDetailsState$Error({
     this.note,
     required this.date,
     required this.moodId,
@@ -131,7 +227,7 @@ final class NoteDetailsStateError implements NoteDetailsState {
   });
 
   @override
-  NoteDetailsStateError copyWith({
+  NoteDetailsState$Error copyWith({
     NoteModel? note,
     DateTime? date,
     int? moodId,
@@ -141,7 +237,7 @@ final class NoteDetailsStateError implements NoteDetailsState {
     String? foodDescription,
     String? message,
   }) {
-    return NoteDetailsStateError(
+    return NoteDetailsState$Error(
       note: note ?? this.note,
       date: date ?? this.date,
       moodId: moodId ?? this.moodId,

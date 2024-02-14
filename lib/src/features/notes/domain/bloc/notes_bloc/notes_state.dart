@@ -8,46 +8,78 @@ sealed class NotesState {
   });
 }
 
-final class NotesStateInitialize implements NotesState {
+final class NotesState$Initialize implements NotesState {
   @override
   List<NoteModel> get notes => [];
 
   @override
-  NotesState copyWith({List<NoteModel>? notes}) => NotesStateInitialize();
+  NotesState copyWith({List<NoteModel>? notes}) => NotesState$Initialize();
 }
 
-final class NotesStateData implements NotesState {
+final class NotesState$Data implements NotesState {
   @override
   final List<NoteModel> notes;
 
-  NotesStateData({required this.notes});
+  NotesState$Data({required this.notes});
 
   @override
-  NotesStateData copyWith({
+  NotesState$Data copyWith({
     List<NoteModel>? notes,
   }) {
-    return NotesStateData(
+    return NotesState$Data(
       notes: notes ?? this.notes,
     );
   }
 }
 
-final class NotesStateError implements NotesState {
+final class NotesState$Progress implements NotesState {
+  @override
+  final List<NoteModel> notes;
+
+  NotesState$Progress({required this.notes});
+
+  @override
+  NotesState$Progress copyWith({
+    List<NoteModel>? notes,
+  }) {
+    return NotesState$Progress(
+      notes: notes ?? this.notes,
+    );
+  }
+}
+
+final class NotesState$Completed implements NotesState {
+  @override
+  final List<NoteModel> notes;
+
+  NotesState$Completed({required this.notes});
+
+  @override
+  NotesState$Completed copyWith({
+    List<NoteModel>? notes,
+  }) {
+    return NotesState$Completed(
+      notes: notes ?? this.notes,
+    );
+  }
+}
+
+final class NotesState$Error implements NotesState {
   @override
   final List<NoteModel>? notes;
   final String message;
 
-  const NotesStateError({
+  const NotesState$Error({
     required this.notes,
     required this.message,
   });
 
   @override
-  NotesStateError copyWith({
+  NotesState$Error copyWith({
     List<NoteModel>? notes,
     String? message,
   }) {
-    return NotesStateError(
+    return NotesState$Error(
       notes: notes ?? this.notes,
       message: message ?? this.message,
     );

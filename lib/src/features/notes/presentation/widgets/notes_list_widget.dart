@@ -4,6 +4,7 @@ import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_bloc.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_state.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
+import 'package:daylio_clone/src/features/notes/presentation/widgets/build_blur.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,12 +41,27 @@ class _NotesListWidgetState extends State<NotesListWidget> {
     return BlocBuilder<NotesBloc, NotesState>(
         builder: (BuildContext context, NotesState state) {
       return switch (state) {
-        NotesStateInitialize() => state.notes.isNotEmpty
-            ? const Center(child: Text('Загрузка данных'))
-            : const Center(child: Text('Пока что нет созданных записей')),
-        NotesStateError(message: final message) =>
-          AlertFailureDialogWidget(message: message),
-        NotesStateData() => ListView.builder(
+        NotesState$Initialize() => const Center(
+            child: CircularProgressIndicator(),
+          ),
+        NotesState$Progress() => Stack(children: [
+            PopScope(
+              canPop: false, //Можно ли свайпнуть для возврата
+              child: AbsorbPointer(
+                absorbing: true, //Состояние абсорба нажатий
+                child: buildBlur(
+                  isLoading: true, //Состояние блюра
+                  child: const Center(), //TODO Отобразить список заметок
+                ),
+              ),
+            ),
+            const Positioned(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ]),
+        NotesState$Data() => ListView.builder(
             controller: _scrollController,
             shrinkWrap: true,
             reverse: true,
@@ -53,45 +69,31 @@ class _NotesListWidgetState extends State<NotesListWidget> {
             itemCount: state.notes.length,
             itemBuilder: (BuildContext context, int index) {
               final note = state.notes[index];
+              final borderRadius = BorderRadius.only(
+                topLeft: index == state.notes.length - 1
+                    ? const Radius.circular(20.0)
+                    : Radius.zero,
+                topRight: index == state.notes.length - 1
+                    ? const Radius.circular(20.0)
+                    : Radius.zero,
+                bottomLeft:
+                    index == 0 ? const Radius.circular(20.0) : Radius.zero,
+                bottomRight:
+                    index == 0 ? const Radius.circular(20.0) : Radius.zero,
+              );
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Stack(
                   children: [
                     Ink(
                       child: InkWell(
-                        borderRadius: BorderRadius.only(
-                          topLeft: index == state.notes.length - 1
-                              ? const Radius.circular(20.0)
-                              : Radius.zero,
-                          topRight: index == state.notes.length - 1
-                              ? const Radius.circular(20.0)
-                              : Radius.zero,
-                          bottomLeft: index == 0
-                              ? const Radius.circular(20.0)
-                              : Radius.zero,
-                          bottomRight: index == 0
-                              ? const Radius.circular(20.0)
-                              : Radius.zero,
-                        ),
+                        borderRadius: borderRadius,
                         onTap: () => _onNoteTab(note.id),
                         child: Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: AppColors.mainGreen,
-                            borderRadius: BorderRadius.only(
-                              topLeft: index == state.notes.length - 1
-                                  ? const Radius.circular(20.0)
-                                  : Radius.zero,
-                              topRight: index == state.notes.length - 1
-                                  ? const Radius.circular(20.0)
-                                  : Radius.zero,
-                              bottomLeft: index == 0
-                                  ? const Radius.circular(20.0)
-                                  : Radius.zero,
-                              bottomRight: index == 0
-                                  ? const Radius.circular(20.0)
-                                  : Radius.zero,
-                            ),
+                            color: AppColors.listBackground,
+                            borderRadius: borderRadius,
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -112,7 +114,7 @@ class _NotesListWidgetState extends State<NotesListWidget> {
                                     children: [
                                       _MoodRow(note: note),
                                       _SleepAndFoodRow(note: note),
-                                    ],
+                                    ]
                                   ),
                                 ),
                               ],
@@ -125,7 +127,10 @@ class _NotesListWidgetState extends State<NotesListWidget> {
                 ),
               );
             },
-          )
+          ),
+        NotesState$Error errorState =>
+          AlertFailureDialogWidget(message: errorState.message),
+        _ => Container(),
       };
     });
   }

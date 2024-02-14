@@ -7,7 +7,7 @@ class AlertFailureDialogWidget extends StatelessWidget {
   final String message;
 
   void _goBack(BuildContext context) {
-    Navigator.popUntil(context, ModalRoute.withName('/'));
+    Navigator.pop(context);
   }
 
   @override

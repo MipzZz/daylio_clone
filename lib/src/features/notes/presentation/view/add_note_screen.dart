@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
 import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
 import 'package:daylio_clone/src/core/utils/extensions/time_of_day_extension.dart';
@@ -8,10 +10,10 @@ import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_no
 import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_events.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_state.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
+import 'package:daylio_clone/src/features/notes/presentation/widgets/build_blur.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/mood_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
 class AddNoteWidget extends StatefulWidget {
   const AddNoteWidget({super.key});
@@ -34,7 +36,6 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
     switch (state) {
       case AddNoteState$Created():
         Navigator.of(context).pop();
-        break;
       case AddNoteState$Error errorState:
         showDialog(
           context: context,
@@ -42,7 +43,6 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
             message: errorState.message,
           ),
         );
-        break;
       default:
         break;
     }
@@ -52,34 +52,63 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => _addNoteBloc,
-      child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: BlocListener<AddNoteBloc, AddNoteState>(
-          listenWhen: (previous, current) => previous.runtimeType != current.runtimeType,
-          listener: _addNoteListener,
-          child: Scaffold(
-            appBar: AppBar(
-              title: const Text('Новая запись'),
-            ),
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
-              child: ListView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                children: const [
-                  DateNTimeRow(),
-                  SizedBox(height: 30),
-                  _MoodFacesRow(),
-                  SizedBox(height: 30),
-                  _SleepRowWidget(),
-                  SizedBox(height: 50),
-                  _FoodRowWidget(),
-                  SizedBox(height: 35),
-                  _AddNoteButton(),
-                  //ToDo Добавить кнопку сброса
-                ],
+      child: BlocConsumer<AddNoteBloc, AddNoteState>(
+        listener: _addNoteListener,
+        builder: (context, addNoteState) => switch (addNoteState) {
+          AddNoteState$Progress() => Stack(children: [
+              PopScope(
+                canPop: false, //Можно ли свайпнуть для возврата
+                child: AbsorbPointer(
+                  absorbing: true, //Состояние абсорба нажатий
+                  child: buildBlur(
+                    isLoading: true, //Состояние блюра
+                    child: const _BodyWidget(),
+                  ),
+                ),
               ),
-            ),
+              const Positioned(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ]),
+          _ => const _BodyWidget(),
+        },
+      ),
+    );
+  }
+}
+
+class _BodyWidget extends StatelessWidget {
+  const _BodyWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Новая запись'),
+      ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 50,
+          ),
+          child: ListView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            children: const [
+              _DateNTimeRow(),
+              SizedBox(height: 30),
+              _MoodFacesRow(),
+              SizedBox(height: 30),
+              _SleepRowWidget(),
+              SizedBox(height: 50),
+              _FoodRowWidget(),
+              SizedBox(height: 35),
+              _AddNoteButton(),
+              //ToDo Добавить кнопку сброса
+            ],
           ),
         ),
       ),
@@ -87,10 +116,10 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
   }
 }
 
-class DateNTimeRow extends StatelessWidget {
-  const DateNTimeRow({
-    super.key,
-  });
+
+
+class _DateNTimeRow extends StatelessWidget {
+  const _DateNTimeRow();
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +154,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
       builder: (context, child) {
         if (child == null) {
           return const SizedBox(
-            child: Text('Непердвиденная ошибка'),
+            child: Text('Непредвиденная ошибка'),
           );
         }
         return Theme(
@@ -239,8 +268,8 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
   }
 
   @override
-  Widget build(BuildContext context) => Consumer<AddNoteBloc>(
-        builder: (context, addNotesVM, child) => Row(
+  Widget build(BuildContext context) => BlocBuilder<AddNoteBloc, AddNoteState>(
+        builder: (context, addNotesState) => Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(
             5,
@@ -250,7 +279,7 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
                 iconPath: mood.selectedIcon,
                 unselectedPath: mood.unSelectedIcon,
                 onTap: () => selectMood(index),
-                selected: mood.id == addNotesVM.state.moodId,
+                selected: mood.id == addNotesState.moodId,
               );
             },
           ),
@@ -383,36 +412,22 @@ class _AddNoteButton extends StatelessWidget {
 
   void _onAddButton(BuildContext context) async {
     context.read<AddNoteBloc>().add(AddNoteSubmitEvent());
-    // if (!context.mounted) return;
-    // switch (context.read<AddNoteBloc>().state) {
-    //   case AddNoteState$Error f:
-    //     showDialog(
-    //         context: context,
-    //         builder: (_) {
-    //           return AlertFailureDialogWidget(
-    //             message: f.message,
-    //           );
-    //         });
-    //   default:
-    //     break;
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AddNoteBloc, AddNoteState>(
       builder: (context, addNoteState) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 100),
-          child: switch (addNoteState) {
-            AddNoteState$Progress() => const CircularProgressIndicator(),
-            _ => OutlinedButton(
-                style: AppButtonStyle.addNoteButtonStyle,
-                onPressed: () => _onAddButton(context),
-                child: const Text(
-                  'Добавить запись',
-                  style: TextStyle(fontSize: 15),
-                ),
-              ),
-          }),
+        padding: const EdgeInsets.symmetric(horizontal: 100),
+        child: OutlinedButton(
+          style: AppButtonStyle.addNoteButtonStyle,
+          onPressed: () => _onAddButton(context),
+          child: const Text(
+            'Добавить запись',
+            style: TextStyle(fontSize: 15),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -6,12 +6,12 @@ import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_events.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_state.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/notes_details_bloc.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_bloc.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
+import 'package:daylio_clone/src/features/notes/presentation/widgets/build_blur.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/mood_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
 class NoteDetailsWidget extends StatefulWidget {
   final int noteId;
@@ -23,39 +23,70 @@ class NoteDetailsWidget extends StatefulWidget {
 }
 
 class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
+  late final NoteDetailsBloc _noteDetailsBloc;
+
+  @override
+  void initState() {
+    _noteDetailsBloc = NoteDetailsBloc(
+      notesRepository: context.read<NotesRepository>(),
+    )..add(NoteDetailsLoadNoteEvent(widget.noteId));
+    super.initState();
+  }
+
+  void _noteDetailsListener(BuildContext context, NoteDetailsState state) {
+    switch (state) {
+      case NoteDetailsState$Completed():
+        Navigator.of(context).pop();
+      case NoteDetailsState$Error errorState:
+        showDialog(
+            context: context,
+            builder: (_) =>
+                AlertFailureDialogWidget(message: errorState.message));
+      default:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => NotesDetailsBloc(
-              notesRepository: context.read<NotesRepository>(),
-            )..add(NoteDetailsLoadNoteEvent(widget.noteId)),
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Scaffold(
-            appBar: AppBar(
-              actions: const [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15),
-                  child: _SaveButton(),
-                )
-              ],
-              title: Text('Запись от ${widget.noteId}'),
+      create: (context) => _noteDetailsBloc,
+      child: BlocConsumer<NoteDetailsBloc, NoteDetailsState>(
+        listenWhen: (previous, current) => previous is! NoteDetailsState$Initial,
+        listener: _noteDetailsListener,
+        builder: (context, state) => switch (state) {
+          NoteDetailsState$Initial() => Scaffold(
+              appBar: AppBar(),
+              body: const Center(
+                child: CircularProgressIndicator(),
+              ),
             ),
-            body: BlocBuilder<NotesDetailsBloc, NoteDetailsState>(
-              //Можно ли использовать BlocListen?
-              buildWhen: (prev, curr) => prev.runtimeType != curr.runtimeType,
-              //ToDO спросить обязательно ли использовать runtimeType
-              builder: (context, state) {
-                return switch (state) {
-                  NoteDetailsStateInitial() => const Text('Инициализация'),
-                  NoteDetailsStateError(message: final message) =>
-                    AlertFailureDialogWidget(message: message),
-                  _ => const _DefaultBodyWidget(),
-                };
-              },
+          NoteDetailsState$Progress() => Stack(children: [
+              PopScope(
+                canPop: false, //Можно ли свайпнуть для возврата
+                child: AbsorbPointer(
+                  absorbing: true, //Состояние абсорба нажатий
+                  child: buildBlur(
+                    isLoading: true, //Состояние блюра
+                    child: const _DefaultBodyWidget(),
+                  ),
+                ),
+              ),
+              const Positioned(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+              ),
+            ]),
+          NoteDetailsState$Error() => Scaffold(
+              appBar: AppBar(),
+              body: const Center(
+                  child: Text('К сожалению, не получилось загрузить запись')),
             ),
-          ),
-        ));
+          _ => const _DefaultBodyWidget(),
+        },
+      ),
+    );
   }
 }
 
@@ -64,21 +95,42 @@ class _DefaultBodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: ListView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        children: const [
-          _DateNTimeRow(),
-          SizedBox(height: 45),
-          _MoodFacesRow(),
-          SizedBox(height: 50),
-          _SleepRowWidget(),
-          SizedBox(height: 50),
-          _FoodRowWidget(),
-          SizedBox(height: 30),
-          _DeleteButton(),
+    return Scaffold(
+      appBar: AppBar(
+        actions: const [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: _SaveButton(),
+          )
         ],
+        title: BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
+          builder: (context, state) {
+            return Text(
+              'Запись от '
+              '${context.read<NoteDetailsBloc>().state.date.dateOnly()}',
+            );
+          },
+        ),
+      ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: ListView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            children: const [
+              _DateNTimeRow(),
+              SizedBox(height: 45),
+              _MoodFacesRow(),
+              SizedBox(height: 50),
+              _SleepRowWidget(),
+              SizedBox(height: 50),
+              _FoodRowWidget(),
+              SizedBox(height: 30),
+              _DeleteButton(),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -108,13 +160,10 @@ class _DatePickerWidget extends StatefulWidget {
 
 class _DatePickerWidgetState extends State<_DatePickerWidget> {
   void _updateDate(DateTime date) {
-    context.read<NotesDetailsBloc>().add(NoteDetailsDateChangeEvent(date));
+    context.read<NoteDetailsBloc>().add(NoteDetailsDateChangeEvent(date));
   }
 
-  void selectDate(DateTime? selectedDate) async {
-    if (selectedDate == null) {
-      return;
-    }
+  void selectDate(DateTime selectedDate) async {
     final DateTime? date = await showDatePicker(
       context: context,
       initialDate: selectedDate,
@@ -145,7 +194,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
 
   @override
   Widget build(BuildContext context) =>
-      BlocBuilder<NotesDetailsBloc, NoteDetailsState>(
+      BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
         builder: (context, state) => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -175,6 +224,12 @@ class _TimePickerWidget extends StatefulWidget {
 }
 
 class _TimePickerWidgetState extends State<_TimePickerWidget> {
+  void _updateTime(TimeOfDay selectedTime) {
+    context
+        .read<NoteDetailsBloc>()
+        .add(NoteDetailsTimeChangeEvent(selectedTime));
+  }
+
   void setTime(TimeOfDay selectedTime) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
         context: context,
@@ -187,37 +242,33 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
           );
         });
     if (timeOfDay != null) {
-      setState(() {
-        context.read<NotesDetailsBloc>().add(
-              NoteDetailsTimeChangeEvent(timeOfDay),
-            );
-        selectedTime = timeOfDay;
-      });
+      _updateTime(timeOfDay);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    TimeOfDay selectedTime =
-        TimeOfDay.fromDateTime(context.watch<NotesDetailsBloc>().state.date);
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          selectedTime.timeOnly(),
-          style: const TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 10),
-        OutlinedButton(
-          style: AppButtonStyle.buttonDateTimeStyle,
-          onPressed: () => setTime(selectedTime),
-          child: const Text(
-            'Выбрать время',
-            style: TextStyle(fontSize: 12),
-          ),
-        )
-      ],
+    return BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
+      builder: (context, state) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              state.date.toTimeOfDay().timeOnly(),
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton(
+              style: AppButtonStyle.buttonDateTimeStyle,
+              onPressed: () => setTime(state.date.toTimeOfDay()),
+              child: const Text(
+                'Выбрать время',
+                style: TextStyle(fontSize: 12),
+              ),
+            )
+          ],
+        );
+      },
     );
   }
 }
@@ -231,23 +282,26 @@ class _MoodFacesRow extends StatefulWidget {
 
 class _MoodFacesRowState extends State<_MoodFacesRow> {
   void selectMood(int moodId) {
-    context.read<NotesDetailsBloc>().add(NoteDetailsMoodChangeEvent(moodId));
+    context.read<NoteDetailsBloc>().add(NoteDetailsMoodChangeEvent(moodId));
   }
 
   @override
   Widget build(BuildContext context) {
-    final noteDetailsVM = context.watch<NotesDetailsBloc>();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(
         5,
         (index) {
           final mood = MoodsStorage.values[index];
-          return MoodIcon(
-            iconPath: mood.selectedIcon,
-            unselectedPath: mood.unSelectedIcon,
-            onTap: () => selectMood(index),
-            selected: mood.id == noteDetailsVM.state.moodId,
+          return BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
+            builder: (context, state) {
+              return MoodIcon(
+                iconPath: mood.selectedIcon,
+                unselectedPath: mood.unSelectedIcon,
+                onTap: () => selectMood(index),
+                selected: mood.id == state.moodId,
+              );
+            },
           );
         },
       ),
@@ -269,48 +323,50 @@ class _SleepRowWidgetState extends State<_SleepRowWidget> {
   void initState() {
     super.initState();
     final initialSleepDescription =
-        context.read<NotesDetailsBloc>().state.sleepDescription;
+        context.read<NoteDetailsBloc>().state.sleepDescription;
     _textController = TextEditingController(text: initialSleepDescription);
   }
 
   void _onSleepSelect(GradeLabel? gradeLabel) {
     if (gradeLabel == null) return;
     context
-        .read<NotesDetailsBloc>()
+        .read<NoteDetailsBloc>()
         .add(NoteDetailsSleepChangeGradeEvent(gradeLabel.index));
   }
 
   void _onSleepDescriptionChanged(String v) {
     context
-        .read<NotesDetailsBloc>()
+        .read<NoteDetailsBloc>()
         .add(NoteDetailsSleepChangeDescriptionEvent(v));
   }
 
   @override
   Widget build(BuildContext context) {
-    final noteDetailsState = context.watch<NotesDetailsBloc>().state;
-    GradeLabel? initSelect =
-        GradeLabel.values.elementAtOrNull(noteDetailsState.sleepId);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
-          child: DropdownMenu<GradeLabel>(
-            initialSelection: initSelect,
-            onSelected: _onSleepSelect,
-            label: const Text('Оценка сна'),
-            inputDecorationTheme: const InputDecorationTheme(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              border: OutlineInputBorder(),
-            ),
-            textStyle: const TextStyle(fontSize: 15),
-            dropdownMenuEntries: GradeLabel.values
-                .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
-              return DropdownMenuEntry<GradeLabel>(
-                value: grade,
-                label: grade.title,
+          child: BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
+            builder: (context, state) {
+              return DropdownMenu<GradeLabel>(
+                initialSelection: GradeLabel.values[state.sleepId],
+                onSelected: _onSleepSelect,
+                label: const Text('Оценка сна'),
+                inputDecorationTheme: const InputDecorationTheme(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  border: OutlineInputBorder(),
+                ),
+                textStyle: const TextStyle(fontSize: 15),
+                dropdownMenuEntries: GradeLabel.values
+                    .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
+                  return DropdownMenuEntry<GradeLabel>(
+                    value: grade,
+                    label: grade.title,
+                  );
+                }).toList(),
               );
-            }).toList(),
+            },
           ),
         ),
         Expanded(
@@ -344,50 +400,52 @@ class _FoodRowWidgetState extends State<_FoodRowWidget> {
   void initState() {
     super.initState();
     final initialFoodDescription =
-        context.read<NotesDetailsBloc>().state.foodDescription;
+        context.read<NoteDetailsBloc>().state.foodDescription;
     _textController = TextEditingController(text: initialFoodDescription);
   }
 
   void _onFoodSelect(GradeLabel? gradeLabel) {
     if (gradeLabel == null) return;
     context
-        .read<NotesDetailsBloc>()
+        .read<NoteDetailsBloc>()
         .add(NoteDetailsFoodChangeGradeEvent(gradeLabel.index));
   }
 
   void _onFoodDescriptionChanged(String v) {
     context
-        .read<NotesDetailsBloc>()
+        .read<NoteDetailsBloc>()
         .add(NoteDetailsFoodChangeDescriptionEvent(v));
   }
 
   @override
   Widget build(BuildContext context) {
-    final noteDetailsState = context.watch<NotesDetailsBloc>().state;
-    GradeLabel? initSelect = GradeLabel.values[noteDetailsState.foodId];
-    GradeLabel.values.elementAtOrNull(noteDetailsState.foodId);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
-          child: DropdownMenu<GradeLabel>(
-            initialSelection: initSelect,
-            onSelected: _onFoodSelect,
-            label: const Text('Оценка еды'),
-            inputDecorationTheme: const InputDecorationTheme(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              border: OutlineInputBorder(),
-            ),
-            textStyle: const TextStyle(fontSize: 15),
-            dropdownMenuEntries:
-                GradeLabel.values.map<DropdownMenuEntry<GradeLabel>>(
-              (GradeLabel grade) {
-                return DropdownMenuEntry<GradeLabel>(
-                  value: grade,
-                  label: grade.title,
-                );
-              },
-            ).toList(),
+          child: BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
+            builder: (context, state) {
+              return DropdownMenu<GradeLabel>(
+                initialSelection: GradeLabel.values[state.foodId],
+                onSelected: _onFoodSelect,
+                label: const Text('Оценка еды'),
+                inputDecorationTheme: const InputDecorationTheme(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  border: OutlineInputBorder(),
+                ),
+                textStyle: const TextStyle(fontSize: 15),
+                dropdownMenuEntries:
+                    GradeLabel.values.map<DropdownMenuEntry<GradeLabel>>(
+                  (GradeLabel grade) {
+                    return DropdownMenuEntry<GradeLabel>(
+                      value: grade,
+                      label: grade.title,
+                    );
+                  },
+                ).toList(),
+              );
+            },
           ),
         ),
         Expanded(
@@ -411,21 +469,7 @@ class _DeleteButton extends StatelessWidget {
   const _DeleteButton();
 
   void _onDeleteButton(BuildContext context) {
-    context.read<NotesDetailsBloc>().add(const NoteDetailsDeleteEvent());
-    if (!context.mounted) return;
-    switch (context.read<NotesDetailsBloc>().state) {
-      case NoteDetailsStateError(message: final message):
-        showDialog(
-          context: context,
-          builder: (_) {
-            return AlertFailureDialogWidget(
-              message: message,
-            );
-          },
-        );
-      default:
-        Navigator.popUntil(context, ModalRoute.withName('/'));
-    }
+    context.read<NoteDetailsBloc>().add(const NoteDetailsDeleteEvent());
   }
 
   @override
@@ -445,21 +489,7 @@ class _SaveButton extends StatelessWidget {
   const _SaveButton();
 
   void _onSaveButton(BuildContext context) {
-    context.read<NotesDetailsBloc>().add(const NoteDetailsSaveEvent());
-    if (!context.mounted) return;
-    switch (context.read<NotesDetailsBloc>().state) {
-      case NoteDetailsStateError(message: final message):
-        showDialog(
-          context: context,
-          builder: (_) {
-            return AlertFailureDialogWidget(
-              message: message,
-            );
-          },
-        );
-      default:
-        Navigator.popUntil(context, ModalRoute.withName('/'));
-    }
+    context.read<NoteDetailsBloc>().add(const NoteDetailsSaveEvent());
   }
 
   @override

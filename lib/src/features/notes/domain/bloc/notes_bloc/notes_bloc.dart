@@ -8,12 +8,14 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
 
   NotesBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
-        super(NotesStateInitialize()) {
+        super(NotesState$Initialize()) {
     on<NotesEvent>((event, emitter) => switch (event) {
           NotesEvent$Initialize event => _initialize(event, emitter),
           NotesEvent$Update event => _updateNotes(event, emitter),
         });
-    _notesRepository.notesStream.listen((notes) => add(NotesEvent$Update(notes)));
+    _notesRepository.notesStream.listen(
+      (notes) => add(NotesEvent$Update(notes)),
+    );
   }
 
   Future<void> _initialize(
@@ -22,14 +24,16 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
   ) async {
     try {
       final notes = await _notesRepository.readNotes();
-      emitter(NotesStateData(notes: notes.toList()));
-    } on Object {
+      emitter(NotesState$Data(notes: notes.toList()));
+    } on Object catch (e, s) {
       emitter(
-        const NotesStateError(
+        const NotesState$Error(
           notes: [],
-          message: 'Loading failure',
+          message: 'При загрузке данных произошла ошибка. '
+              'Пожалуйста, попробуйте перезайти',
         ),
       );
+      Error.throwWithStackTrace(e, s);
     }
   }
 
@@ -38,25 +42,17 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
     Emitter<NotesState> emitter,
   ) async {
     try {
-      emitter(NotesStateData(notes: event.notes.toList()));
-      // await emitter.forEach<Iterable<NoteModel>>(
-      //   _notesRepository.notesStream,
-      //   onData: (notes) => NotesStateData(
-      //     notes: notes.toList(),
-      //   ),
-      //   onError: (e, s) => NotesStateError(
-      //     notes: state.notes,
-      //     message: '$e',
-      //   ),
-      // );
+      emitter(NotesState$Data(notes: event.notes.toList()));
     } on Object catch (e, s) {
       emitter(
-        NotesStateError(
+        NotesState$Error(
           notes: state.notes,
-          message: 'При загрузке данных произошла ошибка',
+          message: 'При обновлении данных произошла ошибка',
         ),
       );
       Error.throwWithStackTrace(e, s);
+    } finally{
+      emitter(NotesState$Data(notes: event.notes.toList()));
     }
   }
 }

@@ -10,12 +10,13 @@ import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/n
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class NotesDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
+class NoteDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
   final NotesRepository _notesRepository;
+  late final NoteModel note;
 
-  NotesDetailsBloc({required NotesRepository notesRepository})
+  NoteDetailsBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
-        super(NoteDetailsStateInitial()) {
+        super(NoteDetailsState$Initial()) {
     on<NoteDetailsEvents>(
       (event, emitter) => switch (event) {
         NoteDetailsLoadNoteEvent() => _loadNote(event, emitter),
@@ -39,8 +40,8 @@ class NotesDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
   Future<void> _loadNote(
       NoteDetailsLoadNoteEvent event, Emitter<NoteDetailsState> emitter) async {
     try {
-      final note = await _notesRepository.readNote(event.noteId);
-      emitter(NoteDetailsStateData(
+      note = await _notesRepository.readNote(event.noteId);
+      emitter(NoteDetailsState$Data(
         note: note,
         date: note.date,
         moodId: note.mood.id,
@@ -50,7 +51,7 @@ class NotesDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
         foodDescription: note.food.description,
       ));
     } on Object catch (e, s) {
-      emitter(NoteDetailsStateError(
+      emitter(NoteDetailsState$Error(
         note: state.note,
         date: state.date,
         moodId: state.moodId,
@@ -143,10 +144,9 @@ class NotesDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
     Emitter<NoteDetailsState> emitter,
   ) async {
     try {
-      final noteId = state.note?.id;
-      if (noteId == null) return;
-      final note = NoteModel(
-        id: noteId,
+      if (note.id == null) throw NoteNullException();
+      final updatedNote = NoteModel(
+        id: note.id,
         mood: MoodModel.fromEnum(MoodsStorage.values[state.moodId]),
         sleep: SleepModel.fromGradeAndDesc(
           id: state.sleepId,
@@ -156,10 +156,32 @@ class NotesDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
             id: state.foodId, description: state.foodDescription),
         date: state.date,
       );
-      await _notesRepository.updateNote(note);
+
+      emitter(NoteDetailsState$Progress(
+        note: updatedNote,
+        date: state.date,
+        moodId: state.moodId,
+        sleepId: state.sleepId,
+        sleepDescription: state.sleepDescription,
+        foodId: state.foodId,
+        foodDescription: state.foodDescription,
+      ));
+
+      await _notesRepository.updateNote(updatedNote);
+
+      emitter(NoteDetailsState$Completed(
+        note: updatedNote,
+        date: state.date,
+        moodId: state.moodId,
+        sleepId: state.sleepId,
+        sleepDescription: state.sleepDescription,
+        foodId: state.foodId,
+        foodDescription: state.foodDescription,
+      ));
+
     } on Object catch (e, s) {
-      emitter(NoteDetailsStateError(
-        note: state.note,
+      emitter(NoteDetailsState$Error(
+        note: note,
         date: state.date,
         moodId: state.moodId,
         sleepId: state.sleepId,
@@ -169,6 +191,17 @@ class NotesDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
         message: 'При сохранении данных произошла ошибка',
       ));
       Error.throwWithStackTrace(e, s);
+    } finally {{
+        emitter(NoteDetailsState$Data(
+          note: note,
+          date: state.date,
+          moodId: state.moodId,
+          sleepId: state.sleepId,
+          sleepDescription: state.sleepDescription,
+          foodId: state.foodId,
+          foodDescription: state.foodDescription,
+        ));
+      }
     }
   }
 
@@ -179,11 +212,34 @@ class NotesDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
     try {
       final id = state.note?.id;
       if (id == null) throw NoteNullException();
+
+      emitter(NoteDetailsState$Progress(
+        note: note,
+        date: state.date,
+        moodId: state.moodId,
+        sleepId: state.sleepId,
+        sleepDescription: state.sleepDescription,
+        foodId: state.foodId,
+        foodDescription: state.foodDescription,
+      ));
+
+
       await _notesRepository.deleteNote(id);
+
+      emitter(NoteDetailsState$Completed(
+        note: note,
+        date: state.date,
+        moodId: state.moodId,
+        sleepId: state.sleepId,
+        sleepDescription: state.sleepDescription,
+        foodId: state.foodId,
+        foodDescription: state.foodDescription,
+      ));
+
     } on Object catch (e, s) {
       emitter(
-        NoteDetailsStateError(
-          note: state.note,
+        NoteDetailsState$Error(
+          note: note,
           date: state.date,
           moodId: state.moodId,
           sleepId: state.sleepId,
@@ -194,6 +250,17 @@ class NotesDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
         ),
       );
       Error.throwWithStackTrace(e, s);
+    } finally {
+        emitter(NoteDetailsState$Data(
+          note: note,
+          date: state.date,
+          moodId: state.moodId,
+          sleepId: state.sleepId,
+          sleepDescription: state.sleepDescription,
+          foodId: state.foodId,
+          foodDescription: state.foodDescription,
+        ));
+      }
     }
   }
-}
+
