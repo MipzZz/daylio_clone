@@ -39,12 +39,6 @@ enum MoodsStorage {
     color: AppColors.terribleGrade,
   );
 
-  final int id;
-  final String title;
-  final String selectedIcon;
-  final String unSelectedIcon;
-  final Color color;
-
   const MoodsStorage({
     required this.id,
     required this.title,
@@ -52,4 +46,12 @@ enum MoodsStorage {
     required this.unSelectedIcon,
     required this.color,
   });
+
+  final int id;
+  final String title;
+  final String selectedIcon;
+  final String unSelectedIcon;
+  final Color color;
+
+
 }

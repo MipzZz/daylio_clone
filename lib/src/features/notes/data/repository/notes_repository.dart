@@ -5,14 +5,14 @@ import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:drift/drift.dart';
 
 class NotesRepository {
-  final AppDb _driftStorage;
-  late final StreamController<Iterable<NoteModel>> _notesController;
-
-  Stream<Iterable<NoteModel>> get notesStream => _notesController.stream;
 
   NotesRepository({required AppDb database})
       : _notesController = StreamController.broadcast(),
         _driftStorage = database;
+  final AppDb _driftStorage;
+  late final StreamController<Iterable<NoteModel>> _notesController;
+
+  Stream<Iterable<NoteModel>> get notesStream => _notesController.stream;
 
 
   Future<void> saveNote(NoteModel note) async {

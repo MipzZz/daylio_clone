@@ -1,15 +1,15 @@
+import 'package:collection/collection.dart';
 import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_event.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_bloc.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_event.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_state.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:collection/collection.dart';
 
 class NotesListWidget extends StatefulWidget {
   const NotesListWidget({super.key});
@@ -20,19 +20,15 @@ class NotesListWidget extends StatefulWidget {
 
 class _NotesListWidgetState extends State<NotesListWidget> {
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<NotesBloc, NotesState>(
-        builder: (BuildContext context, NotesState state) {
-      return switch (state) {
+  Widget build(BuildContext context) => BlocBuilder<NotesBloc, NotesState>(
+        builder: (BuildContext context, NotesState state) => switch (state) {
         NotesState$Progress() => const Center(
             child: CircularProgressIndicator(),
           ),
-        NotesState$Error errorState =>
+        final NotesState$Error errorState =>
           _FailureBody(errorMessage: errorState.message),
         _ => const _NotesListView(),
-      };
-    });
-  }
+      },);
 }
 
 class _FailureBody extends StatelessWidget {
@@ -47,8 +43,7 @@ class _FailureBody extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
+  Widget build(BuildContext context) => Center(
       child: Column(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -66,7 +61,6 @@ class _FailureBody extends StatelessWidget {
         ],
       ),
     );
-  }
 }
 
 class _NotesListView extends StatefulWidget {
@@ -107,7 +101,7 @@ class _NotesListViewState extends State<_NotesListView> {
             _scrollController.animateTo(
                 _scrollController.position.maxScrollExtent,
                 duration: const Duration(milliseconds: 700),
-                curve: Curves.easeInOut);
+                curve: Curves.easeInOut,);
           }
         });
         final sortedNotes =
@@ -168,7 +162,7 @@ class _NotesListViewState extends State<_NotesListView> {
                                       children: [
                                         _MoodRow(note: note),
                                         _SleepAndFoodRow(note: note),
-                                      ]),
+                                      ],),
                                 ),
                               ],
                             ),
@@ -195,8 +189,7 @@ class _MoodRow extends StatelessWidget {
   final NoteModel _note;
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
+  Widget build(BuildContext context) => Row(
       children: [
         Text(
           _note.mood.title,
@@ -210,7 +203,6 @@ class _MoodRow extends StatelessWidget {
         ),
       ],
     );
-  }
 }
 
 class _SleepAndFoodRow extends StatelessWidget {
@@ -221,8 +213,7 @@ class _SleepAndFoodRow extends StatelessWidget {
   final NoteModel _note;
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
+  Widget build(BuildContext context) => Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(
@@ -252,5 +243,4 @@ class _SleepAndFoodRow extends StatelessWidget {
         ),
       ],
     );
-  }
 }

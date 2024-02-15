@@ -31,8 +31,7 @@ class _AboutScreenState extends State<AboutScreen> {
     _initPackageInfo();
   }
 
-  Widget _infoTile(String title, String subtitle) {
-    return ListTile(
+  Widget _infoTile(String title, String subtitle) => ListTile(
       title: Text(
         title,
         style: AppTextStyle.title,
@@ -42,11 +41,9 @@ class _AboutScreenState extends State<AboutScreen> {
         style: AppTextStyle.subTitle,
       ),
     );
-  }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('О приложении'),
       ),
@@ -64,5 +61,4 @@ class _AboutScreenState extends State<AboutScreen> {
         ],
       ),
     );
-  }
 }

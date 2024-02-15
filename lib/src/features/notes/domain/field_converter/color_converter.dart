@@ -6,12 +6,8 @@ class ColorConverter extends JsonConverter<Color, int> {
   const ColorConverter();
 
   @override
-  fromJson(json) {
-    return Color(json);
-  }
+  Color fromJson(int json) => Color(json);
 
   @override
-  toJson(object) {
-    return object.value;
-  }
+  int toJson(Color object) => object.value;
 }

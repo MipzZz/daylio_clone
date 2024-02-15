@@ -10,5 +10,4 @@ abstract class AppIcons {
   static const String normalSolid = 'assets/images/moods/normal/face_meh_solid.svg';
   static const String badSolid = 'assets/images/moods/bad/face_frown_open_solid.svg';
   static const String terribleSolid = 'assets/images/moods/terrible/face_sad_tear_solid.svg';
-
 }

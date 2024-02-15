@@ -9,9 +9,11 @@ enum GradeLabel{
   bad('Плохо', AppColors.badGrade),
   terrible('Ужасно', AppColors.terribleGrade);
 
+  const GradeLabel(this.title, this.color);
+
   final String title;
   final Color color;
 
-  const GradeLabel(this.title, this.color);
+
 
 }

@@ -4,11 +4,6 @@ import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
 
 class NoteModel {
-  final int? id;
-  final MoodModel mood;
-  final SleepModel sleep;
-  final FoodModel food;
-  final DateTime date;
 
   NoteModel({
     required this.id,
@@ -25,6 +20,11 @@ class NoteModel {
         food: note.food,
         date: note.date,
       );
+  final int? id;
+  final MoodModel mood;
+  final SleepModel sleep;
+  final FoodModel food;
+  final DateTime date;
 
 
 
@@ -34,13 +34,11 @@ class NoteModel {
     SleepModel? sleep,
     FoodModel? food,
     DateTime? date,
-  }) {
-    return NoteModel(
+  }) => NoteModel(
       id: id ?? this.id,
       mood: mood ?? this.mood,
       sleep: sleep ?? this.sleep,
       food: food ?? this.food,
       date: date ?? this.date,
     );
-  }
 }

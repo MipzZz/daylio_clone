@@ -1,18 +1,16 @@
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:daylio_clone/src/core/utils/exceptions/note_null_exception.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_event.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_state.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/food_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_event.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
-  final NotesRepository _notesRepository;
-  late final NoteModel note;
 
   NoteDetailsBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
@@ -36,9 +34,11 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
       transformer: sequential(),
     );
   }
+  final NotesRepository _notesRepository;
+  late final NoteModel note;
 
   Future<void> _loadNote(
-      NoteDetailsEvent$LoadNote event, Emitter<NoteDetailsState> emitter) async {
+      NoteDetailsEvent$LoadNote event, Emitter<NoteDetailsState> emitter,) async {
     try {
       note = await _notesRepository.readNote(event.noteId);
       emitter(NoteDetailsState$Data(
@@ -49,7 +49,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
         sleepDescription: note.sleep.description,
         foodId: note.food.id,
         foodDescription: note.food.description,
-      ));
+      ),);
     } on Object catch (e, s) {
       emitter(NoteDetailsState$Error(
         note: state.note,
@@ -60,7 +60,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
         foodId: state.foodId,
         foodDescription: state.foodDescription,
         message: 'При загрузке данных произошла ошибка',
-      ));
+      ),);
       Error.throwWithStackTrace(e, s);
     }
   }
@@ -100,7 +100,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
   ) {
     emitter(state.copyWith(
       moodId: event.moodId,
-    ));
+    ),);
   }
 
   void _onSleepGradeChange(
@@ -109,7 +109,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
   ) {
     emitter(state.copyWith(
       sleepId: event.sleepId,
-    ));
+    ),);
   }
 
   void _onSleepDescriptionChange(
@@ -118,7 +118,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
   ) {
     emitter(state.copyWith(
       sleepDescription: event.sleepDescription,
-    ));
+    ),);
   }
 
   void _onFoodGradeChange(
@@ -127,7 +127,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
   ) {
     emitter(state.copyWith(
       foodId: event.foodId,
-    ));
+    ),);
   }
 
   void _onFoodDescriptionChange(
@@ -136,7 +136,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
   ) {
     emitter(state.copyWith(
       foodDescription: event.foodDescription,
-    ));
+    ),);
   }
 
   Future<void> _onSave(
@@ -153,7 +153,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
           description: state.sleepDescription,
         ),
         food: FoodModel.fromGradeAndDesc(
-            id: state.foodId, description: state.foodDescription),
+            id: state.foodId, description: state.foodDescription,),
         date: state.date,
       );
 
@@ -165,7 +165,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
         sleepDescription: state.sleepDescription,
         foodId: state.foodId,
         foodDescription: state.foodDescription,
-      ));
+      ),);
 
       await _notesRepository.updateNote(updatedNote);
 
@@ -177,7 +177,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
         sleepDescription: state.sleepDescription,
         foodId: state.foodId,
         foodDescription: state.foodDescription,
-      ));
+      ),);
 
     } on Object catch (e, s) {
       emitter(NoteDetailsState$Error(
@@ -189,7 +189,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
         foodId: state.foodId,
         foodDescription: state.foodDescription,
         message: 'При сохранении данных произошла ошибка',
-      ));
+      ),);
       Error.throwWithStackTrace(e, s);
     } finally {{
         emitter(NoteDetailsState$Data(
@@ -200,7 +200,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
           sleepDescription: state.sleepDescription,
           foodId: state.foodId,
           foodDescription: state.foodDescription,
-        ));
+        ),);
       }
     }
   }
@@ -221,7 +221,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
         sleepDescription: state.sleepDescription,
         foodId: state.foodId,
         foodDescription: state.foodDescription,
-      ));
+      ),);
 
 
       await _notesRepository.deleteNote(id);
@@ -234,7 +234,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
         sleepDescription: state.sleepDescription,
         foodId: state.foodId,
         foodDescription: state.foodDescription,
-      ));
+      ),);
 
     } on Object catch (e, s) {
       emitter(
@@ -259,8 +259,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
           sleepDescription: state.sleepDescription,
           foodId: state.foodId,
           foodDescription: state.foodDescription,
-        ));
+        ),);
       }
     }
   }
-

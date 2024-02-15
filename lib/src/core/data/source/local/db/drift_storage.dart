@@ -9,19 +9,17 @@ import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 part 'drift_storage.g.dart';
 
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
+LazyDatabase _openConnection() => LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(path.join(dbFolder.path, 'note.sqlite'));
 
     return NativeDatabase(file);
   });
-}
 
 @DriftDatabase(tables: [NoteTable])
 class AppDb extends _$AppDb {

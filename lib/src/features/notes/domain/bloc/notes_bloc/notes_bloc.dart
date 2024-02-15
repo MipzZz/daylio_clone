@@ -4,23 +4,23 @@ import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_sta
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NotesBloc extends Bloc<NotesEvent, NotesState> {
-  final NotesRepository _notesRepository;
 
   NotesBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
         super(NotesState$Initial()) {
     on<NotesEvent>((event, emitter) => switch (event) {
-          NotesEvent$Initialize event => _initialize(event, emitter),
-          NotesEvent$Update event => _updateNotes(event, emitter),
-          NotesEvent$Refresh event => _refreshNotes(event, emitter),
-        });
+          final NotesEvent$Initialize event => _initialize(event, emitter),
+          final NotesEvent$Update event => _updateNotes(event, emitter),
+          final NotesEvent$Refresh event => _refreshNotes(event, emitter),
+        },);
     _notesRepository.notesStream.listen(
       (notes) => add(NotesEvent$Update(notes)),
     );
   }
+  final NotesRepository _notesRepository;
 
-  //TODO решить проблему с повторяемым кодом
-  //TODO copywith
+  // TODO(MipZ): решить проблему с повторяемым кодом
+  // TODO(MipZ): copywith
   Future<void> _initialize(
     NotesEvent$Initialize event,
     Emitter<NotesState> emitter,
@@ -70,7 +70,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       emitter(const NotesState$Error(
         notes: [],
         message: 'При обновлении данных произошла ошибка',
-      ));
+      ),);
     }
   }
 }

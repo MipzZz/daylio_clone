@@ -5,9 +5,9 @@ sealed class NotesEvent {}
 final class NotesEvent$Initialize implements NotesEvent {}
 
 final class NotesEvent$Update implements NotesEvent {
-  Iterable<NoteModel> notes;
 
   NotesEvent$Update(this.notes);
+  Iterable<NoteModel> notes;
 }
 
 final class NotesEvent$Refresh implements NotesEvent {

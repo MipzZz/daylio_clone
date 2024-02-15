@@ -2,11 +2,11 @@ import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_sty
 import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
 import 'package:daylio_clone/src/core/utils/extensions/time_of_day_extension.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_bloc.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_event.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_state.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_bloc.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/build_blur.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/mood_icon.dart';
@@ -14,9 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NoteDetailsWidget extends StatefulWidget {
-  final int noteId;
 
   const NoteDetailsWidget({super.key, required this.noteId});
+  final int noteId;
 
   @override
   State<NoteDetailsWidget> createState() => _NoteDetailsWidgetState();
@@ -37,19 +37,18 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
     switch (state) {
       case NoteDetailsState$Completed():
         Navigator.of(context).pop();
-      case NoteDetailsState$Error errorState:
-        showDialog(
+      case final NoteDetailsState$Error errorState:
+        showDialog<AlertFailureDialogWidget>(
             context: context,
             builder: (_) =>
-                AlertFailureDialogWidget(message: errorState.message));
+                AlertFailureDialogWidget(message: errorState.message),);
       default:
         break;
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
+  Widget build(BuildContext context) => BlocProvider(
       create: (context) => _noteDetailsBloc,
       child: BlocConsumer<NoteDetailsBloc, NoteDetailsState>(
         listenWhen: (previous, current) => previous is! NoteDetailsState$Initial,
@@ -77,39 +76,35 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
                     child: CircularProgressIndicator(),
                   ),
               ),
-            ]),
+            ],),
           NoteDetailsState$Error() => Scaffold(
               appBar: AppBar(),
               body: const Center(
-                  child: Text('К сожалению, не получилось загрузить запись')),
+                  child: Text('К сожалению, не получилось загрузить запись'),),
             ),
           _ => const _DefaultBodyWidget(),
         },
       ),
     );
-  }
 }
 
 class _DefaultBodyWidget extends StatelessWidget {
   const _DefaultBodyWidget();
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         actions: const [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 15),
             child: _SaveButton(),
-          )
+          ),
         ],
         title: BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
-          builder: (context, state) {
-            return Text(
+          builder: (context, state) => Text(
               'Запись от '
               '${context.read<NoteDetailsBloc>().state.date.dateOnly()}',
-            );
-          },
+            ),
         ),
       ),
       body: GestureDetector(
@@ -133,22 +128,19 @@ class _DefaultBodyWidget extends StatelessWidget {
         ),
       ),
     );
-  }
 }
 
 class _DateNTimeRow extends StatelessWidget {
   const _DateNTimeRow();
 
   @override
-  Widget build(BuildContext context) {
-    return const Row(
+  Widget build(BuildContext context) => const Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(child: _DatePickerWidget()),
         Expanded(child: _TimePickerWidget()),
       ],
     );
-  }
 }
 
 class _DatePickerWidget extends StatefulWidget {
@@ -163,7 +155,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
     context.read<NoteDetailsBloc>().add(NoteDetailsEvent$DateChange(date));
   }
 
-  void selectDate(DateTime selectedDate) async {
+  Future<void> selectDate(DateTime selectedDate) async {
     final DateTime? date = await showDatePicker(
       context: context,
       initialDate: selectedDate,
@@ -183,8 +175,8 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
                 textButtonTheme: TextButtonThemeData(
                     style: TextButton.styleFrom(
                         foregroundColor:
-                            const Color.fromARGB(255, 180, 135, 218)))),
-            child: child);
+                            const Color.fromARGB(255, 180, 135, 218),),),),
+            child: child,);
       },
     );
     if (date != null) {
@@ -230,27 +222,23 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
         .add(NoteDetailsEvent$TimeChange(selectedTime));
   }
 
-  void setTime(TimeOfDay selectedTime) async {
+  Future<void> setTime(TimeOfDay selectedTime) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
         context: context,
         initialTime: selectedTime,
         initialEntryMode: TimePickerEntryMode.dial,
-        builder: (BuildContext context, Widget? child) {
-          return MediaQuery(
+        builder: (BuildContext context, Widget? child) => MediaQuery(
             data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
             child: child!,
-          );
-        });
+          ),);
     if (timeOfDay != null) {
       _updateTime(timeOfDay);
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
-      builder: (context, state) {
-        return Column(
+  Widget build(BuildContext context) => BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
+      builder: (context, state) => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
@@ -265,12 +253,10 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
                 'Выбрать время',
                 style: TextStyle(fontSize: 12),
               ),
-            )
+            ),
           ],
-        );
-      },
+        ),
     );
-  }
 }
 
 class _MoodFacesRow extends StatefulWidget {
@@ -286,27 +272,23 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
+  Widget build(BuildContext context) => Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(
         5,
         (index) {
           final mood = MoodsStorage.values[index];
           return BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
-            builder: (context, state) {
-              return MoodIcon(
+            builder: (context, state) => MoodIcon(
                 iconPath: mood.selectedIcon,
                 unselectedPath: mood.unSelectedIcon,
                 onTap: () => selectMood(index),
                 selected: mood.id == state.moodId,
-              );
-            },
+              ),
           );
         },
       ),
     );
-  }
 }
 
 class _SleepRowWidget extends StatefulWidget {
@@ -341,14 +323,12 @@ class _SleepRowWidgetState extends State<_SleepRowWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
+  Widget build(BuildContext context) => Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
           child: BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
-            builder: (context, state) {
-              return DropdownMenu<GradeLabel>(
+            builder: (context, state) => DropdownMenu<GradeLabel>(
                 initialSelection: GradeLabel.values[state.sleepId],
                 onSelected: _onSleepSelect,
                 label: const Text('Оценка сна'),
@@ -359,14 +339,11 @@ class _SleepRowWidgetState extends State<_SleepRowWidget> {
                 ),
                 textStyle: const TextStyle(fontSize: 15),
                 dropdownMenuEntries: GradeLabel.values
-                    .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
-                  return DropdownMenuEntry<GradeLabel>(
+                    .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) => DropdownMenuEntry<GradeLabel>(
                     value: grade,
                     label: grade.title,
-                  );
-                }).toList(),
-              );
-            },
+                  ),).toList(),
+              ),
           ),
         ),
         Expanded(
@@ -383,7 +360,6 @@ class _SleepRowWidgetState extends State<_SleepRowWidget> {
         ),
       ],
     );
-  }
 }
 
 class _FoodRowWidget extends StatefulWidget {
@@ -418,14 +394,12 @@ class _FoodRowWidgetState extends State<_FoodRowWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
+  Widget build(BuildContext context) => Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
           child: BlocBuilder<NoteDetailsBloc, NoteDetailsState>(
-            builder: (context, state) {
-              return DropdownMenu<GradeLabel>(
+            builder: (context, state) => DropdownMenu<GradeLabel>(
                 initialSelection: GradeLabel.values[state.foodId],
                 onSelected: _onFoodSelect,
                 label: const Text('Оценка еды'),
@@ -437,15 +411,12 @@ class _FoodRowWidgetState extends State<_FoodRowWidget> {
                 textStyle: const TextStyle(fontSize: 15),
                 dropdownMenuEntries:
                     GradeLabel.values.map<DropdownMenuEntry<GradeLabel>>(
-                  (GradeLabel grade) {
-                    return DropdownMenuEntry<GradeLabel>(
+                  (GradeLabel grade) => DropdownMenuEntry<GradeLabel>(
                       value: grade,
                       label: grade.title,
-                    );
-                  },
+                    ),
                 ).toList(),
-              );
-            },
+              ),
           ),
         ),
         Expanded(
@@ -462,7 +433,6 @@ class _FoodRowWidgetState extends State<_FoodRowWidget> {
         ),
       ],
     );
-  }
 }
 
 class _DeleteButton extends StatelessWidget {
@@ -473,8 +443,7 @@ class _DeleteButton extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
+  Widget build(BuildContext context) => Padding(
       padding: const EdgeInsets.symmetric(horizontal: 100),
       child: OutlinedButton(
         style: AppButtonStyle.deleteNoteButtonStyle,
@@ -482,7 +451,6 @@ class _DeleteButton extends StatelessWidget {
         child: const Text('Удалить запись', style: TextStyle(fontSize: 15)),
       ),
     );
-  }
 }
 
 class _SaveButton extends StatelessWidget {
@@ -493,10 +461,8 @@ class _SaveButton extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return IconButton(
+  Widget build(BuildContext context) => IconButton(
       onPressed: () => _onSaveButton(context),
       icon: const Icon(Icons.save),
     );
-  }
 }

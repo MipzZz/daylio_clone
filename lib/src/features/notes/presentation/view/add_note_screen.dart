@@ -1,14 +1,12 @@
-import 'dart:ui';
-
 import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
 import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
 import 'package:daylio_clone/src/core/utils/extensions/time_of_day_extension.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_bloc.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_event.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_state.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/build_blur.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/mood_icon.dart';
@@ -37,7 +35,7 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
       case AddNoteState$Created():
         Navigator.of(context).pop();
       case final AddNoteState$Error errorState:
-        showDialog(
+        showDialog<AlertFailureDialogWidget>(
           context: context,
           builder: (_) => AlertFailureDialogWidget(
             message: errorState.message,
@@ -70,7 +68,7 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
                     child: CircularProgressIndicator(),
                   ),
                 ),
-              ]),
+              ],),
             _ => const _BodyWidget(),
           },
         ),
@@ -104,7 +102,7 @@ class _BodyWidget extends StatelessWidget {
                 _FoodRowWidget(),
                 SizedBox(height: 35),
                 _AddNoteButton(),
-                //ToDo Добавить кнопку сброса
+                // TODO(MipZ): Добавить кнопку сброса
               ],
             ),
           ),
@@ -137,7 +135,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
     context.read<AddNoteBloc>().add(AddNoteEvent$DateChange(date));
   }
 
-  void selectDate() async {
+  Future<void> selectDate() async {
     final DateTime? date = await showDatePicker(
       context: context,
       initialDate: context.read<AddNoteBloc>().state.date,
@@ -157,8 +155,8 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
                 textButtonTheme: TextButtonThemeData(
                     style: TextButton.styleFrom(
                         foregroundColor:
-                            const Color.fromARGB(255, 180, 135, 218)))),
-            child: child);
+                            const Color.fromARGB(255, 180, 135, 218),),),),
+            child: child,);
       },
     );
     if (date != null) {
@@ -178,7 +176,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
             const SizedBox(height: 10),
             OutlinedButton(
               style: AppButtonStyle.buttonDateTimeStyle,
-              onPressed: () => selectDate(),
+              onPressed: selectDate,
               child: const Text(
                 'Выбрать дату',
                 style: TextStyle(fontSize: 12),
@@ -203,7 +201,7 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
     context.read<AddNoteBloc>().add(AddNoteEvent$TimeChange(timeOfDay));
   }
 
-  void setTime() async {
+  Future<void> setTime() async {
     final TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
       initialTime: context.read<AddNoteBloc>().state.date.toTimeOfDay(),
@@ -235,7 +233,7 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
                 'Выбрать время',
                 style: TextStyle(fontSize: 12),
               ),
-            )
+            ),
           ],
         ),
       );
@@ -309,7 +307,7 @@ class _SleepRowWidget extends StatelessWidget {
                         (GradeLabel grade) => DropdownMenuEntry<GradeLabel>(
                               value: grade,
                               label: grade.title,
-                            ))
+                            ),)
                     .toList(),
               ),
             ),
@@ -365,7 +363,7 @@ class _FoodRowWidget extends StatelessWidget {
                         (GradeLabel grade) => DropdownMenuEntry<GradeLabel>(
                               value: grade,
                               label: grade.title,
-                            ))
+                            ),)
                     .toList(),
               ),
             ),
@@ -388,7 +386,7 @@ class _FoodRowWidget extends StatelessWidget {
 class _AddNoteButton extends StatelessWidget {
   const _AddNoteButton();
 
-  void _onAddButton(BuildContext context) async {
+  Future<void> _onAddButton(BuildContext context) async {
     context.read<AddNoteBloc>().add(AddNoteEvent$Submit());
   }
 

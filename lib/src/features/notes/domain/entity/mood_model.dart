@@ -7,12 +7,6 @@ part 'mood_model.g.dart';
 
 @JsonSerializable()
 class MoodModel {
-  final int id;
-  final String title;
-  final String selectedIcon;
-  final String unSelectedIcon;
-  @ColorConverter()
-  final Color color;
 
   MoodModel({
     required this.id,
@@ -22,26 +16,30 @@ class MoodModel {
     required this.color,
   });
 
+  factory MoodModel.fromJson(Map<String, dynamic> json) =>
+      _$MoodModelFromJson(json);
+
   MoodModel.empty()
       : this(
             id: 0,
             title: '',
             selectedIcon: '',
             unSelectedIcon: '',
-            color: Colors.white);
+            color: Colors.white,);
 
-  factory MoodModel.fromJson(Map<String, dynamic> json) =>
-      _$MoodModelFromJson(json);
-
-  factory MoodModel.fromEnum(MoodsStorage moodEnum) {
-    return MoodModel(
+  factory MoodModel.fromEnum(MoodsStorage moodEnum) => MoodModel(
       id: moodEnum.id,
       title: moodEnum.title,
       selectedIcon: moodEnum.selectedIcon,
       unSelectedIcon: moodEnum.unSelectedIcon,
       color: moodEnum.color,
     );
-  }
+  final int id;
+  final String title;
+  final String selectedIcon;
+  final String unSelectedIcon;
+  @ColorConverter()
+  final Color color;
 
   Map<String, dynamic> toJson() => _$MoodModelToJson(this);
 
@@ -51,13 +49,11 @@ class MoodModel {
     String? selectedIcon,
     String? unSelectedIcon,
     Color? color,
-  }) {
-    return MoodModel(
+  }) => MoodModel(
       id: id ?? this.id,
       title: title ?? this.title,
       selectedIcon: selectedIcon ?? this.selectedIcon,
       unSelectedIcon: unSelectedIcon ?? this.unSelectedIcon,
       color: color ?? this.color,
     );
-  }
 }

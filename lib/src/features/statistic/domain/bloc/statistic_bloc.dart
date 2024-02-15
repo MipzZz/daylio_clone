@@ -9,20 +9,20 @@ part 'statistic_event.dart';
 part 'statistic_state.dart';
 
 class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
-  final NotesRepository _notesRepository;
 
   StatisticBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
         super(StatisticState$Initial()) {
     on<StatisticEvent>(
       (event, emitter) => switch (event) {
-        StatisticEvent$Calculate event => _calculateStatistic(event, emitter),
+        final StatisticEvent$Calculate event => _calculateStatistic(event, emitter),
       },
     );
     _notesRepository.notesStream.listen(
       (notes) => add(StatisticEvent$Calculate()),
     );
   }
+  final NotesRepository _notesRepository;
 
   Future<void> _calculateStatistic(
     StatisticEvent event,
@@ -33,7 +33,7 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
         notesCount: state.notesCount,
         averageMood: state.averageMood,
         activityCount: state.activityCount,
-      ));
+      ),);
 
       final notes = await _notesRepository.readNotes();
       final averageMood = _calculateAverageMood(notes);
@@ -43,14 +43,14 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
         notesCount: notes.length,
         averageMood: averageMood,
         activityCount: activityCount,
-      ));
+      ),);
     } on Object catch (e, s) {
       emitter(StatisticState$Error(
         notesCount: state.notesCount,
         averageMood: state.averageMood,
         activityCount: state.activityCount,
         message: 'При обновлении статистики произошла ошибка',
-      ));
+      ),);
       Error.throwWithStackTrace(e, s);
     }
   }
@@ -63,14 +63,7 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
     return 5 - averageMood;
   }
 
-  //TODO доработать подсчет активностей
+  // TODO(MipZ): доработать подсчет активностей
 
-  int _activityCount(Iterable<NoteModel> notes) {
-    var counter = 0;
-    for (var note in notes) {
-      if (note.food != null) counter += 1;
-      if (note.sleep != null) counter += 1;
-    }
-    return counter;
-  }
+  int _activityCount(Iterable<NoteModel> notes) => notes.length * 2;
 }

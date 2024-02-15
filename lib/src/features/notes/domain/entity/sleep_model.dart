@@ -7,12 +7,6 @@ part 'sleep_model.g.dart';
 
 @JsonSerializable()
 class SleepModel {
-  final int id;
-  final String title;
-  final String icon;
-  final String description;
-  @ColorConverter()
-  final Color color;
 
   SleepModel({
     required this.id,
@@ -34,19 +28,23 @@ class SleepModel {
   factory SleepModel.fromJson(Map<String, dynamic> json) =>
       _$SleepModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$SleepModelToJson(this);
-
   factory SleepModel.fromGradeAndDesc({
     required int id,
     required String description,
-  }) {
-    return SleepModel(
+  }) => SleepModel(
         id: id,
         title: GradeLabel.values[id].title,
         icon: '',
         description: description,
-        color: GradeLabel.values[id].color);
-  }
+        color: GradeLabel.values[id].color,);
+  final int id;
+  final String title;
+  final String icon;
+  final String description;
+  @ColorConverter()
+  final Color color;
+
+  Map<String, dynamic> toJson() => _$SleepModelToJson(this);
 
   SleepModel copyWith({
     int? id,
@@ -54,13 +52,11 @@ class SleepModel {
     String? icon,
     String? description,
     Color? color,
-  }) {
-    return SleepModel(
+  }) => SleepModel(
       id: id ?? this.id,
       title: title ?? this.title,
       icon: icon ?? this.icon,
       description: description ?? this.description,
       color: color ?? this.color,
     );
-  }
 }

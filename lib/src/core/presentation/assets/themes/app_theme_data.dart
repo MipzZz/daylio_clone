@@ -1,6 +1,5 @@
+import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:flutter/material.dart';
-
-import '../colors/app_colors.dart';
 
 abstract class AppThemeData {
   static final darkMainTheme = ThemeData(
@@ -33,5 +32,4 @@ abstract class AppThemeData {
     ),
     textTheme: Typography.whiteRedmond,
   );
-
 }

@@ -11,8 +11,7 @@ class AlertFailureDialogWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
+  Widget build(BuildContext context) => AlertDialog(
       backgroundColor: Colors.black,
       title: const Text('Ошибочка'),
       content: Text(message),
@@ -26,5 +25,4 @@ class AlertFailureDialogWidget extends StatelessWidget {
         ),
       ],
     );
-  }
 }

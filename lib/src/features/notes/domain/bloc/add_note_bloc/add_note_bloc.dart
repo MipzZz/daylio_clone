@@ -1,37 +1,37 @@
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_event.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_state.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/food_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_event.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
-  final NotesRepository _notesRepository;
 
   AddNoteBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
         super(AddNoteState$Idle(date: DateTime.now())) {
     on<AddNoteEvent>(
       (event, emitter) => switch (event) {
-        AddNoteEvent$DateChange event => _onDateChange(event, emitter),
-        AddNoteEvent$TimeChange event => _onTimeChange(event, emitter),
-        AddNoteEvent$MoodChange event => _onMoodChange(event, emitter),
-        AddNoteEvent$SleepGradeChange event =>
+        final AddNoteEvent$DateChange event => _onDateChange(event, emitter),
+        final AddNoteEvent$TimeChange event => _onTimeChange(event, emitter),
+        final AddNoteEvent$MoodChange event => _onMoodChange(event, emitter),
+        final AddNoteEvent$SleepGradeChange event =>
           _onSleepGradeChange(event, emitter),
-        AddNoteEvent$SleepDescriptionChange event =>
+        final AddNoteEvent$SleepDescriptionChange event =>
           _onSleepDescriptionChange(event, emitter),
-        AddNoteEvent$FoodGradeChange event => _onFoodGradeChange(event, emitter),
-        AddNoteEvent$FoodDescriptionChange event =>
+        final AddNoteEvent$FoodGradeChange event => _onFoodGradeChange(event, emitter),
+        final AddNoteEvent$FoodDescriptionChange event =>
           _onFoodDescriptionChange(event, emitter),
-        AddNoteEvent$Submit event => _onAddNoteSubmit(event, emitter),
+        final AddNoteEvent$Submit event => _onAddNoteSubmit(event, emitter),
       },
       transformer: sequential(),
     );
   }
+  final NotesRepository _notesRepository;
 
   void _onDateChange(
     AddNoteEvent$DateChange event,
@@ -129,7 +129,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
             sleepId: state.sleepId,
             sleepDescription: state.sleepDescription,
             foodId: state.foodId,
-            foodDescription: state.foodDescription),
+            foodDescription: state.foodDescription,),
       );
 
       final note = NoteModel(
@@ -140,7 +140,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
           description: state.sleepDescription,
         ),
         food: FoodModel.fromGradeAndDesc(
-            id: state.foodId, description: state.foodDescription),
+            id: state.foodId, description: state.foodDescription,),
         date: state.date,
       );
       await _notesRepository.saveNote(note);
@@ -152,7 +152,8 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
             sleepId: state.sleepId,
             sleepDescription: state.sleepDescription,
             foodId: state.foodId,
-            foodDescription: state.foodDescription), //ToDo можно сделать поля null
+            foodDescription: state.foodDescription,), // TODO(MipZ): Can make null.
+
       );
     } on Object{
       emitter(
@@ -177,7 +178,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
         sleepDescription: state.sleepDescription,
         foodId: state.foodId,
         foodDescription: state.foodDescription,
-      ));
+      ),);
     }
   }
 }

@@ -4,8 +4,8 @@ import 'package:daylio_clone/src/features/debug/presentation/view/debug_screen.d
 import 'package:daylio_clone/src/features/main/presentation/view/main_screen.dart';
 import 'package:daylio_clone/src/features/more/presentation/view/about_screen.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_event.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_bloc.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_event.dart';
 import 'package:daylio_clone/src/features/notes/presentation/view/add_note_screen.dart';
 import 'package:daylio_clone/src/features/notes/presentation/view/note_details_screen.dart';
 import 'package:daylio_clone/src/features/statistic/domain/bloc/statistic_bloc.dart';
@@ -32,8 +32,7 @@ class _AppViewState extends State<AppView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
+  Widget build(BuildContext context) => MultiProvider(
       providers: [
         Provider(
           create: (context) => _notesRepository,
@@ -65,18 +64,13 @@ class _AppViewState extends State<AppView> {
           '/about': (context) => const AboutScreen(),
         },
         initialRoute: '/',
-        onGenerateRoute: (RouteSettings settings) {
-          return MaterialPageRoute(
-            builder: (context) {
-              return const Scaffold(
+        onGenerateRoute: (RouteSettings settings) => MaterialPageRoute(
+            builder: (context) => const Scaffold(
                 body: Center(
                   child: Text('Произошла ошибка навигации'),
                 ),
-              );
-            },
-          );
-        },
+              ),
+          ),
       ),
     );
-  }
 }

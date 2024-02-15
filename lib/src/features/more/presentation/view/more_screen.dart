@@ -4,13 +4,11 @@ class MoreWidget extends StatelessWidget{
   const MoreWidget({super.key});
 
   Future<void> _onAbout(BuildContext context) async {
-    Navigator.pushNamed(context, '/about');
+    await Navigator.pushNamed(context, '/about');
   }
 
   @override
-  Widget build(BuildContext context) {
-    //TODO Переделать верстку
-    return ListView(
+  Widget build(BuildContext context) => ListView(
       children: [
         const _MenuRowWidget(
           icon: Icons.password,
@@ -26,26 +24,23 @@ class MoreWidget extends StatelessWidget{
           iconColor: Colors.white,
           textColor: Colors.white,
           onTap: () => _onAbout(context),
-        )
+        ),
       ],
     );
-  }
 }
 
 class _MenuRowWidget extends StatelessWidget {
+
+  const _MenuRowWidget({required this.title, required this.icon});
   final String title;
   final IconData icon;
 
-  const _MenuRowWidget({super.key, required this.title, required this.icon});
-
   @override
-  Widget build(BuildContext context) {
-    return ListTile(
+  Widget build(BuildContext context) => ListTile(
       leading: Icon(icon),
       title: Text(title),
       iconColor: Colors.white,
       textColor: Colors.white,
       onTap: () {},
     );
-  }
 }

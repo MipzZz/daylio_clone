@@ -5,43 +5,43 @@ sealed class NoteDetailsEvent {
 }
 
 final class NoteDetailsEvent$LoadNote implements NoteDetailsEvent {
-  final int noteId;
   const NoteDetailsEvent$LoadNote(this.noteId);
+  final int noteId;
 }
 
 final class NoteDetailsEvent$DateChange implements NoteDetailsEvent {
-  final DateTime date;
   const NoteDetailsEvent$DateChange(this.date);
+  final DateTime date;
 }
 
 final class NoteDetailsEvent$TimeChange implements NoteDetailsEvent {
-  final TimeOfDay time;
   const NoteDetailsEvent$TimeChange(this.time);
+  final TimeOfDay time;
 }
 
 final class NoteDetailsEvent$MoodChange implements NoteDetailsEvent {
-  final int moodId;
   const NoteDetailsEvent$MoodChange(this.moodId);
+  final int moodId;
 }
 
 final class NoteDetailsEvent$SleepGradeChange implements NoteDetailsEvent {
-  final int sleepId;
   const NoteDetailsEvent$SleepGradeChange(this.sleepId);
+  final int sleepId;
 }
 
 final class NoteDetailsEvent$SleepDescriptionChange implements NoteDetailsEvent {
-  final String sleepDescription;
   const NoteDetailsEvent$SleepDescriptionChange(this.sleepDescription);
+  final String sleepDescription;
 }
 
 final class NoteDetailsEvent$FoodGradeChange implements NoteDetailsEvent {
-  final int foodId;
   const NoteDetailsEvent$FoodGradeChange(this.foodId);
+  final int foodId;
 }
 
 final class NoteDetailsEvent$FoodDescriptionChange implements NoteDetailsEvent {
-  final String foodDescription;
   const NoteDetailsEvent$FoodDescriptionChange(this.foodDescription);
+  final String foodDescription;
 }
 
 final class NoteDetailsEvent$Save implements NoteDetailsEvent {

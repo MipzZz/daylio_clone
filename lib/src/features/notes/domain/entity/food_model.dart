@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/field_converter/color_converter.dart';
@@ -9,19 +8,13 @@ part 'food_model.g.dart';
 
 @JsonSerializable()
 class FoodModel {
-  final int id;
-  final String title;
-  final String icon;
-  final String description;
-  @ColorConverter()
-  final Color color;
 
   FoodModel(
       {required this.id,
       required this.title,
       required this.icon,
       required this.description,
-      required this.color});
+      required this.color,});
 
   FoodModel.empty()
       : this(id: 0, title: '', icon: '', description: '', color: Colors.white);
@@ -29,17 +22,21 @@ class FoodModel {
   factory FoodModel.fromGradeAndDesc({
     required int id,
     required String description,
-  }) {
-    return FoodModel(
+  }) => FoodModel(
         id: id,
         title: GradeLabel.values[id].title,
         icon: '',
         description: description,
-        color: GradeLabel.values[id].color);
-  }
+        color: GradeLabel.values[id].color,);
 
   factory FoodModel.fromJson(Map<String, dynamic> json) =>
       _$FoodModelFromJson(json);
+  final int id;
+  final String title;
+  final String icon;
+  final String description;
+  @ColorConverter()
+  final Color color;
 
   Map<String, dynamic> toJson() => _$FoodModelToJson(this);
 
@@ -49,13 +46,11 @@ class FoodModel {
     String? icon,
     String? description,
     Color? color,
-  }) {
-    return FoodModel(
+  }) => FoodModel(
       id: id ?? this.id,
       title: title ?? this.title,
       icon: icon ?? this.icon,
       description: description ?? this.description,
       color: color ?? this.color,
     );
-  }
 }

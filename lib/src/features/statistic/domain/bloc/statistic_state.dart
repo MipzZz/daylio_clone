@@ -16,43 +16,36 @@ class StatisticState$Initial extends StatisticState {
 }
 
 class StatisticState$Data extends StatisticState {
-  @override
-  final int notesCount;
-  @override
-  final double averageMood;
-  @override
-  final int activityCount;
 
   StatisticState$Data({
     required this.notesCount,
     required this.averageMood,
     required this.activityCount,
   });
-}
-
-class StatisticState$Progress extends StatisticState {
   @override
   final int notesCount;
   @override
   final double averageMood;
   @override
   final int activityCount;
+}
+
+class StatisticState$Progress extends StatisticState {
 
   StatisticState$Progress({
     required this.notesCount,
     required this.averageMood,
     required this.activityCount,
   });
-}
-
-class StatisticState$Error extends StatisticState {
   @override
   final int notesCount;
   @override
   final double averageMood;
   @override
   final int activityCount;
-  final String message;
+}
+
+class StatisticState$Error extends StatisticState {
 
   StatisticState$Error({
     required this.notesCount,
@@ -60,5 +53,11 @@ class StatisticState$Error extends StatisticState {
     required this.activityCount,
     required this.message,
   });
+  @override
+  final int notesCount;
+  @override
+  final double averageMood;
+  @override
+  final int activityCount;
+  final String message;
 }
-

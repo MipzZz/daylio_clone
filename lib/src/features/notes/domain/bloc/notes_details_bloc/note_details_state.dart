@@ -50,26 +50,10 @@ final class NoteDetailsState$Initial implements NoteDetailsState {
     int? moodId,
     String? sleepDescription,
     int? sleepId,
-  }) {
-    return NoteDetailsState$Initial();
-  }
+  }) => NoteDetailsState$Initial();
 }
 
 final class NoteDetailsState$Progress implements NoteDetailsState {
-  @override
-  final NoteModel note;
-  @override
-  final DateTime date;
-  @override
-  final int moodId;
-  @override
-  final int sleepId;
-  @override
-  final String sleepDescription;
-  @override
-  final int foodId;
-  @override
-  final String foodDescription;
 
   const NoteDetailsState$Progress({
     required this.note,
@@ -80,6 +64,20 @@ final class NoteDetailsState$Progress implements NoteDetailsState {
     required this.foodId,
     required this.foodDescription,
   });
+  @override
+  final NoteModel note;
+  @override
+  final DateTime date;
+  @override
+  final int moodId;
+  @override
+  final int sleepId;
+  @override
+  final String sleepDescription;
+  @override
+  final int foodId;
+  @override
+  final String foodDescription;
 
   @override
   NoteDetailsState$Progress copyWith({
@@ -90,8 +88,7 @@ final class NoteDetailsState$Progress implements NoteDetailsState {
     String? sleepDescription,
     int? foodId,
     String? foodDescription,
-  }) {
-    return NoteDetailsState$Progress(
+  }) => NoteDetailsState$Progress(
       note: note ?? this.note,
       date: date ?? this.date,
       moodId: moodId ?? this.moodId,
@@ -100,24 +97,9 @@ final class NoteDetailsState$Progress implements NoteDetailsState {
       foodId: foodId ?? this.foodId,
       foodDescription: foodDescription ?? this.foodDescription,
     );
-  }
 }
 
 final class NoteDetailsState$Data implements NoteDetailsState {
-  @override
-  final NoteModel note;
-  @override
-  final DateTime date;
-  @override
-  final int moodId;
-  @override
-  final int sleepId;
-  @override
-  final String sleepDescription;
-  @override
-  final int foodId;
-  @override
-  final String foodDescription;
 
   const NoteDetailsState$Data({
     required this.note,
@@ -128,30 +110,6 @@ final class NoteDetailsState$Data implements NoteDetailsState {
     required this.foodId,
     required this.foodDescription,
   });
-
-  @override
-  NoteDetailsState$Data copyWith({
-    NoteModel? note,
-    DateTime? date,
-    int? moodId,
-    int? sleepId,
-    String? sleepDescription,
-    int? foodId,
-    String? foodDescription,
-  }) {
-    return NoteDetailsState$Data(
-      note: note ?? this.note,
-      date: date ?? this.date,
-      moodId: moodId ?? this.moodId,
-      sleepId: sleepId ?? this.sleepId,
-      sleepDescription: sleepDescription ?? this.sleepDescription,
-      foodId: foodId ?? this.foodId,
-      foodDescription: foodDescription ?? this.foodDescription,
-    );
-  }
-}
-
-final class NoteDetailsState$Completed implements NoteDetailsState {
   @override
   final NoteModel note;
   @override
@@ -167,6 +125,28 @@ final class NoteDetailsState$Completed implements NoteDetailsState {
   @override
   final String foodDescription;
 
+  @override
+  NoteDetailsState$Data copyWith({
+    NoteModel? note,
+    DateTime? date,
+    int? moodId,
+    int? sleepId,
+    String? sleepDescription,
+    int? foodId,
+    String? foodDescription,
+  }) => NoteDetailsState$Data(
+      note: note ?? this.note,
+      date: date ?? this.date,
+      moodId: moodId ?? this.moodId,
+      sleepId: sleepId ?? this.sleepId,
+      sleepDescription: sleepDescription ?? this.sleepDescription,
+      foodId: foodId ?? this.foodId,
+      foodDescription: foodDescription ?? this.foodDescription,
+    );
+}
+
+final class NoteDetailsState$Completed implements NoteDetailsState {
+
   const NoteDetailsState$Completed({
     required this.note,
     required this.date,
@@ -176,6 +156,20 @@ final class NoteDetailsState$Completed implements NoteDetailsState {
     required this.foodId,
     required this.foodDescription,
   });
+  @override
+  final NoteModel note;
+  @override
+  final DateTime date;
+  @override
+  final int moodId;
+  @override
+  final int sleepId;
+  @override
+  final String sleepDescription;
+  @override
+  final int foodId;
+  @override
+  final String foodDescription;
 
   @override
   NoteDetailsState$Completed copyWith({
@@ -186,8 +180,7 @@ final class NoteDetailsState$Completed implements NoteDetailsState {
     String? sleepDescription,
     int? foodId,
     String? foodDescription,
-  }) {
-    return NoteDetailsState$Completed(
+  }) => NoteDetailsState$Completed(
       note: note ?? this.note,
       date: date ?? this.date,
       moodId: moodId ?? this.moodId,
@@ -196,10 +189,19 @@ final class NoteDetailsState$Completed implements NoteDetailsState {
       foodId: foodId ?? this.foodId,
       foodDescription: foodDescription ?? this.foodDescription,
     );
-  }
 }
 
 final class NoteDetailsState$Error implements NoteDetailsState {
+  const NoteDetailsState$Error({
+    this.note,
+    required this.date,
+    required this.moodId,
+    required this.sleepId,
+    required this.sleepDescription,
+    required this.foodId,
+    required this.foodDescription,
+    required this.message,
+  });
   @override
   final NoteModel? note;
   @override
@@ -215,16 +217,6 @@ final class NoteDetailsState$Error implements NoteDetailsState {
   @override
   final String foodDescription;
   final String message;
-  const NoteDetailsState$Error({
-    this.note,
-    required this.date,
-    required this.moodId,
-    required this.sleepId,
-    required this.sleepDescription,
-    required this.foodId,
-    required this.foodDescription,
-    required this.message,
-  });
 
   @override
   NoteDetailsState$Error copyWith({
@@ -236,8 +228,7 @@ final class NoteDetailsState$Error implements NoteDetailsState {
     int? foodId,
     String? foodDescription,
     String? message,
-  }) {
-    return NoteDetailsState$Error(
+  }) => NoteDetailsState$Error(
       note: note ?? this.note,
       date: date ?? this.date,
       moodId: moodId ?? this.moodId,
@@ -247,5 +238,4 @@ final class NoteDetailsState$Error implements NoteDetailsState {
       foodDescription: foodDescription ?? this.foodDescription,
       message: message ?? this.message,
     );
-  }
 }

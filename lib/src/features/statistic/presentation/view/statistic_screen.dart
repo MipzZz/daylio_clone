@@ -21,7 +21,7 @@ class StatisticWidget extends StatelessWidget {
             (statisticState.notesCount) > 2
                 ? const _DefaultBodyWidget()
                 : const _NotEnoughNotesWidget()
-          });
+          },);
 }
 
 class _FailureBody extends StatelessWidget {
@@ -113,7 +113,7 @@ class _NotesCountCard extends StatelessWidget {
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                   horizontalTitleGap: 7,
-                )
+                ),
               ],
             ),
           ),
@@ -150,7 +150,7 @@ class _AverageMoodCard extends StatelessWidget {
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                   horizontalTitleGap: 7,
-                )
+                ),
               ],
             ),
           ),
@@ -162,10 +162,8 @@ class _ActivityCountCard extends StatelessWidget {
   const _ActivityCountCard();
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<StatisticBloc, StatisticState>(
-      builder: (context, statisticState) {
-        return Card(
+  Widget build(BuildContext context) => BlocBuilder<StatisticBloc, StatisticState>(
+      builder: (context, statisticState) => Card(
           color: AppColors.listBackground,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -189,12 +187,10 @@ class _ActivityCountCard extends StatelessWidget {
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                   horizontalTitleGap: 7,
-                )
+                ),
               ],
             ),
           ),
-        );
-      },
+        ),
     );
-  }
 }
