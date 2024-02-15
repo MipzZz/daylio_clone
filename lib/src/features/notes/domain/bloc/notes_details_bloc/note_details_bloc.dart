@@ -6,39 +6,39 @@ import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_events.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_event.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class NoteDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
+class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
   final NotesRepository _notesRepository;
   late final NoteModel note;
 
   NoteDetailsBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
         super(NoteDetailsState$Initial()) {
-    on<NoteDetailsEvents>(
+    on<NoteDetailsEvent>(
       (event, emitter) => switch (event) {
-        NoteDetailsLoadNoteEvent() => _loadNote(event, emitter),
-        NoteDetailsDateChangeEvent() => _onDateChange(event, emitter),
-        NoteDetailsTimeChangeEvent() => _onTimeChange(event, emitter),
-        NoteDetailsMoodChangeEvent() => _onMoodChange(event, emitter),
-        NoteDetailsSleepChangeGradeEvent() =>
+        NoteDetailsEvent$LoadNote() => _loadNote(event, emitter),
+        NoteDetailsEvent$DateChange() => _onDateChange(event, emitter),
+        NoteDetailsEvent$TimeChange() => _onTimeChange(event, emitter),
+        NoteDetailsEvent$MoodChange() => _onMoodChange(event, emitter),
+        NoteDetailsEvent$SleepGradeChange() =>
           _onSleepGradeChange(event, emitter),
-        NoteDetailsSleepChangeDescriptionEvent() =>
+        NoteDetailsEvent$SleepDescriptionChange() =>
           _onSleepDescriptionChange(event, emitter),
-        NoteDetailsFoodChangeGradeEvent() => _onFoodGradeChange(event, emitter),
-        NoteDetailsFoodChangeDescriptionEvent() =>
+        NoteDetailsEvent$FoodGradeChange() => _onFoodGradeChange(event, emitter),
+        NoteDetailsEvent$FoodDescriptionChange() =>
           _onFoodDescriptionChange(event, emitter),
-        NoteDetailsSaveEvent() => _onSave(event, emitter),
-        NoteDetailsDeleteEvent() => _onDelete(event, emitter),
+        NoteDetailsEvent$Save() => _onSave(event, emitter),
+        NoteDetailsEvent$Delete() => _onDelete(event, emitter),
       },
       transformer: sequential(),
     );
   }
 
   Future<void> _loadNote(
-      NoteDetailsLoadNoteEvent event, Emitter<NoteDetailsState> emitter) async {
+      NoteDetailsEvent$LoadNote event, Emitter<NoteDetailsState> emitter) async {
     try {
       note = await _notesRepository.readNote(event.noteId);
       emitter(NoteDetailsState$Data(
@@ -66,7 +66,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
   }
 
   void _onDateChange(
-    NoteDetailsDateChangeEvent event,
+    NoteDetailsEvent$DateChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
     emitter(
@@ -81,7 +81,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
   }
 
   void _onTimeChange(
-    NoteDetailsTimeChangeEvent event,
+    NoteDetailsEvent$TimeChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
     emitter(
@@ -95,7 +95,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
   }
 
   void _onMoodChange(
-    NoteDetailsMoodChangeEvent event,
+    NoteDetailsEvent$MoodChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
     emitter(state.copyWith(
@@ -104,7 +104,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
   }
 
   void _onSleepGradeChange(
-    NoteDetailsSleepChangeGradeEvent event,
+    NoteDetailsEvent$SleepGradeChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
     emitter(state.copyWith(
@@ -113,7 +113,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
   }
 
   void _onSleepDescriptionChange(
-    NoteDetailsSleepChangeDescriptionEvent event,
+    NoteDetailsEvent$SleepDescriptionChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
     emitter(state.copyWith(
@@ -122,7 +122,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
   }
 
   void _onFoodGradeChange(
-    NoteDetailsFoodChangeGradeEvent event,
+    NoteDetailsEvent$FoodGradeChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
     emitter(state.copyWith(
@@ -131,7 +131,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
   }
 
   void _onFoodDescriptionChange(
-    NoteDetailsFoodChangeDescriptionEvent event,
+    NoteDetailsEvent$FoodDescriptionChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
     emitter(state.copyWith(
@@ -140,7 +140,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
   }
 
   Future<void> _onSave(
-    NoteDetailsSaveEvent event,
+    NoteDetailsEvent$Save event,
     Emitter<NoteDetailsState> emitter,
   ) async {
     try {
@@ -206,7 +206,7 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvents, NoteDetailsState> {
   }
 
   Future<void> _onDelete(
-    NoteDetailsDeleteEvent event,
+    NoteDetailsEvent$Delete event,
     Emitter<NoteDetailsState> emitter,
   ) async {
     try {

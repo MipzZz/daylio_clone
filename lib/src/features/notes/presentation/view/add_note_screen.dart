@@ -7,7 +7,7 @@ import 'package:daylio_clone/src/features/notes/data/repository/notes_repository
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_bloc.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_events.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_event.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_state.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/build_blur.dart';
@@ -36,7 +36,7 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
     switch (state) {
       case AddNoteState$Created():
         Navigator.of(context).pop();
-      case AddNoteState$Error errorState:
+      case final AddNoteState$Error errorState:
         showDialog(
           context: context,
           builder: (_) => AlertFailureDialogWidget(
@@ -49,88 +49,80 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => _addNoteBloc,
-      child: BlocConsumer<AddNoteBloc, AddNoteState>(
-        listener: _addNoteListener,
-        builder: (context, addNoteState) => switch (addNoteState) {
-          AddNoteState$Progress() => Stack(children: [
-              PopScope(
-                canPop: false, //Можно ли свайпнуть для возврата
-                child: AbsorbPointer(
-                  absorbing: true, //Состояние абсорба нажатий
-                  child: buildBlur(
-                    isLoading: true, //Состояние блюра
-                    child: const _BodyWidget(),
+  Widget build(BuildContext context) => BlocProvider(
+        create: (context) => _addNoteBloc,
+        child: BlocConsumer<AddNoteBloc, AddNoteState>(
+          listener: _addNoteListener,
+          builder: (context, addNoteState) => switch (addNoteState) {
+            AddNoteState$Progress() => Stack(children: [
+                PopScope(
+                  canPop: false, //Можно ли свайпнуть для возврата
+                  child: AbsorbPointer(
+                    absorbing: true, //Состояние абсорба нажатий
+                    child: buildBlur(
+                      isLoading: true, //Состояние блюра
+                      child: const _BodyWidget(),
+                    ),
                   ),
                 ),
-              ),
-              const Positioned(
-                child: Center(
-                  child: CircularProgressIndicator(),
+                const Positioned(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
-              ),
-            ]),
-          _ => const _BodyWidget(),
-        },
-      ),
-    );
-  }
+              ]),
+            _ => const _BodyWidget(),
+          },
+        ),
+      );
 }
 
 class _BodyWidget extends StatelessWidget {
   const _BodyWidget();
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Новая запись'),
-      ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 50,
-          ),
-          child: ListView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            children: const [
-              _DateNTimeRow(),
-              SizedBox(height: 30),
-              _MoodFacesRow(),
-              SizedBox(height: 30),
-              _SleepRowWidget(),
-              SizedBox(height: 50),
-              _FoodRowWidget(),
-              SizedBox(height: 35),
-              _AddNoteButton(),
-              //ToDo Добавить кнопку сброса
-            ],
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Новая запись'),
+        ),
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 50,
+            ),
+            child: ListView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              children: const [
+                _DateNTimeRow(),
+                SizedBox(height: 30),
+                _MoodFacesRow(),
+                SizedBox(height: 30),
+                _SleepRowWidget(),
+                SizedBox(height: 50),
+                _FoodRowWidget(),
+                SizedBox(height: 35),
+                _AddNoteButton(),
+                //ToDo Добавить кнопку сброса
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }
-
-
 
 class _DateNTimeRow extends StatelessWidget {
   const _DateNTimeRow();
 
   @override
-  Widget build(BuildContext context) {
-    return const Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Expanded(child: _DatePickerWidget()),
-        Expanded(child: _TimePickerWidget()),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(child: _DatePickerWidget()),
+          Expanded(child: _TimePickerWidget()),
+        ],
+      );
 }
 
 class _DatePickerWidget extends StatefulWidget {
@@ -142,7 +134,7 @@ class _DatePickerWidget extends StatefulWidget {
 
 class _DatePickerWidgetState extends State<_DatePickerWidget> {
   void _saveDate(DateTime date) {
-    context.read<AddNoteBloc>().add(AddNoteDateChangeEvent(date));
+    context.read<AddNoteBloc>().add(AddNoteEvent$DateChange(date));
   }
 
   void selectDate() async {
@@ -175,28 +167,26 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AddNoteBloc, AddNoteState>(
-      builder: (context, state) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            state.date.dateOnly(),
-            style: const TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 10),
-          OutlinedButton(
-            style: AppButtonStyle.buttonDateTimeStyle,
-            onPressed: () => selectDate(),
-            child: const Text(
-              'Выбрать дату',
-              style: TextStyle(fontSize: 12),
+  Widget build(BuildContext context) => BlocBuilder<AddNoteBloc, AddNoteState>(
+        builder: (context, state) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              state.date.dateOnly(),
+              style: const TextStyle(fontSize: 16),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+            const SizedBox(height: 10),
+            OutlinedButton(
+              style: AppButtonStyle.buttonDateTimeStyle,
+              onPressed: () => selectDate(),
+              child: const Text(
+                'Выбрать дату',
+                style: TextStyle(fontSize: 12),
+              ),
+            ),
+          ],
+        ),
+      );
 }
 
 class _TimePickerWidget extends StatefulWidget {
@@ -210,7 +200,7 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
   TimeOfDay selectedTime = TimeOfDay.now();
 
   void _saveTime(TimeOfDay timeOfDay) {
-    context.read<AddNoteBloc>().add(AddNoteTimeChangeEvent(timeOfDay));
+    context.read<AddNoteBloc>().add(AddNoteEvent$TimeChange(timeOfDay));
   }
 
   void setTime() async {
@@ -218,12 +208,10 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
       context: context,
       initialTime: context.read<AddNoteBloc>().state.date.toTimeOfDay(),
       initialEntryMode: TimePickerEntryMode.dial,
-      builder: (BuildContext context, Widget? child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-          child: child!,
-        );
-      },
+      builder: (BuildContext context, Widget? child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+        child: child!,
+      ),
     );
     if (timeOfDay != null) {
       _saveTime(timeOfDay);
@@ -231,28 +219,26 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AddNoteBloc, AddNoteState>(
-      builder: (context, state) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            state.date.toTimeOfDay().timeOnly(),
-            style: const TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 10),
-          OutlinedButton(
-            style: AppButtonStyle.buttonDateTimeStyle,
-            onPressed: setTime,
-            child: const Text(
-              'Выбрать время',
-              style: TextStyle(fontSize: 12),
+  Widget build(BuildContext context) => BlocBuilder<AddNoteBloc, AddNoteState>(
+        builder: (context, state) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              state.date.toTimeOfDay().timeOnly(),
+              style: const TextStyle(fontSize: 16),
             ),
-          )
-        ],
-      ),
-    );
-  }
+            const SizedBox(height: 10),
+            OutlinedButton(
+              style: AppButtonStyle.buttonDateTimeStyle,
+              onPressed: setTime,
+              child: const Text(
+                'Выбрать время',
+                style: TextStyle(fontSize: 12),
+              ),
+            )
+          ],
+        ),
+      );
 }
 
 class _MoodFacesRow extends StatefulWidget {
@@ -264,7 +250,7 @@ class _MoodFacesRow extends StatefulWidget {
 
 class _MoodFacesRowState extends State<_MoodFacesRow> {
   void selectMood(int moodId) {
-    context.read<AddNoteBloc>().add(AddNoteMoodChangeEvent(moodId));
+    context.read<AddNoteBloc>().add(AddNoteEvent$MoodChange(moodId));
   }
 
   @override
@@ -294,22 +280,20 @@ class _SleepRowWidget extends StatelessWidget {
     if (gradeLabel == null) return;
     context
         .read<AddNoteBloc>()
-        .add(AddNoteSleepChangeGradeEvent(gradeLabel.index));
+        .add(AddNoteEvent$SleepGradeChange(gradeLabel.index));
   }
 
   void _onSleepDescriptionChanged(BuildContext context, String v) {
-    context.read<AddNoteBloc>().add(AddNoteSleepChangeDescriptionEvent(v));
+    context.read<AddNoteBloc>().add(AddNoteEvent$SleepDescriptionChange(v));
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Expanded(
-          child: BlocBuilder<AddNoteBloc, AddNoteState>(
-            builder: (context, addNoteState) {
-              return DropdownMenu(
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: BlocBuilder<AddNoteBloc, AddNoteState>(
+              builder: (context, addNoteState) => DropdownMenu(
                 initialSelection:
                     GradeLabel.values.elementAt(addNoteState.sleepId),
                 onSelected: (v) => _onSleepSelect(context, v),
@@ -321,30 +305,28 @@ class _SleepRowWidget extends StatelessWidget {
                 label: const Text('Оценка сна'),
                 textStyle: const TextStyle(fontSize: 15),
                 dropdownMenuEntries: GradeLabel.values
-                    .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
-                  return DropdownMenuEntry<GradeLabel>(
-                    value: grade,
-                    label: grade.title,
-                  );
-                }).toList(),
-              );
-            },
-          ),
-        ),
-        Expanded(
-          child: TextField(
-            onChanged: (v) => _onSleepDescriptionChanged(context, v),
-            maxLines: 1,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Описание сна',
+                    .map<DropdownMenuEntry<GradeLabel>>(
+                        (GradeLabel grade) => DropdownMenuEntry<GradeLabel>(
+                              value: grade,
+                              label: grade.title,
+                            ))
+                    .toList(),
+              ),
             ),
-            style: const TextStyle(fontSize: 10),
           ),
-        ),
-      ],
-    );
-  }
+          Expanded(
+            child: TextField(
+              onChanged: (v) => _onSleepDescriptionChanged(context, v),
+              maxLines: 1,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Описание сна',
+              ),
+              style: const TextStyle(fontSize: 10),
+            ),
+          ),
+        ],
+      );
 }
 
 class _FoodRowWidget extends StatelessWidget {
@@ -354,22 +336,20 @@ class _FoodRowWidget extends StatelessWidget {
     if (gradeLabel == null) return;
     context
         .read<AddNoteBloc>()
-        .add(AddNoteFoodChangeGradeEvent(gradeLabel.index));
+        .add(AddNoteEvent$FoodGradeChange(gradeLabel.index));
   }
 
   void _onFoodDescriptionChanged(BuildContext context, String v) {
-    context.read<AddNoteBloc>().add(AddNoteSleepChangeDescriptionEvent(v));
+    context.read<AddNoteBloc>().add(AddNoteEvent$SleepDescriptionChange(v));
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Expanded(
-          child: BlocBuilder<AddNoteBloc, AddNoteState>(
-            builder: (context, addNoteState) {
-              return DropdownMenu<GradeLabel>(
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: BlocBuilder<AddNoteBloc, AddNoteState>(
+              builder: (context, addNoteState) => DropdownMenu<GradeLabel>(
                 initialSelection:
                     GradeLabel.values.elementAt(addNoteState.foodId),
                 onSelected: (v) => _onFoodSelect(context, v),
@@ -381,42 +361,39 @@ class _FoodRowWidget extends StatelessWidget {
                 label: const Text('Оценка еды'),
                 textStyle: const TextStyle(fontSize: 15),
                 dropdownMenuEntries: GradeLabel.values
-                    .map<DropdownMenuEntry<GradeLabel>>((GradeLabel grade) {
-                  return DropdownMenuEntry<GradeLabel>(
-                    value: grade,
-                    label: grade.title,
-                  );
-                }).toList(),
-              );
-            },
-          ),
-        ),
-        Expanded(
-          child: TextField(
-            onChanged: (v) => _onFoodDescriptionChanged(context, v),
-            maxLines: 1,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Описание еды',
+                    .map<DropdownMenuEntry<GradeLabel>>(
+                        (GradeLabel grade) => DropdownMenuEntry<GradeLabel>(
+                              value: grade,
+                              label: grade.title,
+                            ))
+                    .toList(),
+              ),
             ),
-            style: const TextStyle(fontSize: 10),
           ),
-        ),
-      ],
-    );
-  }
+          Expanded(
+            child: TextField(
+              onChanged: (v) => _onFoodDescriptionChanged(context, v),
+              maxLines: 1,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Описание еды',
+              ),
+              style: const TextStyle(fontSize: 10),
+            ),
+          ),
+        ],
+      );
 }
 
 class _AddNoteButton extends StatelessWidget {
   const _AddNoteButton();
 
   void _onAddButton(BuildContext context) async {
-    context.read<AddNoteBloc>().add(AddNoteSubmitEvent());
+    context.read<AddNoteBloc>().add(AddNoteEvent$Submit());
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AddNoteBloc, AddNoteState>(
+  Widget build(BuildContext context) => BlocBuilder<AddNoteBloc, AddNoteState>(
       builder: (context, addNoteState) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 100),
         child: OutlinedButton(
@@ -429,5 +406,4 @@ class _AddNoteButton extends StatelessWidget {
         ),
       ),
     );
-  }
 }

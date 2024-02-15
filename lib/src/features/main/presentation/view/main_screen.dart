@@ -1,7 +1,6 @@
-import 'package:daylio_clone/src/core/data/source/local/db/drift_storage.dart';
-import 'package:daylio_clone/src/core/utils/extensions/string_extension.dart';
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
-import 'package:daylio_clone/src/features/more/presentation/more_widget.dart';
+import 'package:daylio_clone/src/core/utils/extensions/string_extension.dart';
+import 'package:daylio_clone/src/features/more/presentation/view/more_screen.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/notes_list_widget.dart';
 import 'package:daylio_clone/src/features/statistic/presentation/view/statistic_screen.dart';
 import 'package:flutter/material.dart';

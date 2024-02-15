@@ -1,26 +1,30 @@
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 
 sealed class NotesState {
-  List<NoteModel>? get notes;
+  List<NoteModel> get notes;
 
-  NotesState copyWith({
+  copyWith({
     List<NoteModel>? notes,
   });
 }
 
-final class NotesState$Initialize implements NotesState {
+final class NotesState$Initial implements NotesState {
   @override
   List<NoteModel> get notes => [];
 
   @override
-  NotesState copyWith({List<NoteModel>? notes}) => NotesState$Initialize();
+  copyWith({
+    List<NoteModel>? notes,
+  }) => NotesState$Initial();
 }
 
 final class NotesState$Data implements NotesState {
   @override
   final List<NoteModel> notes;
 
-  NotesState$Data({required this.notes});
+  const NotesState$Data({
+    required this.notes,
+  });
 
   @override
   NotesState$Data copyWith({
@@ -36,7 +40,9 @@ final class NotesState$Progress implements NotesState {
   @override
   final List<NoteModel> notes;
 
-  NotesState$Progress({required this.notes});
+  const NotesState$Progress({
+    required this.notes,
+  });
 
   @override
   NotesState$Progress copyWith({
@@ -48,13 +54,32 @@ final class NotesState$Progress implements NotesState {
   }
 }
 
+final class NotesState$Refreshing implements NotesState {
+  @override
+  final List<NoteModel> notes;
+
+  const NotesState$Refreshing({
+    required this.notes,
+  });
+
+  @override
+  NotesState$Refreshing copyWith({
+    List<NoteModel>? notes,
+  }) {
+    return NotesState$Refreshing(
+      notes: notes ?? this.notes,
+    );
+  }
+}
+
 final class NotesState$Completed implements NotesState {
   @override
   final List<NoteModel> notes;
 
-  NotesState$Completed({required this.notes});
+  const NotesState$Completed({
+    required this.notes,
+  });
 
-  @override
   NotesState$Completed copyWith({
     List<NoteModel>? notes,
   }) {
@@ -66,7 +91,7 @@ final class NotesState$Completed implements NotesState {
 
 final class NotesState$Error implements NotesState {
   @override
-  final List<NoteModel>? notes;
+  final List<NoteModel> notes;
   final String message;
 
   const NotesState$Error({

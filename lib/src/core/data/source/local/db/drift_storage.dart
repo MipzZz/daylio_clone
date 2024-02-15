@@ -27,30 +27,23 @@ LazyDatabase _openConnection() {
 class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
 
-  Future<List<NoteTableData>> readNotes() async {
-    return await select(noteTable).get();
-  }
+  Future<List<NoteTableData>> readNotes() async => select(noteTable).get();
 
-  Future<int> saveNote(NoteTableCompanion entity) async {
-    return await into(noteTable).insert(entity);
-  }
+  Future<int> saveNote(NoteTableCompanion entity) async =>
+      into(noteTable).insert(entity);
 
-  Future<int> deleteNote(int id) async {
-    return await (delete(noteTable)..where((tbl) => tbl.id.equals(id))).go();
-  }
+  Future<int> deleteNote(int id) async =>
+      (delete(noteTable)..where((tbl) => tbl.id.equals(id))).go();
 
-  Future<NoteTableData> readNote(int id) async {
-    return await (select(noteTable)..where((tbl) => tbl.id.equals(id)))
-        .getSingle();
-  }
+  Future<NoteTableData> readNote(int id) async =>
+      (select(noteTable)..where((tbl) => tbl.id.equals(id))).getSingle();
 
-  Future<bool> updateNote(NoteTableCompanion entity) async {
-    return await update(noteTable).replace(entity);
-  }
+  Future<bool> updateNote(NoteTableCompanion entity) async =>
+      update(noteTable).replace(entity);
 
-  Future createAllTablesAgain() async {
+  Future<void> createAllTablesAgain() async {
     final migrator = createMigrator();
-    for (var table in allTables) {
+    for (final table in allTables) {
       await customStatement('DROP TABLE ${table.actualTableName};');
       await migrator.createTable(table);
     }
@@ -61,17 +54,15 @@ class AppDb extends _$AppDb {
   final isInDebugMode = false;
 
   @override
-  MigrationStrategy get migration {
-    return MigrationStrategy(
-      beforeOpen: (openingDetails) async {
-        if (isInDebugMode) {
-          final m = createMigrator();
-          for (final table in allTables) {
-            await m.deleteTable(table.actualTableName);
-            await m.createTable(table);
+  MigrationStrategy get migration => MigrationStrategy(
+        beforeOpen: (openingDetails) async {
+          if (isInDebugMode) {
+            final m = createMigrator();
+            for (final table in allTables) {
+              await m.deleteTable(table.actualTableName);
+              await m.createTable(table);
+            }
           }
-        }
-      },
-    );
-  }
+        },
+      );
 }

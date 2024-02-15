@@ -9,3 +9,7 @@ final class NotesEvent$Update implements NotesEvent {
 
   NotesEvent$Update(this.notes);
 }
+
+final class NotesEvent$Refresh implements NotesEvent {
+  NotesEvent$Refresh();
+}

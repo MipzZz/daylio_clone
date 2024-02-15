@@ -3,22 +3,30 @@ import 'package:flutter/material.dart';
 class MoreWidget extends StatelessWidget{
   const MoreWidget({super.key});
 
+  Future<void> _onAbout(BuildContext context) async {
+    Navigator.pushNamed(context, '/about');
+  }
+
   @override
   Widget build(BuildContext context) {
+    //TODO Переделать верстку
     return ListView(
-      children: const [
-        _MenuRowWidget(
+      children: [
+        const _MenuRowWidget(
           icon: Icons.password,
           title: 'Изменить пин-код',
         ),
-        _MenuRowWidget(
+        const _MenuRowWidget(
           icon: Icons.mood,
           title: 'Редактировать настроения',
         ),
-        _MenuRowWidget(
-          icon: Icons.info,
-          title: 'О приложении',
-        ),
+        ListTile(
+          leading: const Icon(Icons.info_outline),
+          title: const Text('О приложении'),
+          iconColor: Colors.white,
+          textColor: Colors.white,
+          onTap: () => _onAbout(context),
+        )
       ],
     );
   }

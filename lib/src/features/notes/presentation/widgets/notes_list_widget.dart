@@ -1,14 +1,15 @@
+import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_event.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_bloc.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_state.dart';
-import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
-import 'package:daylio_clone/src/features/notes/presentation/widgets/build_blur.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:collection/collection.dart';
 
 class NotesListWidget extends StatefulWidget {
   const NotesListWidget({super.key});
@@ -18,6 +19,64 @@ class NotesListWidget extends StatefulWidget {
 }
 
 class _NotesListWidgetState extends State<NotesListWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<NotesBloc, NotesState>(
+        builder: (BuildContext context, NotesState state) {
+      return switch (state) {
+        NotesState$Progress() => const Center(
+            child: CircularProgressIndicator(),
+          ),
+        NotesState$Error errorState =>
+          _FailureBody(errorMessage: errorState.message),
+        _ => const _NotesListView(),
+      };
+    });
+  }
+}
+
+class _FailureBody extends StatelessWidget {
+  const _FailureBody({
+    required this.errorMessage,
+  });
+
+  final String errorMessage;
+
+  void _refreshList(BuildContext context) {
+    context.read<NotesBloc>().add(NotesEvent$Initialize());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            errorMessage,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 15),
+          ElevatedButton(
+            onPressed: () => _refreshList(context),
+            style: AppButtonStyle.addNoteButtonStyle,
+            child: const Text('Обновить'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NotesListView extends StatefulWidget {
+  const _NotesListView();
+
+  @override
+  State<_NotesListView> createState() => _NotesListViewState();
+}
+
+class _NotesListViewState extends State<_NotesListView> {
   final ScrollController _scrollController = ScrollController();
 
   void _onNoteTab(int? id) {
@@ -30,45 +89,40 @@ class _NotesListWidgetState extends State<NotesListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.jumpTo(
-          _scrollController.position.maxScrollExtent,
-        );
-      }
-    });
+    Future<void> refreshList() async {
+      context.read<NotesBloc>().add(NotesEvent$Refresh());
+      await context.read<NotesBloc>().stream.firstWhere(
+            (element) => switch (element) {
+              NotesState$Data() => true,
+              NotesState$Error() => true,
+              _ => false
+            },
+          );
+    }
 
     return BlocBuilder<NotesBloc, NotesState>(
-        builder: (BuildContext context, NotesState state) {
-      return switch (state) {
-        NotesState$Initialize() => const Center(
-            child: CircularProgressIndicator(),
-          ),
-        NotesState$Progress() => Stack(children: [
-            PopScope(
-              canPop: false, //Можно ли свайпнуть для возврата
-              child: AbsorbPointer(
-                absorbing: true, //Состояние абсорба нажатий
-                child: buildBlur(
-                  isLoading: true, //Состояние блюра
-                  child: const Center(), //TODO Отобразить список заметок
-                ),
-              ),
-            ),
-            const Positioned(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          ]),
-        NotesState$Data() => ListView.builder(
+      builder: (context, state) {
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 700),
+                curve: Curves.easeInOut);
+          }
+        });
+        final sortedNotes =
+            state.notes.sorted((a, b) => a.date.compareTo(b.date));
+        return RefreshIndicator(
+          onRefresh: refreshList,
+          child: ListView.builder(
             controller: _scrollController,
             shrinkWrap: true,
             reverse: true,
+            physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(top: 5),
             itemCount: state.notes.length,
             itemBuilder: (BuildContext context, int index) {
-              final note = state.notes[index];
+              final note = sortedNotes[index];
               final borderRadius = BorderRadius.only(
                 topLeft: index == state.notes.length - 1
                     ? const Radius.circular(20.0)
@@ -108,14 +162,13 @@ class _NotesListWidgetState extends State<NotesListWidget> {
                                 //Расстояние между иконко и информацией
                                 Expanded(
                                   child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      _MoodRow(note: note),
-                                      _SleepAndFoodRow(note: note),
-                                    ]
-                                  ),
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        _MoodRow(note: note),
+                                        _SleepAndFoodRow(note: note),
+                                      ]),
                                 ),
                               ],
                             ),
@@ -128,11 +181,9 @@ class _NotesListWidgetState extends State<NotesListWidget> {
               );
             },
           ),
-        NotesState$Error errorState =>
-          AlertFailureDialogWidget(message: errorState.message),
-        _ => Container(),
-      };
-    });
+        );
+      },
+    );
   }
 }
 

@@ -4,7 +4,7 @@ import 'package:daylio_clone/src/core/utils/extensions/time_of_day_extension.dar
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_events.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_event.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_state.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_details_bloc/note_details_bloc.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/alert_failure_dialog_widget.dart';
@@ -29,7 +29,7 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
   void initState() {
     _noteDetailsBloc = NoteDetailsBloc(
       notesRepository: context.read<NotesRepository>(),
-    )..add(NoteDetailsLoadNoteEvent(widget.noteId));
+    )..add(NoteDetailsEvent$LoadNote(widget.noteId));
     super.initState();
   }
 
@@ -160,7 +160,7 @@ class _DatePickerWidget extends StatefulWidget {
 
 class _DatePickerWidgetState extends State<_DatePickerWidget> {
   void _updateDate(DateTime date) {
-    context.read<NoteDetailsBloc>().add(NoteDetailsDateChangeEvent(date));
+    context.read<NoteDetailsBloc>().add(NoteDetailsEvent$DateChange(date));
   }
 
   void selectDate(DateTime selectedDate) async {
@@ -227,7 +227,7 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
   void _updateTime(TimeOfDay selectedTime) {
     context
         .read<NoteDetailsBloc>()
-        .add(NoteDetailsTimeChangeEvent(selectedTime));
+        .add(NoteDetailsEvent$TimeChange(selectedTime));
   }
 
   void setTime(TimeOfDay selectedTime) async {
@@ -282,7 +282,7 @@ class _MoodFacesRow extends StatefulWidget {
 
 class _MoodFacesRowState extends State<_MoodFacesRow> {
   void selectMood(int moodId) {
-    context.read<NoteDetailsBloc>().add(NoteDetailsMoodChangeEvent(moodId));
+    context.read<NoteDetailsBloc>().add(NoteDetailsEvent$MoodChange(moodId));
   }
 
   @override
@@ -331,13 +331,13 @@ class _SleepRowWidgetState extends State<_SleepRowWidget> {
     if (gradeLabel == null) return;
     context
         .read<NoteDetailsBloc>()
-        .add(NoteDetailsSleepChangeGradeEvent(gradeLabel.index));
+        .add(NoteDetailsEvent$SleepGradeChange(gradeLabel.index));
   }
 
   void _onSleepDescriptionChanged(String v) {
     context
         .read<NoteDetailsBloc>()
-        .add(NoteDetailsSleepChangeDescriptionEvent(v));
+        .add(NoteDetailsEvent$SleepDescriptionChange(v));
   }
 
   @override
@@ -408,13 +408,13 @@ class _FoodRowWidgetState extends State<_FoodRowWidget> {
     if (gradeLabel == null) return;
     context
         .read<NoteDetailsBloc>()
-        .add(NoteDetailsFoodChangeGradeEvent(gradeLabel.index));
+        .add(NoteDetailsEvent$FoodGradeChange(gradeLabel.index));
   }
 
   void _onFoodDescriptionChanged(String v) {
     context
         .read<NoteDetailsBloc>()
-        .add(NoteDetailsFoodChangeDescriptionEvent(v));
+        .add(NoteDetailsEvent$FoodDescriptionChange(v));
   }
 
   @override
@@ -469,7 +469,7 @@ class _DeleteButton extends StatelessWidget {
   const _DeleteButton();
 
   void _onDeleteButton(BuildContext context) {
-    context.read<NoteDetailsBloc>().add(const NoteDetailsDeleteEvent());
+    context.read<NoteDetailsBloc>().add(const NoteDetailsEvent$Delete());
   }
 
   @override
@@ -489,7 +489,7 @@ class _SaveButton extends StatelessWidget {
   const _SaveButton();
 
   void _onSaveButton(BuildContext context) {
-    context.read<NoteDetailsBloc>().add(const NoteDetailsSaveEvent());
+    context.read<NoteDetailsBloc>().add(const NoteDetailsEvent$Save());
   }
 
   @override

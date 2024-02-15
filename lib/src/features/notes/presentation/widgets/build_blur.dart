@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 Widget buildBlur({
   required Widget child,
-  final isLoading,
+  required bool isLoading,
 }) =>
     ImageFiltered(
       imageFilter: ImageFilter.blur(

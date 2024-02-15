@@ -5,7 +5,7 @@ import 'package:daylio_clone/src/features/notes/domain/entity/mood_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_events.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_event.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,24 +17,24 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
         super(AddNoteState$Idle(date: DateTime.now())) {
     on<AddNoteEvent>(
       (event, emitter) => switch (event) {
-        AddNoteDateChangeEvent event => _onDateChange(event, emitter),
-        AddNoteTimeChangeEvent event => _onTimeChange(event, emitter),
-        AddNoteMoodChangeEvent event => _onMoodChange(event, emitter),
-        AddNoteSleepChangeGradeEvent event =>
+        AddNoteEvent$DateChange event => _onDateChange(event, emitter),
+        AddNoteEvent$TimeChange event => _onTimeChange(event, emitter),
+        AddNoteEvent$MoodChange event => _onMoodChange(event, emitter),
+        AddNoteEvent$SleepGradeChange event =>
           _onSleepGradeChange(event, emitter),
-        AddNoteSleepChangeDescriptionEvent event =>
+        AddNoteEvent$SleepDescriptionChange event =>
           _onSleepDescriptionChange(event, emitter),
-        AddNoteFoodChangeGradeEvent event => _onFoodGradeChange(event, emitter),
-        AddNoteFoodChangeDescriptionEvent event =>
+        AddNoteEvent$FoodGradeChange event => _onFoodGradeChange(event, emitter),
+        AddNoteEvent$FoodDescriptionChange event =>
           _onFoodDescriptionChange(event, emitter),
-        AddNoteSubmitEvent event => _onAddNoteSubmit(event, emitter),
+        AddNoteEvent$Submit event => _onAddNoteSubmit(event, emitter),
       },
       transformer: sequential(),
     );
   }
 
   void _onDateChange(
-    AddNoteDateChangeEvent event,
+    AddNoteEvent$DateChange event,
     Emitter<AddNoteState> emitter,
   ) {
     emitter(
@@ -49,7 +49,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
   }
 
   void _onTimeChange(
-    AddNoteTimeChangeEvent event,
+    AddNoteEvent$TimeChange event,
     Emitter<AddNoteState> emitter,
   ) {
     emitter(
@@ -63,7 +63,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
   }
 
   void _onMoodChange(
-    AddNoteMoodChangeEvent event,
+    AddNoteEvent$MoodChange event,
     Emitter<AddNoteState> emitter,
   ) {
     emitter(
@@ -74,7 +74,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
   }
 
   void _onSleepGradeChange(
-    AddNoteSleepChangeGradeEvent event,
+    AddNoteEvent$SleepGradeChange event,
     Emitter<AddNoteState> emitter,
   ) {
     emitter(
@@ -85,7 +85,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
   }
 
   void _onSleepDescriptionChange(
-    AddNoteSleepChangeDescriptionEvent event,
+    AddNoteEvent$SleepDescriptionChange event,
     Emitter<AddNoteState> emitter,
   ) {
     emitter(
@@ -96,7 +96,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
   }
 
   void _onFoodGradeChange(
-    AddNoteFoodChangeGradeEvent event,
+    AddNoteEvent$FoodGradeChange event,
     Emitter<AddNoteState> emitter,
   ) {
     emitter(
@@ -107,7 +107,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
   }
 
   void _onFoodDescriptionChange(
-    AddNoteFoodChangeDescriptionEvent event,
+    AddNoteEvent$FoodDescriptionChange event,
     Emitter<AddNoteState> emitter,
   ) {
     emitter(
@@ -118,7 +118,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
   }
 
   Future<void> _onAddNoteSubmit(
-    AddNoteSubmitEvent event,
+    AddNoteEvent$Submit event,
     Emitter<AddNoteState> emitter,
   ) async {
     try {

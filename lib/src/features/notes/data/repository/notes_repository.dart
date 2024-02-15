@@ -24,8 +24,6 @@ class NotesRepository {
         date: Value(note.date),
       );
       await _driftStorage.saveNote(noteCompanion);
-      // await Future.delayed(const Duration(seconds: 3));
-      // throw Exception('SaveNote exception');
       final updateNotes = await _driftStorage.readNotes();
       final notes = updateNotes.map(NoteModel.fromNoteTableData);
       _notesController.add(notes);
@@ -35,16 +33,14 @@ class NotesRepository {
   }
 
   Future<Iterable<NoteModel>> readNotes() async {
-    // await Future.delayed(const Duration(seconds: 3));
-    // throw Exception('Read Note exception');
     final updateNotes = await _driftStorage.readNotes();
     final notes = updateNotes.map(NoteModel.fromNoteTableData);
     return notes;
   }
 
+
+
   Future<NoteModel> readNote(int id) async {
-    // await Future.delayed(const Duration(seconds: 3));
-    // throw Exception('Read Note exception');
     final updateNote = await _driftStorage.readNote(id);
     final note = NoteModel.fromNoteTableData(updateNote);
     return note;
@@ -61,8 +57,6 @@ class NotesRepository {
           food: Value(note.food),
           date: Value(note.date),
         );
-        // await Future.delayed(Duration(seconds: 3));
-        // throw Exception('Update Note exception');
         await _driftStorage.updateNote(noteCompanion);
         final updateNotes = await _driftStorage.readNotes();
         final notes = updateNotes.map(NoteModel.fromNoteTableData);

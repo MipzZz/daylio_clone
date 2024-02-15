@@ -6,6 +6,6 @@ class DebugProvider{
   DebugProvider({required DebugRepository debugRepository}): _debugRepository = debugRepository;
 
   void dropTables(){
-    // _debugRepository.dropTables();
+    _debugRepository.dropTable();
   }
 }
