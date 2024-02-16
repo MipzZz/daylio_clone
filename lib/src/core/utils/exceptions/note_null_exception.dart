@@ -1,4 +1,10 @@
 class NoteNullException implements Exception{
+
+  const NoteNullException({
+    required this.message,
+  });
+  final String message;
+
   @override
-  String toString() => 'К сожалению, запись не найдена';
+  String toString() => message;
 }

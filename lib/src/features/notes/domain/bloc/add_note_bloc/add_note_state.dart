@@ -1,3 +1,5 @@
+import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 import 'package:flutter/cupertino.dart';
 
 sealed class AddNoteState {
@@ -22,9 +24,9 @@ sealed class AddNoteState {
     String? foodDescription,
   });
 }
+
 @immutable
 final class AddNoteState$Idle implements AddNoteState {
-
   const AddNoteState$Idle({
     required this.date,
     this.moodId = 0,
@@ -33,6 +35,7 @@ final class AddNoteState$Idle implements AddNoteState {
     this.sleepId = 0,
     this.sleepDescription = '',
   });
+
   @override
   final DateTime date;
 
@@ -59,14 +62,15 @@ final class AddNoteState$Idle implements AddNoteState {
     String? foodDescription,
     int? sleepId,
     String? sleepDescription,
-  }) => AddNoteState$Idle(
-      date: date ?? this.date,
-      moodId: moodId ?? this.moodId,
-      foodId: foodId ?? this.foodId,
-      foodDescription: foodDescription ?? this.foodDescription,
-      sleepId: sleepId ?? this.sleepId,
-      sleepDescription: sleepDescription ?? this.sleepDescription,
-    );
+  }) =>
+      AddNoteState$Idle(
+        date: date ?? this.date,
+        moodId: moodId ?? this.moodId,
+        foodId: foodId ?? this.foodId,
+        foodDescription: foodDescription ?? this.foodDescription,
+        sleepId: sleepId ?? this.sleepId,
+        sleepDescription: sleepDescription ?? this.sleepDescription,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -91,8 +95,7 @@ final class AddNoteState$Idle implements AddNoteState {
       );
 }
 
-final class AddNoteState$Progress implements AddNoteState{
-
+final class AddNoteState$Progress implements AddNoteState {
   const AddNoteState$Progress({
     required this.date,
     required this.moodId,
@@ -101,6 +104,7 @@ final class AddNoteState$Progress implements AddNoteState{
     required this.foodId,
     required this.foodDescription,
   });
+
   @override
   final DateTime date;
   @override
@@ -122,60 +126,50 @@ final class AddNoteState$Progress implements AddNoteState{
     String? sleepDescription,
     int? foodId,
     String? foodDescription,
-  }) => AddNoteState$Progress(
-      date: date ?? this.date,
-      moodId: moodId ?? this.moodId,
-      sleepId: sleepId ?? this.sleepId,
-      sleepDescription: sleepDescription ?? this.sleepDescription,
-      foodId: foodId ?? this.foodId,
-      foodDescription: foodDescription ?? this.foodDescription,
-    );
+  }) =>
+      AddNoteState$Progress(
+        date: date ?? this.date,
+        moodId: moodId ?? this.moodId,
+        sleepId: sleepId ?? this.sleepId,
+        sleepDescription: sleepDescription ?? this.sleepDescription,
+        foodId: foodId ?? this.foodId,
+        foodDescription: foodDescription ?? this.foodDescription,
+      );
 }
 
-final class AddNoteState$Created implements AddNoteState{
+final class AddNoteState$Created implements AddNoteState {
+  @override
+  DateTime get date => DateTime.now();
 
+  @override
+  String get foodDescription => '';
 
-  const AddNoteState$Created({
-    required this.date,
-    required this.moodId,
-    required this.sleepId,
-    required this.sleepDescription,
-    required this.foodId,
-    required this.foodDescription,
-  });
   @override
-  final DateTime date;
+  int get foodId => GradeLabel.values.first.index;
+
   @override
-  final int moodId;
+  int get moodId => 0;
+
   @override
-  final int sleepId;
+  String get sleepDescription => '';
+
   @override
-  final String sleepDescription;
-  @override
-  final int foodId;
-  @override
-  final String foodDescription;
+  int get sleepId => 0;
 
   @override
   AddNoteState$Created copyWith({
+    NoteModel? note,
     DateTime? date,
     int? moodId,
     int? sleepId,
     String? sleepDescription,
     int? foodId,
     String? foodDescription,
-  }) => AddNoteState$Created(
-      date: date ?? this.date,
-      moodId: moodId ?? this.moodId,
-      sleepId: sleepId ?? this.sleepId,
-      sleepDescription: sleepDescription ?? this.sleepDescription,
-      foodId: foodId ?? this.foodId,
-      foodDescription: foodDescription ?? this.foodDescription,
-    );
+  }) =>
+      AddNoteState$Created();
 }
 
 final class AddNoteState$Error implements AddNoteState {
-
   const AddNoteState$Error({
     required this.date,
     required this.moodId,
@@ -185,6 +179,7 @@ final class AddNoteState$Error implements AddNoteState {
     required this.foodDescription,
     required this.message,
   });
+
   @override
   final DateTime date;
   @override
@@ -208,13 +203,14 @@ final class AddNoteState$Error implements AddNoteState {
     int? foodId,
     String? foodDescription,
     String? message,
-  }) => AddNoteState$Error(
-      date: date ?? this.date,
-      moodId: moodId ?? this.moodId,
-      sleepId: sleepId ?? this.sleepId,
-      sleepDescription: sleepDescription ?? this.sleepDescription,
-      foodId: foodId ?? this.foodId,
-      foodDescription: foodDescription ?? this.foodDescription,
-      message: message ?? this.message,
-    );
+  }) =>
+      AddNoteState$Error(
+        date: date ?? this.date,
+        moodId: moodId ?? this.moodId,
+        sleepId: sleepId ?? this.sleepId,
+        sleepDescription: sleepDescription ?? this.sleepDescription,
+        foodId: foodId ?? this.foodId,
+        foodDescription: foodDescription ?? this.foodDescription,
+        message: message ?? this.message,
+      );
 }

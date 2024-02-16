@@ -10,7 +10,6 @@ import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
-
   AddNoteBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
         super(AddNoteState$Idle(date: DateTime.now())) {
@@ -23,7 +22,8 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
           _onSleepGradeChange(event, emitter),
         final AddNoteEvent$SleepDescriptionChange event =>
           _onSleepDescriptionChange(event, emitter),
-        final AddNoteEvent$FoodGradeChange event => _onFoodGradeChange(event, emitter),
+        final AddNoteEvent$FoodGradeChange event =>
+          _onFoodGradeChange(event, emitter),
         final AddNoteEvent$FoodDescriptionChange event =>
           _onFoodDescriptionChange(event, emitter),
         final AddNoteEvent$Submit event => _onAddNoteSubmit(event, emitter),
@@ -31,6 +31,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
       transformer: sequential(),
     );
   }
+
   final NotesRepository _notesRepository;
 
   void _onDateChange(
@@ -124,12 +125,13 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
     try {
       emitter(
         AddNoteState$Progress(
-            date: state.date,
-            moodId: state.moodId,
-            sleepId: state.sleepId,
-            sleepDescription: state.sleepDescription,
-            foodId: state.foodId,
-            foodDescription: state.foodDescription,),
+          date: state.date,
+          moodId: state.moodId,
+          sleepId: state.sleepId,
+          sleepDescription: state.sleepDescription,
+          foodId: state.foodId,
+          foodDescription: state.foodDescription,
+        ),
       );
 
       final note = NoteModel(
@@ -140,22 +142,15 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
           description: state.sleepDescription,
         ),
         food: FoodModel.fromGradeAndDesc(
-            id: state.foodId, description: state.foodDescription,),
+          id: state.foodId,
+          description: state.foodDescription,
+        ),
         date: state.date,
       );
       await _notesRepository.saveNote(note);
 
-      emitter(
-        AddNoteState$Created(
-            date: state.date,
-            moodId: state.moodId,
-            sleepId: state.sleepId,
-            sleepDescription: state.sleepDescription,
-            foodId: state.foodId,
-            foodDescription: state.foodDescription,), // TODO(MipZ): Can make null.
-
-      );
-    } on Object{
+      emitter(AddNoteState$Created());
+    } on Object {
       emitter(
         AddNoteState$Error(
           date: state.date,
@@ -166,19 +161,20 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
           foodDescription: state.foodDescription,
           message: 'При сохранении данных произошла ошибка',
         ),
+
       );
-
       rethrow;
-
     } finally {
-      emitter(AddNoteState$Idle(
-        date: state.date,
-        moodId: state.moodId,
-        sleepId: state.sleepId,
-        sleepDescription: state.sleepDescription,
-        foodId: state.foodId,
-        foodDescription: state.foodDescription,
-      ),);
+      emitter(
+        AddNoteState$Idle(
+          date: state.date,
+          moodId: state.moodId,
+          sleepId: state.sleepId,
+          sleepDescription: state.sleepDescription,
+          foodId: state.foodId,
+          foodDescription: state.foodDescription,
+        ),
+      );
     }
   }
 }

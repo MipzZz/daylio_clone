@@ -24,9 +24,7 @@ class NotesRepository {
         date: Value(note.date),
       );
       await _driftStorage.saveNote(noteCompanion);
-      final updateNotes = await _driftStorage.readNotes();
-      final notes = updateNotes.map(NoteModel.fromNoteTableData);
-      _notesController.add(notes);
+      await _updateStream();
     } on Object {
       rethrow;
     }
@@ -58,9 +56,7 @@ class NotesRepository {
           date: Value(note.date),
         );
         await _driftStorage.updateNote(noteCompanion);
-        final updateNotes = await _driftStorage.readNotes();
-        final notes = updateNotes.map(NoteModel.fromNoteTableData);
-        _notesController.add(notes);
+        await _updateStream();
       }
     } on Object {
       rethrow;
@@ -69,14 +65,16 @@ class NotesRepository {
 
   Future<void> deleteNote(int id) async {
     try {
-      // await Future.delayed(const Duration(seconds: 3));
-      // throw Exception('Delete Note exception');
       await _driftStorage.deleteNote(id);
-      final updateNotes = await _driftStorage.readNotes();
-      final notes = updateNotes.map(NoteModel.fromNoteTableData);
-      _notesController.add(notes);
+      await _updateStream();
     } on Object {
       rethrow;
     }
+  }
+
+  Future<void> _updateStream() async {
+    final updateNotes = await _driftStorage.readNotes();
+    final notes = updateNotes.map(NoteModel.fromNoteTableData);
+    _notesController.add(notes);
   }
 }

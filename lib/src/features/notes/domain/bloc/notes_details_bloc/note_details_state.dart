@@ -1,5 +1,6 @@
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
+import 'package:flutter/cupertino.dart';
 
 sealed class NoteDetailsState {
   NoteModel? get note;
@@ -99,6 +100,7 @@ final class NoteDetailsState$Progress implements NoteDetailsState {
     );
 }
 
+@immutable
 final class NoteDetailsState$Data implements NoteDetailsState {
 
   const NoteDetailsState$Data({
@@ -122,6 +124,29 @@ final class NoteDetailsState$Data implements NoteDetailsState {
   final String sleepDescription;
   @override
   final int foodId;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NoteDetailsState$Data &&
+          runtimeType == other.runtimeType &&
+          note == other.note &&
+          date == other.date &&
+          moodId == other.moodId &&
+          sleepId == other.sleepId &&
+          sleepDescription == other.sleepDescription &&
+          foodId == other.foodId &&
+          foodDescription == other.foodDescription;
+
+  @override
+  int get hashCode =>
+      note.hashCode ^
+      date.hashCode ^
+      moodId.hashCode ^
+      sleepId.hashCode ^
+      sleepDescription.hashCode ^
+      foodId.hashCode ^
+      foodDescription.hashCode;
   @override
   final String foodDescription;
 
@@ -147,29 +172,26 @@ final class NoteDetailsState$Data implements NoteDetailsState {
 
 final class NoteDetailsState$Completed implements NoteDetailsState {
 
-  const NoteDetailsState$Completed({
-    required this.note,
-    required this.date,
-    required this.moodId,
-    required this.sleepId,
-    required this.sleepDescription,
-    required this.foodId,
-    required this.foodDescription,
-  });
   @override
-  final NoteModel note;
+  DateTime get date => DateTime.now();
+
   @override
-  final DateTime date;
+  String get foodDescription => '';
+
   @override
-  final int moodId;
+  int get foodId => GradeLabel.values.first.index;
+
   @override
-  final int sleepId;
+  int get moodId => 0;
+
   @override
-  final String sleepDescription;
+  NoteModel? get note => null;
+
   @override
-  final int foodId;
+  String get sleepDescription => '';
+
   @override
-  final String foodDescription;
+  int get sleepId => 0;
 
   @override
   NoteDetailsState$Completed copyWith({
@@ -180,15 +202,7 @@ final class NoteDetailsState$Completed implements NoteDetailsState {
     String? sleepDescription,
     int? foodId,
     String? foodDescription,
-  }) => NoteDetailsState$Completed(
-      note: note ?? this.note,
-      date: date ?? this.date,
-      moodId: moodId ?? this.moodId,
-      sleepId: sleepId ?? this.sleepId,
-      sleepDescription: sleepDescription ?? this.sleepDescription,
-      foodId: foodId ?? this.foodId,
-      foodDescription: foodDescription ?? this.foodDescription,
-    );
+  }) => NoteDetailsState$Completed();
 }
 
 final class NoteDetailsState$Error implements NoteDetailsState {

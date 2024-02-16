@@ -1,5 +1,6 @@
 import 'package:daylio_clone/src/core/data/source/local/db/drift_storage.dart';
 import 'package:daylio_clone/src/core/presentation/assets/themes/app_theme_data.dart';
+import 'package:daylio_clone/src/features/debug/data/debug_repository.dart';
 import 'package:daylio_clone/src/features/debug/presentation/view/debug_screen.dart';
 import 'package:daylio_clone/src/features/main/presentation/view/main_screen.dart';
 import 'package:daylio_clone/src/features/more/presentation/view/about_screen.dart';
@@ -23,54 +24,60 @@ class AppView extends StatefulWidget {
 class _AppViewState extends State<AppView> {
   late final AppDb _driftStorage;
   late final NotesRepository _notesRepository;
+  late final DebugRepository _debugRepository;
 
   @override
   void initState() {
     super.initState();
     _driftStorage = AppDb();
     _notesRepository = NotesRepository(database: _driftStorage);
+    _debugRepository = DebugRepository(database: _driftStorage);
   }
 
   @override
   Widget build(BuildContext context) => MultiProvider(
-      providers: [
-        Provider(
-          create: (context) => _notesRepository,
-        ),
-        BlocProvider(
-          create: (context) => NotesBloc(notesRepository: _notesRepository)
-            ..add(NotesEvent$Initialize()),
-        ),
-        BlocProvider(
-          create: (context) => StatisticBloc(notesRepository: _notesRepository)
-            ..add(StatisticEvent$Calculate()),
-        ),
-      ],
-      child: MaterialApp(
-        theme: AppThemeData.darkMainTheme,
-        title: 'Daylio Clone',
-        routes: {
-          '/': (context) => const MainScreen(),
-          '/debug': (context) => const DebugScreen(),
-          '/note_detail': (context) {
-            final arguments = ModalRoute.of(context)?.settings.arguments;
-            if (arguments is int) {
-              return NoteDetailsWidget(noteId: arguments);
-            } else {
-              return const NoteDetailsWidget(noteId: 1);
-            }
-          },
-          '/add_note': (context) => const AddNoteWidget(),
-          '/about': (context) => const AboutScreen(),
-        },
-        initialRoute: '/',
-        onGenerateRoute: (RouteSettings settings) => MaterialPageRoute(
-            builder: (context) => const Scaffold(
-                body: Center(
-                  child: Text('Произошла ошибка навигации'),
-                ),
-              ),
+        providers: [
+          Provider(
+            create: (context) => _notesRepository,
           ),
-      ),
-    );
+          Provider(
+            create: (context) => _debugRepository,
+          ),
+          BlocProvider(
+            create: (context) => NotesBloc(notesRepository: _notesRepository)
+              ..add(NotesEvent$Read()),
+          ),
+          BlocProvider(
+            create: (context) =>
+                StatisticBloc(notesRepository: _notesRepository)
+                  ..add(StatisticEvent$Initialize()),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppThemeData.darkMainTheme,
+          title: 'Daylio Clone',
+          routes: {
+            '/': (context) => const MainScreen(),
+            '/debug': (context) => const DebugScreen(),
+            '/note_detail': (context) {
+              final arguments = ModalRoute.of(context)?.settings.arguments;
+              if (arguments is int) {
+                return NoteDetailsWidget(noteId: arguments);
+              } else {
+                return const NoteDetailsWidget(noteId: 1);
+              }
+            },
+            '/add_note': (context) => const AddNoteWidget(),
+            '/about': (context) => const AboutScreen(),
+          },
+          initialRoute: '/',
+          onGenerateRoute: (RouteSettings settings) => MaterialPageRoute(
+            builder: (context) => const Scaffold(
+              body: Center(
+                child: Text('Произошла ошибка навигации'),
+              ),
+            ),
+          ),
+        ),
+      );
 }

@@ -34,6 +34,7 @@ class MoodModel {
       unSelectedIcon: moodEnum.unSelectedIcon,
       color: moodEnum.color,
     );
+
   final int id;
   final String title;
   final String selectedIcon;

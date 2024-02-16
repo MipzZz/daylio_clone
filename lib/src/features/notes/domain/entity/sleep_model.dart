@@ -16,15 +16,6 @@ class SleepModel {
     required this.color,
   });
 
-  SleepModel.empty()
-      : this(
-          id: 0,
-          title: '',
-          icon: '',
-          description: '',
-          color: Colors.white,
-        );
-
   factory SleepModel.fromJson(Map<String, dynamic> json) =>
       _$SleepModelFromJson(json);
 

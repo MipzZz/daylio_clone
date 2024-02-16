@@ -17,7 +17,7 @@ abstract class AppThemeData {
       todayForegroundColor: MaterialStatePropertyAll(AppColors.mainTextColor),
     ),
     timePickerTheme: const TimePickerThemeData(
-      backgroundColor: AppColors.background,
+      backgroundColor: Color.fromARGB(255, 30, 30, 30),
     ),
     appBarTheme: const AppBarTheme(
       foregroundColor: AppColors.mainTextColor,

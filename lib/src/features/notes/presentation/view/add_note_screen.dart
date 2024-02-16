@@ -1,6 +1,6 @@
 import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
+import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
 import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
-import 'package:daylio_clone/src/core/utils/extensions/time_of_day_extension.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_bloc.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/add_note_bloc/add_note_event.dart';
@@ -52,23 +52,25 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
         child: BlocConsumer<AddNoteBloc, AddNoteState>(
           listener: _addNoteListener,
           builder: (context, addNoteState) => switch (addNoteState) {
-            AddNoteState$Progress() => Stack(children: [
-                PopScope(
-                  canPop: false, //Можно ли свайпнуть для возврата
-                  child: AbsorbPointer(
-                    absorbing: true, //Состояние абсорба нажатий
-                    child: buildBlur(
-                      isLoading: true, //Состояние блюра
-                      child: const _BodyWidget(),
+            AddNoteState$Progress() => Stack(
+                children: [
+                  PopScope(
+                    canPop: false, //Можно ли свайпнуть для возврата
+                    child: AbsorbPointer(
+                      absorbing: true, //Состояние абсорба нажатий
+                      child: buildBlur(
+                        isLoading: true, //Состояние блюра
+                        child: const _BodyWidget(),
+                      ),
                     ),
                   ),
-                ),
-                const Positioned(
-                  child: Center(
-                    child: CircularProgressIndicator(),
+                  const Positioned(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
                   ),
-                ),
-              ],),
+                ],
+              ),
             _ => const _BodyWidget(),
           },
         ),
@@ -78,13 +80,17 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
 class _BodyWidget extends StatelessWidget {
   const _BodyWidget();
 
+  void _unFocus(BuildContext context) {
+    FocusScope.of(context).unfocus();
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: const Text('Новая запись'),
         ),
         body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
+          onTap: () => _unFocus(context),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 10,
@@ -102,7 +108,6 @@ class _BodyWidget extends StatelessWidget {
                 _FoodRowWidget(),
                 SizedBox(height: 35),
                 _AddNoteButton(),
-                // TODO(MipZ): Добавить кнопку сброса
               ],
             ),
           ),
@@ -148,15 +153,18 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
           );
         }
         return Theme(
-            data: Theme.of(context).copyWith(
-                colorScheme: const ColorScheme.light(
-                  onSurface: Colors.white,
-                ),
-                textButtonTheme: TextButtonThemeData(
-                    style: TextButton.styleFrom(
-                        foregroundColor:
-                            const Color.fromARGB(255, 180, 135, 218),),),),
-            child: child,);
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              onSurface: Colors.white,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: const Color.fromARGB(255, 180, 135, 218),
+              ),
+            ),
+          ),
+          child: child,
+        );
       },
     );
     if (date != null) {
@@ -222,7 +230,7 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              state.date.toTimeOfDay().timeOnly(),
+              state.date.toTimeOnly(),
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
@@ -300,14 +308,18 @@ class _SleepRowWidget extends StatelessWidget {
                       EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   border: OutlineInputBorder(),
                 ),
-                label: const Text('Оценка сна'),
+                label: const Text(
+                  'Оценка сна',
+                  style: AppTextStyle.dropdownLabel,
+                ),
                 textStyle: const TextStyle(fontSize: 15),
                 dropdownMenuEntries: GradeLabel.values
                     .map<DropdownMenuEntry<GradeLabel>>(
-                        (GradeLabel grade) => DropdownMenuEntry<GradeLabel>(
-                              value: grade,
-                              label: grade.title,
-                            ),)
+                      (GradeLabel grade) => DropdownMenuEntry<GradeLabel>(
+                        value: grade,
+                        label: grade.title,
+                      ),
+                    )
                     .toList(),
               ),
             ),
@@ -317,10 +329,11 @@ class _SleepRowWidget extends StatelessWidget {
               onChanged: (v) => _onSleepDescriptionChanged(context, v),
               maxLines: 1,
               decoration: const InputDecoration(
+                isDense: true,
                 border: OutlineInputBorder(),
                 labelText: 'Описание сна',
               ),
-              style: const TextStyle(fontSize: 10),
+              style: const TextStyle(fontSize: 15),
             ),
           ),
         ],
@@ -356,14 +369,18 @@ class _FoodRowWidget extends StatelessWidget {
                       EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   border: OutlineInputBorder(),
                 ),
-                label: const Text('Оценка еды'),
+                label: const Text(
+                  'Оценка еды',
+                  style: AppTextStyle.dropdownLabel,
+                ),
                 textStyle: const TextStyle(fontSize: 15),
                 dropdownMenuEntries: GradeLabel.values
                     .map<DropdownMenuEntry<GradeLabel>>(
-                        (GradeLabel grade) => DropdownMenuEntry<GradeLabel>(
-                              value: grade,
-                              label: grade.title,
-                            ),)
+                      (GradeLabel grade) => DropdownMenuEntry<GradeLabel>(
+                        value: grade,
+                        label: grade.title,
+                      ),
+                    )
                     .toList(),
               ),
             ),
@@ -373,10 +390,11 @@ class _FoodRowWidget extends StatelessWidget {
               onChanged: (v) => _onFoodDescriptionChanged(context, v),
               maxLines: 1,
               decoration: const InputDecoration(
+                isDense: true,
                 border: OutlineInputBorder(),
                 labelText: 'Описание еды',
               ),
-              style: const TextStyle(fontSize: 10),
+              style: const TextStyle(fontSize: 15),
             ),
           ),
         ],
@@ -392,16 +410,16 @@ class _AddNoteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocBuilder<AddNoteBloc, AddNoteState>(
-      builder: (context, addNoteState) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 100),
-        child: OutlinedButton(
-          style: AppButtonStyle.addNoteButtonStyle,
-          onPressed: () => _onAddButton(context),
-          child: const Text(
-            'Добавить запись',
-            style: TextStyle(fontSize: 15),
+        builder: (context, addNoteState) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 100),
+          child: OutlinedButton(
+            style: AppButtonStyle.addNoteButtonStyle,
+            onPressed: () => _onAddButton(context),
+            child: const Text(
+              'Добавить запись',
+              style: TextStyle(fontSize: 15),
+            ),
           ),
         ),
-      ),
-    );
+      );
 }

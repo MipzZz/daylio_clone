@@ -15,4 +15,8 @@ abstract class AppTextStyle {
     fontSize: 14,
     color: Colors.white70,
   );
+  static const TextStyle dropdownLabel = TextStyle(
+    fontSize: 16.5,
+    color: AppColors.labelTextColor,
+  );
 }

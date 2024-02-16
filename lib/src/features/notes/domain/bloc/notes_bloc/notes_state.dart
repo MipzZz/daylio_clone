@@ -50,38 +50,6 @@ final class NotesState$Progress implements NotesState {
     );
 }
 
-final class NotesState$Refreshing implements NotesState {
-
-  const NotesState$Refreshing({
-    required this.notes,
-  });
-  @override
-  final List<NoteModel> notes;
-
-  @override
-  NotesState$Refreshing copyWith({
-    List<NoteModel>? notes,
-  }) => NotesState$Refreshing(
-      notes: notes ?? this.notes,
-    );
-}
-
-final class NotesState$Completed implements NotesState {
-
-  const NotesState$Completed({
-    required this.notes,
-  });
-  @override
-  final List<NoteModel> notes;
-
-  @override
-  NotesState$Completed copyWith({
-    List<NoteModel>? notes,
-  }) => NotesState$Completed(
-      notes: notes ?? this.notes,
-    );
-}
-
 final class NotesState$Error implements NotesState {
 
   const NotesState$Error({

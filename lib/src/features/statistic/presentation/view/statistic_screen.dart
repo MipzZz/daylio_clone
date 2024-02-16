@@ -9,19 +9,19 @@ class StatisticWidget extends StatelessWidget {
   const StatisticWidget({super.key});
 
   @override
-  Widget build(BuildContext context) => BlocBuilder<StatisticBloc, StatisticState>(
+  Widget build(BuildContext context) =>
+      BlocBuilder<StatisticBloc, StatisticState>(
         builder: (context, statisticState) => switch (statisticState) {
-            StatisticState$Progress () =>
-            const Center(
+          StatisticState$Progress() => const Center(
               child: CircularProgressIndicator(),
             ),
-            final StatisticState$Error errorState =>
-                _FailureBody(errorMessage: errorState.message),
-            _ =>
-            (statisticState.notesCount) > 2
-                ? const _DefaultBodyWidget()
-                : const _NotEnoughNotesWidget()
-          },);
+          final StatisticState$Error errorState =>
+            _FailureBody(errorMessage: errorState.message),
+          _ => (statisticState.notesCount) > 2
+              ? const _DefaultBodyWidget()
+              : const _NotEnoughNotesWidget()
+        },
+      );
 }
 
 class _FailureBody extends StatelessWidget {
@@ -32,28 +32,28 @@ class _FailureBody extends StatelessWidget {
   final String errorMessage;
 
   void _refreshList(BuildContext context) {
-    context.read<StatisticBloc>().add(StatisticEvent$Calculate());
+    context.read<StatisticBloc>().add(StatisticEvent$Initialize());
   }
 
   @override
   Widget build(BuildContext context) => Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            errorMessage,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 15),
-          ElevatedButton(
-            onPressed: () => _refreshList(context),
-            style: AppButtonStyle.addNoteButtonStyle,
-            child: const Text('Обновить'),
-          ),
-        ],
-      ),
-    );
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              errorMessage,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 15),
+            ElevatedButton(
+              onPressed: () => _refreshList(context),
+              style: AppButtonStyle.addNoteButtonStyle,
+              child: const Text('Обновить'),
+            ),
+          ],
+        ),
+      );
 }
 
 class _NotEnoughNotesWidget extends StatelessWidget {
@@ -61,8 +61,11 @@ class _NotEnoughNotesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const Center(
-      child: Text('Для отображение статистики, необходимо минимум 3 записи'),
-    );
+        child: Text(
+          'Для отображение статистики, необходимо минимум 3 записи',
+          textAlign: TextAlign.center,
+        ),
+      );
 }
 
 class _DefaultBodyWidget extends StatelessWidget {
@@ -70,26 +73,26 @@ class _DefaultBodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Flexible(flex: 1, child: _NotesCountCard()),
-          // SizedBox(width: 35),
-          Flexible(flex: 1, child: _AverageMoodCard()),
-          Flexible(flex: 1, child: _ActivityCountCard()),
-        ],
-      ),
-    );
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(child: _NotesCountCard()),
+            Flexible(child: _AverageMoodCard()),
+            Flexible(child: _ActivityCountCard()),
+          ],
+        ),
+      );
 }
 
 class _NotesCountCard extends StatelessWidget {
   const _NotesCountCard();
 
   @override
-  Widget build(BuildContext context) => BlocBuilder<StatisticBloc, StatisticState>(
-      builder: (context, statisticState) => Card(
+  Widget build(BuildContext context) =>
+      BlocBuilder<StatisticBloc, StatisticState>(
+        builder: (context, statisticState) => Card(
           color: AppColors.listBackground,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -118,15 +121,16 @@ class _NotesCountCard extends StatelessWidget {
             ),
           ),
         ),
-    );
+      );
 }
 
 class _AverageMoodCard extends StatelessWidget {
   const _AverageMoodCard();
 
   @override
-  Widget build(BuildContext context) => BlocBuilder<StatisticBloc, StatisticState>(
-      builder: (context, statisticState) => Card(
+  Widget build(BuildContext context) =>
+      BlocBuilder<StatisticBloc, StatisticState>(
+        builder: (context, statisticState) => Card(
           color: AppColors.listBackground,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -155,15 +159,16 @@ class _AverageMoodCard extends StatelessWidget {
             ),
           ),
         ),
-    );
+      );
 }
 
 class _ActivityCountCard extends StatelessWidget {
   const _ActivityCountCard();
 
   @override
-  Widget build(BuildContext context) => BlocBuilder<StatisticBloc, StatisticState>(
-      builder: (context, statisticState) => Card(
+  Widget build(BuildContext context) =>
+      BlocBuilder<StatisticBloc, StatisticState>(
+        builder: (context, statisticState) => Card(
           color: AppColors.listBackground,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -192,5 +197,5 @@ class _ActivityCountCard extends StatelessWidget {
             ),
           ),
         ),
-    );
+      );
 }

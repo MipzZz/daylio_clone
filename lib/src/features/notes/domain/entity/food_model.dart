@@ -15,10 +15,7 @@ class FoodModel {
       required this.icon,
       required this.description,
       required this.color,});
-
-  FoodModel.empty()
-      : this(id: 0, title: '', icon: '', description: '', color: Colors.white);
-
+  
   factory FoodModel.fromGradeAndDesc({
     required int id,
     required String description,

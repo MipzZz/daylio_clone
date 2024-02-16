@@ -11,7 +11,6 @@ import 'package:daylio_clone/src/features/notes/domain/entity/sleep_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
-
   NoteDetailsBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
         super(NoteDetailsState$Initial()) {
@@ -25,7 +24,8 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
           _onSleepGradeChange(event, emitter),
         NoteDetailsEvent$SleepDescriptionChange() =>
           _onSleepDescriptionChange(event, emitter),
-        NoteDetailsEvent$FoodGradeChange() => _onFoodGradeChange(event, emitter),
+        NoteDetailsEvent$FoodGradeChange() =>
+          _onFoodGradeChange(event, emitter),
         NoteDetailsEvent$FoodDescriptionChange() =>
           _onFoodDescriptionChange(event, emitter),
         NoteDetailsEvent$Save() => _onSave(event, emitter),
@@ -34,34 +34,41 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
       transformer: sequential(),
     );
   }
+
   final NotesRepository _notesRepository;
   late final NoteModel note;
 
   Future<void> _loadNote(
-      NoteDetailsEvent$LoadNote event, Emitter<NoteDetailsState> emitter,) async {
+    NoteDetailsEvent$LoadNote event,
+    Emitter<NoteDetailsState> emitter,
+  ) async {
     try {
       note = await _notesRepository.readNote(event.noteId);
-      emitter(NoteDetailsState$Data(
-        note: note,
-        date: note.date,
-        moodId: note.mood.id,
-        sleepId: note.sleep.id,
-        sleepDescription: note.sleep.description,
-        foodId: note.food.id,
-        foodDescription: note.food.description,
-      ),);
-    } on Object catch (e, s) {
-      emitter(NoteDetailsState$Error(
-        note: state.note,
-        date: state.date,
-        moodId: state.moodId,
-        sleepId: state.sleepId,
-        sleepDescription: state.sleepDescription,
-        foodId: state.foodId,
-        foodDescription: state.foodDescription,
-        message: 'При загрузке данных произошла ошибка',
-      ),);
-      Error.throwWithStackTrace(e, s);
+      emitter(
+        NoteDetailsState$Data(
+          note: note,
+          date: note.date,
+          moodId: note.mood.id,
+          sleepId: note.sleep.id,
+          sleepDescription: note.sleep.description,
+          foodId: note.food.id,
+          foodDescription: note.food.description,
+        ),
+      );
+    } on Object {
+      emitter(
+        NoteDetailsState$Error(
+          note: state.note,
+          date: state.date,
+          moodId: state.moodId,
+          sleepId: state.sleepId,
+          sleepDescription: state.sleepDescription,
+          foodId: state.foodId,
+          foodDescription: state.foodDescription,
+          message: 'При загрузке данных произошла ошибка',
+        ),
+      );
+      rethrow;
     }
   }
 
@@ -98,45 +105,55 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
     NoteDetailsEvent$MoodChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
-    emitter(state.copyWith(
-      moodId: event.moodId,
-    ),);
+    emitter(
+      state.copyWith(
+        moodId: event.moodId,
+      ),
+    );
   }
 
   void _onSleepGradeChange(
     NoteDetailsEvent$SleepGradeChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
-    emitter(state.copyWith(
-      sleepId: event.sleepId,
-    ),);
+    emitter(
+      state.copyWith(
+        sleepId: event.sleepId,
+      ),
+    );
   }
 
   void _onSleepDescriptionChange(
     NoteDetailsEvent$SleepDescriptionChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
-    emitter(state.copyWith(
-      sleepDescription: event.sleepDescription,
-    ),);
+    emitter(
+      state.copyWith(
+        sleepDescription: event.sleepDescription,
+      ),
+    );
   }
 
   void _onFoodGradeChange(
     NoteDetailsEvent$FoodGradeChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
-    emitter(state.copyWith(
-      foodId: event.foodId,
-    ),);
+    emitter(
+      state.copyWith(
+        foodId: event.foodId,
+      ),
+    );
   }
 
   void _onFoodDescriptionChange(
     NoteDetailsEvent$FoodDescriptionChange event,
     Emitter<NoteDetailsState> emitter,
   ) {
-    emitter(state.copyWith(
-      foodDescription: event.foodDescription,
-    ),);
+    emitter(
+      state.copyWith(
+        foodDescription: event.foodDescription,
+      ),
+    );
   }
 
   Future<void> _onSave(
@@ -144,7 +161,9 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
     Emitter<NoteDetailsState> emitter,
   ) async {
     try {
-      if (note.id == null) throw NoteNullException();
+      if (note.id == null) {
+        throw const NoteNullException(message: 'Cannot update null note');
+      }
       final updatedNote = NoteModel(
         id: note.id,
         mood: MoodModel.fromEnum(MoodsStorage.values[state.moodId]),
@@ -153,46 +172,30 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
           description: state.sleepDescription,
         ),
         food: FoodModel.fromGradeAndDesc(
-            id: state.foodId, description: state.foodDescription,),
+          id: state.foodId,
+          description: state.foodDescription,
+        ),
         date: state.date,
       );
 
-      emitter(NoteDetailsState$Progress(
-        note: updatedNote,
-        date: state.date,
-        moodId: state.moodId,
-        sleepId: state.sleepId,
-        sleepDescription: state.sleepDescription,
-        foodId: state.foodId,
-        foodDescription: state.foodDescription,
-      ),);
+      emitter(
+        NoteDetailsState$Progress(
+          note: updatedNote,
+          date: state.date,
+          moodId: state.moodId,
+          sleepId: state.sleepId,
+          sleepDescription: state.sleepDescription,
+          foodId: state.foodId,
+          foodDescription: state.foodDescription,
+        ),
+      );
 
       await _notesRepository.updateNote(updatedNote);
 
-      emitter(NoteDetailsState$Completed(
-        note: updatedNote,
-        date: state.date,
-        moodId: state.moodId,
-        sleepId: state.sleepId,
-        sleepDescription: state.sleepDescription,
-        foodId: state.foodId,
-        foodDescription: state.foodDescription,
-      ),);
-
-    } on Object catch (e, s) {
-      emitter(NoteDetailsState$Error(
-        note: note,
-        date: state.date,
-        moodId: state.moodId,
-        sleepId: state.sleepId,
-        sleepDescription: state.sleepDescription,
-        foodId: state.foodId,
-        foodDescription: state.foodDescription,
-        message: 'При сохранении данных произошла ошибка',
-      ),);
-      Error.throwWithStackTrace(e, s);
-    } finally {{
-        emitter(NoteDetailsState$Data(
+      emitter(NoteDetailsState$Completed());
+    } on Object {
+      emitter(
+        NoteDetailsState$Error(
           note: note,
           date: state.date,
           moodId: state.moodId,
@@ -200,7 +203,23 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
           sleepDescription: state.sleepDescription,
           foodId: state.foodId,
           foodDescription: state.foodDescription,
-        ),);
+          message: 'При сохранении данных произошла ошибка',
+        ),
+      );
+      rethrow;
+    } finally {
+      {
+        emitter(
+          NoteDetailsState$Data(
+            note: note,
+            date: state.date,
+            moodId: state.moodId,
+            sleepId: state.sleepId,
+            sleepDescription: state.sleepDescription,
+            foodId: state.foodId,
+            foodDescription: state.foodDescription,
+          ),
+        );
       }
     }
   }
@@ -211,32 +230,26 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
   ) async {
     try {
       final id = state.note?.id;
-      if (id == null) throw NoteNullException();
+      if (id == null) {
+        throw const NoteNullException(message: 'Cannot delete null note');
+      }
 
-      emitter(NoteDetailsState$Progress(
-        note: note,
-        date: state.date,
-        moodId: state.moodId,
-        sleepId: state.sleepId,
-        sleepDescription: state.sleepDescription,
-        foodId: state.foodId,
-        foodDescription: state.foodDescription,
-      ),);
-
+      emitter(
+        NoteDetailsState$Progress(
+          note: note,
+          date: state.date,
+          moodId: state.moodId,
+          sleepId: state.sleepId,
+          sleepDescription: state.sleepDescription,
+          foodId: state.foodId,
+          foodDescription: state.foodDescription,
+        ),
+      );
 
       await _notesRepository.deleteNote(id);
 
-      emitter(NoteDetailsState$Completed(
-        note: note,
-        date: state.date,
-        moodId: state.moodId,
-        sleepId: state.sleepId,
-        sleepDescription: state.sleepDescription,
-        foodId: state.foodId,
-        foodDescription: state.foodDescription,
-      ),);
-
-    } on Object catch (e, s) {
+      emitter(NoteDetailsState$Completed());
+    } on Object{
       emitter(
         NoteDetailsState$Error(
           note: note,
@@ -249,9 +262,10 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
           message: 'При удалении данных произошла ошибка',
         ),
       );
-      Error.throwWithStackTrace(e, s);
+      rethrow;
     } finally {
-        emitter(NoteDetailsState$Data(
+      emitter(
+        NoteDetailsState$Data(
           note: note,
           date: state.date,
           moodId: state.moodId,
@@ -259,7 +273,8 @@ class NoteDetailsBloc extends Bloc<NoteDetailsEvent, NoteDetailsState> {
           sleepDescription: state.sleepDescription,
           foodId: state.foodId,
           foodDescription: state.foodDescription,
-        ),);
-      }
+        ),
+      );
     }
   }
+}
