@@ -1,8 +1,8 @@
-import 'package:collection/collection.dart';
 import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
 import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
+import 'package:daylio_clone/src/features/navigation/domain/app_routes.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_bloc.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_event.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_state.dart';
@@ -40,7 +40,7 @@ class _FailureBody extends StatelessWidget {
 
   final String errorMessage;
 
-  void _refreshList(BuildContext context) {
+  void _readNotes(BuildContext context) {
     context.read<NotesBloc>().add(NotesEvent$Read());
   }
 
@@ -56,7 +56,7 @@ class _FailureBody extends StatelessWidget {
             ),
             const SizedBox(height: 15),
             ElevatedButton(
-              onPressed: () => _refreshList(context),
+              onPressed: () => _readNotes(context),
               style: AppButtonStyle.addNoteButtonStyle,
               child: const Text('Обновить'),
             ),
@@ -75,27 +75,23 @@ class _NotesListView extends StatefulWidget {
 class _NotesListViewState extends State<_NotesListView> {
   final ScrollController _scrollController = ScrollController();
 
-  void _onNoteTab(int? id) {
-    if (id == null) return;
-    Navigator.pushNamed(context, '/note_detail', arguments: id);
+  Future<void> _refreshList() async {
+    context.read<NotesBloc>().add(NotesEvent$Refresh());
+    await context.read<NotesBloc>().stream.firstWhere(
+          (element) => switch (element) {
+            NotesState$Data() => true,
+            NotesState$Error() => true,
+            _ => false
+          },
+        );
   }
 
   @override
-  Widget build(BuildContext context) {
-    Future<void> refreshList() async {
-      context.read<NotesBloc>().add(NotesEvent$Read());
-      await context.read<NotesBloc>().stream.firstWhere(
-            (element) => switch (element) {
-              NotesState$Data() => true,
-              NotesState$Error() => true,
-              _ => false
-            },
-          );
-    }
-
-    return BlocBuilder<NotesBloc, NotesState>(
-      builder: (context, state) {
-        SchedulerBinding.instance.addPostFrameCallback((_) {
+  Widget build(BuildContext context) => BlocConsumer<NotesBloc, NotesState>(
+        listenWhen: (previous, current) =>
+            previous.notes.length < current.notes.length,
+        listener: (_, __) =>
+            SchedulerBinding.instance.addPostFrameCallback((_) {
           if (_scrollController.hasClients) {
             _scrollController.animateTo(
               _scrollController.position.maxScrollExtent,
@@ -103,81 +99,87 @@ class _NotesListViewState extends State<_NotesListView> {
               curve: Curves.easeInOut,
             );
           }
-        });
-        final sortedNotes =
-            state.notes.sorted((a, b) => a.date.compareTo(b.date));
-        return RefreshIndicator(
-          onRefresh: refreshList,
-          child: ListView.builder(
-            controller: _scrollController,
-            shrinkWrap: true,
-            reverse: true,
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(top: 5),
-            itemCount: state.notes.length,
-            itemBuilder: (BuildContext context, int index) {
-              final note = sortedNotes[index];
-              final borderRadius = BorderRadius.only(
-                topLeft: index == state.notes.length - 1
-                    ? const Radius.circular(20.0)
-                    : Radius.zero,
-                topRight: index == state.notes.length - 1
-                    ? const Radius.circular(20.0)
-                    : Radius.zero,
-                bottomLeft:
-                    index == 0 ? const Radius.circular(20.0) : Radius.zero,
-                bottomRight:
-                    index == 0 ? const Radius.circular(20.0) : Radius.zero,
-              );
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Stack(
-                  children: [
-                    Ink(
-                      child: InkWell(
-                        borderRadius: borderRadius,
-                        onTap: () => _onNoteTab(note.id),
-                        child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: AppColors.listBackground,
-                            borderRadius: borderRadius,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                SvgPicture.asset(
-                                  note.mood.selectedIcon,
-                                  height: 50,
-                                  width: 50,
-                                ),
-                                const SizedBox(width: 13),
-                                //Расстояние между иконко и информацией
-                                Expanded(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      _MoodRow(note: note),
-                                      _SleepAndFoodRow(note: note),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
+        }),
+        builder: (context, state) => RefreshIndicator(
+          onRefresh: _refreshList,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 5, right: 16, left: 16),
+            child: ListView.builder(
+              controller: _scrollController,
+              reverse: true,
+              itemCount: state.notes.length,
+              itemBuilder: (BuildContext context, int index) => ListViewItem(
+                notes: state.sortedNotes,
+                index: index,
+              ),
+            ),
           ),
-        );
-      },
+        ),
+      );
+}
+
+class ListViewItem extends StatelessWidget {
+  const ListViewItem({
+    super.key,
+    required this.notes,
+    required this.index,
+  });
+
+  final List<NoteModel> notes;
+  final int index;
+
+  void _onNoteTab(BuildContext context, int? id) {
+    if (id == null) return;
+    Navigator.pushNamed(context, AppRouteNames.noteDetails, arguments: id);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final note = notes[index];
+    final borderRadius = BorderRadius.only(
+      bottomLeft: index == 0 ? const Radius.circular(20.0) : Radius.zero,
+      bottomRight: index == 0 ? const Radius.circular(20.0) : Radius.zero,
+      topLeft:
+          index == notes.length - 1 ? const Radius.circular(20.0) : Radius.zero,
+      topRight:
+          index == notes.length - 1 ? const Radius.circular(20.0) : Radius.zero,
+    );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.mainGreen,
+        borderRadius: borderRadius,
+      ),
+      // TODO(MipZ): Обрезать сплеш по айтему, при скроле
+      child: ClipRect(
+        child: InkWell(
+          borderRadius: borderRadius,
+          onTap: () => _onNoteTab(context, note.id),
+          child: Padding(
+            padding: const EdgeInsets.all(8.5),
+            child: Row(
+              children: [
+                SvgPicture.asset(
+                  note.mood.selectedIcon,
+                  height: 50,
+                  width: 50,
+                ),
+                const SizedBox(width: 13),
+                //Расстояние между иконкой и информацией
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _MoodRow(note: note),
+                      _SleepAndFoodRow(note: note),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

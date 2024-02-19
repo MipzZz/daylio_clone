@@ -1,10 +1,11 @@
+import 'package:daylio_clone/src/features/navigation/domain/app_routes.dart';
 import 'package:flutter/material.dart';
 
 class MoreWidget extends StatelessWidget{
   const MoreWidget({super.key});
 
   Future<void> _onAbout(BuildContext context) async {
-    await Navigator.pushNamed(context, '/about');
+    await Navigator.pushNamed(context, AppRouteNames.about);
   }
 
   @override

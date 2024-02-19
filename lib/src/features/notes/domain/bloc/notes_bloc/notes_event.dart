@@ -9,3 +9,5 @@ final class NotesEvent$Update implements NotesEvent {
   NotesEvent$Update(this.notes);
   Iterable<NoteModel> notes;
 }
+
+final class NotesEvent$Refresh implements NotesEvent {}

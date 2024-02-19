@@ -74,13 +74,17 @@ class _DefaultBodyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const Padding(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
           children: [
-            Flexible(child: _NotesCountCard()),
-            Flexible(child: _AverageMoodCard()),
-            Flexible(child: _ActivityCountCard()),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(child: _NotesCountCard()),
+                Flexible(child: _AverageMoodCard()),
+                Flexible(child: _ActivityCountCard()),
+              ],
+            ),
           ],
         ),
       );

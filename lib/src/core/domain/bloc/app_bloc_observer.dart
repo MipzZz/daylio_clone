@@ -10,14 +10,14 @@ class AppBlocObserver extends BlocObserver {
   @override
   void onCreate(BlocBase<Object?> bloc) {
     super.onCreate(bloc);
-    debugPrint('${bloc.runtimeType}');
+    debugPrint('Create: ${bloc.runtimeType}');
   }
 
   @override
   void onEvent(Bloc<Object?, Object?> bloc, Object? event) {
     super.onEvent(bloc, event);
     if (event == null) return;
-    debugPrint('${bloc.runtimeType}.add(${event.runtimeType})');
+    debugPrint('Event: ${bloc.runtimeType}.add(${event.runtimeType})');
     final state = bloc.state;
     if (state == null) return;
   }
@@ -33,7 +33,7 @@ class AppBlocObserver extends BlocObserver {
     final Object? nextState = transition.nextState;
     if (event == null || currentState == null || nextState == null) return;
     debugPrint(
-      '${bloc.runtimeType} ${event.runtimeType}: ${currentState.runtimeType}->${nextState.runtimeType}',
+      'Transition: ${bloc.runtimeType} ${event.runtimeType}: ${currentState.runtimeType}->${nextState.runtimeType}',
     );
   }
 
@@ -53,6 +53,6 @@ class AppBlocObserver extends BlocObserver {
   @override
   void onClose(BlocBase<Object?> bloc) {
     super.onClose(bloc);
-    debugPrint('${bloc.runtimeType}.close()');
+    debugPrint('Close: ${bloc.runtimeType}.close()');
   }
 }
