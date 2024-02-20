@@ -1,7 +1,9 @@
 import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/statistic/domain/bloc/statistic_bloc.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -75,6 +77,8 @@ class _DefaultBodyWidget extends StatelessWidget {
   Widget build(BuildContext context) => const Padding(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -85,7 +89,46 @@ class _DefaultBodyWidget extends StatelessWidget {
                 Flexible(child: _ActivityCountCard()),
               ],
             ),
+            Flexible(
+              child: _PieChart(),
+            ),
           ],
+        ),
+      );
+}
+
+class _PieChart extends StatelessWidget {
+  const _PieChart();
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocBuilder<StatisticBloc, StatisticState>(
+        // TODO(MipZ): Доработать
+        builder: (context, state) => PieChart(
+          PieChartData(
+            sections: [
+              PieChartSectionData(
+                color: GradeLabel.excellent.color,
+                value: state.moodsCount[GradeLabel.excellent.title],
+              ),
+              PieChartSectionData(
+                color: GradeLabel.good.color,
+                value: state.moodsCount[GradeLabel.good.title],
+              ),
+              PieChartSectionData(
+                color: GradeLabel.normal.color,
+                value: state.moodsCount[GradeLabel.normal.title],
+              ),
+              PieChartSectionData(
+                color: GradeLabel.bad.color,
+                value: state.moodsCount[GradeLabel.bad.title],
+              ),
+              PieChartSectionData(
+                color: GradeLabel.terrible.color,
+                value: state.moodsCount[GradeLabel.terrible.title],
+              ),
+            ],
+          ),
         ),
       );
 }

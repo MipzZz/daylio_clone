@@ -39,26 +39,30 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
           notesCount: state.notesCount,
           averageMood: state.averageMood,
           activityCount: state.activityCount,
+          moodsCount: state.moodsCount,
         ),
       );
 
       final notes = await _notesRepository.readNotes();
       final averageMood = _calculateAverageMood(notes);
       final activityCount = _activityCount(notes);
+      final moodsCount = _moodsCount(notes);
 
       emitter(
         StatisticState$Data(
           notesCount: notes.length,
           averageMood: averageMood,
           activityCount: activityCount,
+          moodsCount: moodsCount,
         ),
       );
-    } on Object{
+    } on Object {
       emitter(
         StatisticState$Error(
           notesCount: state.notesCount,
           averageMood: state.averageMood,
           activityCount: state.activityCount,
+          moodsCount: state.moodsCount,
           message: 'При обновлении статистики произошла ошибка',
         ),
       );
@@ -72,13 +76,23 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
   ) {
     final averageMood = _calculateAverageMood(event.notes);
     final activityCount = _activityCount(event.notes);
+    final moodsCount = _moodsCount(event.notes);
     emitter(
       StatisticState$Data(
         notesCount: event.notes.length,
         averageMood: averageMood,
         activityCount: activityCount,
+        moodsCount: moodsCount,
       ),
     );
+  }
+
+  Map<String, double> _moodsCount(Iterable<NoteModel> notes) {
+    final moodMap = <String, double>{};
+    for (final note in notes) {
+      moodMap[note.mood.title] = (moodMap[note.mood.title] ?? 0) + 1;
+    }
+    return moodMap;
   }
 
   double _calculateAverageMood(Iterable<NoteModel> notes) {
@@ -88,7 +102,6 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
         (moodIdList.reduce((value, element) => value + element)) / notes.length;
     return 5 - averageMood;
   }
-
 
   int _activityCount(Iterable<NoteModel> notes) => notes.length * 2;
 }

@@ -25,7 +25,10 @@ class MainNavigator {
     switch (settings.name) {
       case AppRouteNames.noteDetails:
         final arguments = settings.arguments;
-        final id = arguments is int ? arguments : 0;
+        // TODO(MipZ): Придумать как избавиться от присвоения 0, в случаях неккоректного типа аргумента аргументов
+        final id = arguments is int
+            ? arguments
+            : 0;
         return MaterialPageRoute(
           builder: (context) => NoteDetailsWidget(noteId: id),
         );

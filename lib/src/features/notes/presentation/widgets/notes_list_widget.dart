@@ -150,33 +150,31 @@ class ListViewItem extends StatelessWidget {
         borderRadius: borderRadius,
       ),
       // TODO(MipZ): Обрезать сплеш по айтему, при скроле
-      child: ClipRect(
-        child: InkWell(
-          borderRadius: borderRadius,
-          onTap: () => _onNoteTab(context, note.id),
-          child: Padding(
-            padding: const EdgeInsets.all(8.5),
-            child: Row(
-              children: [
-                SvgPicture.asset(
-                  note.mood.selectedIcon,
-                  height: 50,
-                  width: 50,
+      child: InkWell(
+        borderRadius: borderRadius,
+        onTap: () => _onNoteTab(context, note.id),
+        child: Padding(
+          padding: const EdgeInsets.all(8.5),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                note.mood.selectedIcon,
+                height: 50,
+                width: 50,
+              ),
+              const SizedBox(width: 13),
+              //Расстояние между иконкой и информацией
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _MoodRow(note: note),
+                    _SleepAndFoodRow(note: note),
+                  ],
                 ),
-                const SizedBox(width: 13),
-                //Расстояние между иконкой и информацией
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _MoodRow(note: note),
-                      _SleepAndFoodRow(note: note),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

@@ -1,8 +1,9 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/utils/extensions/string_extension.dart';
-import 'package:daylio_clone/src/features/main/domain/main_bloc.dart';
 import 'package:daylio_clone/src/features/more/presentation/view/more_screen.dart';
 import 'package:daylio_clone/src/features/navigation/domain/app_routes.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_bloc.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_state.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/notes_list_widget.dart';
 import 'package:daylio_clone/src/features/statistic/presentation/view/statistic_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +20,12 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedTab = 0;
 
-  void _addDays() {
-    context.read<MainBloc>().add(MainEvent$AddTime());
+  void _addDays(BuildContext context) {
+    // context.read<MainBloc>().add(MainEvent$AddTime());
   }
 
-  void _reduceDays() {
-    context.read<MainBloc>().add(MainEvent$ReduceTime());
+  void _reduceDays(BuildContext context) {
+    // context.read<MainBloc>().add(MainEvent$ReduceTime());
   }
 
   final List<Widget> _tabs = [
@@ -49,7 +50,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => BlocBuilder<MainBloc, MainState>(
+  Widget build(BuildContext context) => BlocBuilder<NotesBloc, NotesState>(
         builder: (context, state) => Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -76,13 +77,15 @@ class _MainScreenState extends State<MainScreen> {
                       Icons.chevron_left,
                       color: Colors.white,
                     ),
-                    onPressed: _reduceDays,
+                    onPressed: () => _reduceDays(context),
                   ),
                 ),
                 Flexible(
                   flex: 4,
                   child: Text(
-                    DateFormat.yMMMM('ru-Ru').format(state.date).capitalize(),
+                    DateFormat.yMMMM('ru-Ru')
+                        .format(DateTime.now())
+                        .capitalize(),
                   ),
                 ),
                 Flexible(
@@ -91,7 +94,7 @@ class _MainScreenState extends State<MainScreen> {
                       Icons.chevron_right,
                       color: Colors.white,
                     ),
-                    onPressed: () => _addDays,
+                    onPressed: () => _addDays(context),
                   ),
                 ),
               ],
@@ -114,7 +117,10 @@ class _MainScreenState extends State<MainScreen> {
             child: const Icon(Icons.add),
           ),
           bottomNavigationBar: BottomAppBar(
-            padding: const EdgeInsets.symmetric(horizontal: 9.0, vertical: 0.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 9.0,
+              vertical: 0.0,
+            ),
             height: 70.0,
             child: Row(
               mainAxisSize: MainAxisSize.min,
