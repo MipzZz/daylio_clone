@@ -196,31 +196,34 @@ class SliverListItem extends StatelessWidget {
         borderRadius: borderRadius,
       ),
       // TODO(MipZ): Обрезать сплеш по айтему, при скроле
-      child: InkWell(
-        borderRadius: borderRadius,
-        onTap: () => _onNoteTab(context, note.id),
-        child: Padding(
-          padding: const EdgeInsets.all(8.5),
-          child: Row(
-            children: [
-              SvgPicture.asset(
-                note.mood.selectedIcon,
-                height: 50,
-                width: 50,
-              ),
-              const SizedBox(width: 13),
-              //Расстояние между иконкой и информацией
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _MoodRow(note: note),
-                    _SleepAndFoodRow(note: note),
-                  ],
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: borderRadius,
+          onTap: () => _onNoteTab(context, note.id),
+          child: Padding(
+            padding: const EdgeInsets.all(8.5),
+            child: Row(
+              children: [
+                SvgPicture.asset(
+                  note.mood.selectedIcon,
+                  height: 50,
+                  width: 50,
                 ),
-              ),
-            ],
+                const SizedBox(width: 13),
+                //Расстояние между иконкой и информацией
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _MoodRow(note: note),
+                      _SleepAndFoodRow(note: note),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
