@@ -19,4 +19,8 @@ abstract class AppTextStyle {
     fontSize: 16.5,
     color: AppColors.labelTextColor,
   );
+  static const TextStyle dateHeader = TextStyle(
+    fontSize: 14.5,
+    color: AppColors.headerNoteTextColor,
+  );
 }

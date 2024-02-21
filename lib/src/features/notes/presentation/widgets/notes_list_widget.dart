@@ -86,6 +86,59 @@ class _NotesListViewState extends State<_NotesListView> {
         );
   }
 
+
+  Iterable<Widget> _listWithTitle(Map<String, List<NoteModel>> notes) sync* {
+    for (int i = 0; i < notes.length; i++) {
+      final entry = notes.entries.elementAt(i);
+      final prevEntry = notes.entries.elementAt((i - 1).abs());
+      final currentDate = entry.value[0].date;
+      final previousDate = prevEntry.value.last.date;
+      if (previousDate.difference(currentDate).inDays > 1) {
+        yield SliverPadding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            sliver: SliverToBoxAdapter(
+              child: Center(
+                child:
+                    Text('Пропущено дней: ${previousDate.difference(currentDate).inDays}'),
+              ),
+            ));
+      }
+      yield SliverPadding(
+        padding: const EdgeInsets.only(top: 10),
+        sliver: SliverToBoxAdapter(
+          child: DecoratedBox(
+            decoration: const BoxDecoration(
+              color: AppColors.headerNoteColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20.0),
+                topRight: Radius.circular(20.0),
+              ),
+            ),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 3.5),
+                child: Text(
+                  entry.key,
+                  style: AppTextStyle.dateHeader,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      yield SliverList(
+        delegate: SliverChildBuilderDelegate(
+          childCount: entry.value.length,
+          (BuildContext context, int index) => SliverListItem(
+            notes: entry.value,
+            index: index,
+          ),
+        ),
+      );
+      yield const SliverToBoxAdapter(child: SizedBox(height: 5));
+    }
+  }
+
   @override
   Widget build(BuildContext context) => BlocConsumer<NotesBloc, NotesState>(
         listenWhen: (previous, current) =>
@@ -94,7 +147,7 @@ class _NotesListViewState extends State<_NotesListView> {
             SchedulerBinding.instance.addPostFrameCallback((_) {
           if (_scrollController.hasClients) {
             _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
+              _scrollController.position.minScrollExtent,
               duration: const Duration(milliseconds: 700),
               curve: Curves.easeInOut,
             );
@@ -104,22 +157,17 @@ class _NotesListViewState extends State<_NotesListView> {
           onRefresh: _refreshList,
           child: Padding(
             padding: const EdgeInsets.only(top: 5, right: 16, left: 16),
-            child: ListView.builder(
+            child: CustomScrollView(
               controller: _scrollController,
-              reverse: true,
-              itemCount: state.notes.length,
-              itemBuilder: (BuildContext context, int index) => ListViewItem(
-                notes: state.sortedNotes,
-                index: index,
-              ),
+              slivers: _listWithTitle(state.groupedNotes).toList(),
             ),
           ),
         ),
       );
 }
 
-class ListViewItem extends StatelessWidget {
-  const ListViewItem({
+class SliverListItem extends StatelessWidget {
+  const SliverListItem({
     super.key,
     required this.notes,
     required this.index,
@@ -137,16 +185,14 @@ class ListViewItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final note = notes[index];
     final borderRadius = BorderRadius.only(
-      bottomLeft: index == 0 ? const Radius.circular(20.0) : Radius.zero,
-      bottomRight: index == 0 ? const Radius.circular(20.0) : Radius.zero,
-      topLeft:
+      bottomLeft:
           index == notes.length - 1 ? const Radius.circular(20.0) : Radius.zero,
-      topRight:
+      bottomRight:
           index == notes.length - 1 ? const Radius.circular(20.0) : Radius.zero,
     );
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.mainGreen,
+        color: AppColors.listBackground,
         borderRadius: borderRadius,
       ),
       // TODO(MipZ): Обрезать сплеш по айтему, при скроле

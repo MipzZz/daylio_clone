@@ -1,10 +1,13 @@
 import 'package:collection/collection.dart';
+import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
 
 sealed class NotesState {
   List<NoteModel> get notes;
 
   List<NoteModel> get sortedNotes;
+
+  Map<String, List<NoteModel>> get groupedNotes;
 
   NotesState copyWith({
     List<NoteModel>? notes,
@@ -19,6 +22,9 @@ final class NotesState$Initial implements NotesState {
   List<NoteModel> get sortedNotes => [];
 
   @override
+  Map<String, List<NoteModel>> get groupedNotes => {};
+
+  @override
   NotesState$Initial copyWith({
     List<NoteModel>? notes,
   }) =>
@@ -29,13 +35,16 @@ final class NotesState$Data implements NotesState {
   NotesState$Data({
     required this.notes,
   }) {
-    sortedNotes = notes.sorted((a, b) => a.date.compareTo(b.date));
+    sortedNotes = notes.sorted((a, b) => b.date.compareTo(a.date));
+    groupedNotes = groupBy(sortedNotes, (note) => note.date.toHeaderDate());
   }
 
   @override
   final List<NoteModel> notes;
   @override
   late final List<NoteModel> sortedNotes;
+  @override
+  late final Map<String, List<NoteModel>> groupedNotes;
 
   @override
   NotesState$Data copyWith({
@@ -50,13 +59,17 @@ final class NotesState$Progress implements NotesState {
   NotesState$Progress({
     required this.notes,
   }) {
-    sortedNotes = notes.sorted((a, b) => a.date.compareTo(b.date));
+    sortedNotes = notes.sorted((a, b) => b.date.compareTo(a.date));
+    groupedNotes = groupBy(sortedNotes, (note) => note.date.toHeaderDate());
   }
 
   @override
   final List<NoteModel> notes;
   @override
   late final List<NoteModel> sortedNotes;
+  @override
+  late final Map<String, List<NoteModel>> groupedNotes;
+
 
   @override
   NotesState$Progress copyWith({
@@ -71,13 +84,16 @@ final class NotesState$Refreshing implements NotesState {
   NotesState$Refreshing({
     required this.notes,
   }) {
-    sortedNotes = notes.sorted((a, b) => a.date.compareTo(b.date));
+    sortedNotes = notes.sorted((a, b) => b.date.compareTo(a.date));
+    groupedNotes = groupBy(sortedNotes, (note) => note.date.toHeaderDate());
   }
 
   @override
   final List<NoteModel> notes;
   @override
   late final List<NoteModel> sortedNotes;
+  @override
+  late final Map<String, List<NoteModel>> groupedNotes;
 
   @override
   NotesState$Refreshing copyWith({
@@ -93,13 +109,16 @@ final class NotesState$Error implements NotesState {
     required this.notes,
     required this.message,
   }) {
-    sortedNotes = notes.sorted((a, b) => a.date.compareTo(b.date));
+    sortedNotes = notes.sorted((a, b) => b.date.compareTo(a.date));
+    groupedNotes = groupBy(sortedNotes, (note) => note.date.toHeaderDate());
   }
 
   @override
   final List<NoteModel> notes;
   @override
   late final List<NoteModel> sortedNotes;
+  @override
+  late final Map<String, List<NoteModel>> groupedNotes;
   final String message;
 
   @override

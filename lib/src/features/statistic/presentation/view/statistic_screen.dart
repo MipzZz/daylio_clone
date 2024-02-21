@@ -103,31 +103,15 @@ class _PieChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       BlocBuilder<StatisticBloc, StatisticState>(
-        // TODO(MipZ): Доработать
         builder: (context, state) => PieChart(
           PieChartData(
-            sections: [
-              PieChartSectionData(
-                color: GradeLabel.excellent.color,
-                value: state.moodsCount[GradeLabel.excellent.title],
+            sections: List.generate(
+              5,
+              (index) => PieChartSectionData(
+                color: GradeLabel.values[index].color,
+                value: state.moodsCount[GradeLabel.values[index].title] ?? 0,
               ),
-              PieChartSectionData(
-                color: GradeLabel.good.color,
-                value: state.moodsCount[GradeLabel.good.title],
-              ),
-              PieChartSectionData(
-                color: GradeLabel.normal.color,
-                value: state.moodsCount[GradeLabel.normal.title],
-              ),
-              PieChartSectionData(
-                color: GradeLabel.bad.color,
-                value: state.moodsCount[GradeLabel.bad.title],
-              ),
-              PieChartSectionData(
-                color: GradeLabel.terrible.color,
-                value: state.moodsCount[GradeLabel.terrible.title],
-              ),
-            ],
+            ),
           ),
         ),
       );

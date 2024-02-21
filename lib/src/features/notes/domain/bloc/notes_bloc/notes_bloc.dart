@@ -47,6 +47,11 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
     }
   }
 
+  void _deleteNote(NotesEvent$Update event,
+      Emitter<NotesState> emitter,) {
+    // TODO(Mipz): Добавить удаление заметки и продумать процесс длительного удаления
+  }
+
   void _updateNotes(NotesEvent$Update event,
       Emitter<NotesState> emitter,) {
     try {

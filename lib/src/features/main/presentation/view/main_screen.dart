@@ -124,9 +124,10 @@ class _MainScreenState extends State<MainScreen> {
             height: 70.0,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Column(
+                  // TODO(Mipz): Сделать более лаконично
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
