@@ -108,6 +108,9 @@ class _PieChart extends StatelessWidget {
             sections: List.generate(
               5,
               (index) => PieChartSectionData(
+                titleStyle: AppTextStyle.pieChart,
+                title: state.moodsCount[GradeLabel.values[index].title]
+                    ?.toStringAsFixed(0),
                 color: GradeLabel.values[index].color,
                 value: state.moodsCount[GradeLabel.values[index].title] ?? 0,
               ),

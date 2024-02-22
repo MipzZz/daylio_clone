@@ -1,9 +1,8 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/utils/extensions/string_extension.dart';
+import 'package:daylio_clone/src/features/main/domain/main_bloc.dart';
 import 'package:daylio_clone/src/features/more/presentation/view/more_screen.dart';
 import 'package:daylio_clone/src/features/navigation/domain/app_routes.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_bloc.dart';
-import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_state.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/notes_list_widget.dart';
 import 'package:daylio_clone/src/features/statistic/presentation/view/statistic_screen.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +20,11 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedTab = 0;
 
   void _addDays(BuildContext context) {
-    // context.read<MainBloc>().add(MainEvent$AddTime());
+    context.read<MainBloc>().add(MainEvent$AddTime());
   }
 
   void _reduceDays(BuildContext context) {
-    // context.read<MainBloc>().add(MainEvent$ReduceTime());
+    context.read<MainBloc>().add(MainEvent$ReduceTime());
   }
 
   final List<Widget> _tabs = [
@@ -49,8 +48,24 @@ class _MainScreenState extends State<MainScreen> {
     await Navigator.pushNamed(context, AppRouteNames.debug);
   }
 
+  void _scrollToItem(GlobalObjectKey key) {
+    final targetContext = key.currentContext;
+    if (targetContext != null) {
+      Scrollable.ensureVisible(
+        targetContext,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   @override
-  Widget build(BuildContext context) => BlocBuilder<NotesBloc, NotesState>(
+  Widget build(BuildContext context) => BlocConsumer<MainBloc, MainState>(
+        listener: (previous, current) => _scrollToItem(
+          GlobalObjectKey(
+            '${current.date.month}-${current.date.year}'.hashCode,
+          ),
+        ),
         builder: (context, state) => Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -71,7 +86,7 @@ class _MainScreenState extends State<MainScreen> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Flexible(
+                Expanded(
                   child: IconButton(
                     icon: const Icon(
                       Icons.chevron_left,
@@ -80,15 +95,15 @@ class _MainScreenState extends State<MainScreen> {
                     onPressed: () => _reduceDays(context),
                   ),
                 ),
-                Flexible(
+                Expanded(
                   flex: 4,
-                  child: Text(
-                    DateFormat.yMMMM('ru-Ru')
-                        .format(DateTime.now())
-                        .capitalize(),
+                  child: Center(
+                    child: Text(
+                      DateFormat.yMMMM('ru-Ru').format(state.date).capitalize(),
+                    ),
                   ),
                 ),
-                Flexible(
+                Expanded(
                   child: IconButton(
                     icon: const Icon(
                       Icons.chevron_right,

@@ -7,7 +7,7 @@ sealed class NotesState {
 
   List<NoteModel> get sortedNotes;
 
-  Map<String, List<NoteModel>> get groupedNotes;
+  Map<DateTime, List<NoteModel>> get groupedNotes;
 
   NotesState copyWith({
     List<NoteModel>? notes,
@@ -22,7 +22,7 @@ final class NotesState$Initial implements NotesState {
   List<NoteModel> get sortedNotes => [];
 
   @override
-  Map<String, List<NoteModel>> get groupedNotes => {};
+  Map<DateTime, List<NoteModel>> get groupedNotes => {};
 
   @override
   NotesState$Initial copyWith({
@@ -36,7 +36,7 @@ final class NotesState$Data implements NotesState {
     required this.notes,
   }) {
     sortedNotes = notes.sorted((a, b) => b.date.compareTo(a.date));
-    groupedNotes = groupBy(sortedNotes, (note) => note.date.toHeaderDate());
+    groupedNotes = groupBy(sortedNotes, (note) => note.date.withoutTime());
   }
 
   @override
@@ -44,7 +44,7 @@ final class NotesState$Data implements NotesState {
   @override
   late final List<NoteModel> sortedNotes;
   @override
-  late final Map<String, List<NoteModel>> groupedNotes;
+  late final Map<DateTime, List<NoteModel>> groupedNotes;
 
   @override
   NotesState$Data copyWith({
@@ -60,7 +60,7 @@ final class NotesState$Progress implements NotesState {
     required this.notes,
   }) {
     sortedNotes = notes.sorted((a, b) => b.date.compareTo(a.date));
-    groupedNotes = groupBy(sortedNotes, (note) => note.date.toHeaderDate());
+    groupedNotes = groupBy(sortedNotes, (note) => note.date.withoutTime());
   }
 
   @override
@@ -68,7 +68,7 @@ final class NotesState$Progress implements NotesState {
   @override
   late final List<NoteModel> sortedNotes;
   @override
-  late final Map<String, List<NoteModel>> groupedNotes;
+  late final Map<DateTime, List<NoteModel>> groupedNotes;
 
 
   @override
@@ -85,7 +85,7 @@ final class NotesState$Refreshing implements NotesState {
     required this.notes,
   }) {
     sortedNotes = notes.sorted((a, b) => b.date.compareTo(a.date));
-    groupedNotes = groupBy(sortedNotes, (note) => note.date.toHeaderDate());
+    groupedNotes = groupBy(sortedNotes, (note) => note.date.withoutTime());
   }
 
   @override
@@ -93,7 +93,7 @@ final class NotesState$Refreshing implements NotesState {
   @override
   late final List<NoteModel> sortedNotes;
   @override
-  late final Map<String, List<NoteModel>> groupedNotes;
+  late final Map<DateTime, List<NoteModel>> groupedNotes;
 
   @override
   NotesState$Refreshing copyWith({
@@ -110,7 +110,7 @@ final class NotesState$Error implements NotesState {
     required this.message,
   }) {
     sortedNotes = notes.sorted((a, b) => b.date.compareTo(a.date));
-    groupedNotes = groupBy(sortedNotes, (note) => note.date.toHeaderDate());
+    groupedNotes = groupBy(sortedNotes, (note) => note.date.withoutTime());
   }
 
   @override
@@ -118,7 +118,7 @@ final class NotesState$Error implements NotesState {
   @override
   late final List<NoteModel> sortedNotes;
   @override
-  late final Map<String, List<NoteModel>> groupedNotes;
+  late final Map<DateTime, List<NoteModel>> groupedNotes;
   final String message;
 
   @override

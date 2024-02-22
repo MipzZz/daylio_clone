@@ -14,6 +14,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
         final NotesEvent$Read event => _readNotes(event, emitter),
         final NotesEvent$Refresh event => _readNotes(event, emitter),
         final NotesEvent$Update event => _updateNotes(event, emitter),
+      final NotesEvent$Delete event => _deleteNote(event, emitter),
       },
       transformer: sequential(),
     );
@@ -46,10 +47,20 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       rethrow;
     }
   }
-
-  void _deleteNote(NotesEvent$Update event,
+ // TODO(MipZ): Добавить обработку ошибок и длительного удаления
+  void _deleteNote(NotesEvent$Delete event,
       Emitter<NotesState> emitter,) {
-    // TODO(Mipz): Добавить удаление заметки и продумать процесс длительного удаления
+    try {
+      final id = event.noteId;
+      if (id == null) return;
+      _notesRepository.deleteNote(id);
+    } on Object {
+      emitter(
+        NotesState$Error(
+          notes: state.notes, message: 'При удалении записи произошла ошибка',
+        )
+      );
+    }
   }
 
   void _updateNotes(NotesEvent$Update event,

@@ -1,6 +1,7 @@
 import 'package:daylio_clone/src/core/data/source/local/db/drift_storage.dart';
 import 'package:daylio_clone/src/core/presentation/assets/themes/app_theme_data.dart';
 import 'package:daylio_clone/src/features/debug/data/debug_repository.dart';
+import 'package:daylio_clone/src/features/main/domain/main_bloc.dart';
 import 'package:daylio_clone/src/features/navigation/domain/app_routes.dart';
 import 'package:daylio_clone/src/features/notes/data/repository/notes_repository.dart';
 import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_bloc.dart';
@@ -48,6 +49,9 @@ class _AppViewState extends State<AppView> {
             create: (context) =>
                 StatisticBloc(notesRepository: _notesRepository)
                   ..add(StatisticEvent$Initialize()),
+          ),
+          BlocProvider(
+            create: (context) => MainBloc(),
           ),
         ],
         child: MaterialApp(

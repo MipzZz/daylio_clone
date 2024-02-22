@@ -86,56 +86,93 @@ class _NotesListViewState extends State<_NotesListView> {
         );
   }
 
+  String _getDatAddition(int days) {
+    final double preLastDigit = days % 100 / 10;
+    if (preLastDigit == 1) {
+      return 'дней';
+    }
+    switch (days % 10) {
+      case 1:
+        return 'Пропущен $days день';
+      case 2:
+      case 3:
+      case 4:
+        return 'Пропущено $days дня';
+      default:
+        return 'Пропущено $days дней';
+    }
+  }
 
-  Iterable<Widget> _listWithTitle(Map<String, List<NoteModel>> notes) sync* {
+  void _dismissNote(int? id) {
+    context.read<NotesBloc>().add(NotesEvent$Delete(id));
+  }
+
+  Iterable<Widget> _listWithTitle(Map<DateTime, List<NoteModel>> notes) sync* {
     for (int i = 0; i < notes.length; i++) {
       final entry = notes.entries.elementAt(i);
-      final prevEntry = notes.entries.elementAt((i - 1).abs());
-      final currentDate = entry.value[0].date;
-      final previousDate = prevEntry.value.last.date;
-      if (previousDate.difference(currentDate).inDays > 1) {
-        yield SliverPadding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
+
+      GlobalObjectKey? keyMonth =
+          GlobalObjectKey('${entry.key.month}-${entry.key.year}'.hashCode);
+      if (notes.length > 1 && i > 0) {
+        final prevEntry = notes.entries.elementAt(i - 1);
+        final currentDate = entry.value[0].date;
+        final previousDate = prevEntry.value.last.date;
+        if (entry.key.month == prevEntry.key.month) {
+          keyMonth = null;
+        }
+        final difference = previousDate.difference(currentDate).inDays;
+        if (difference > 1) {
+          yield SliverPadding(
+            padding: const EdgeInsets.only(bottom: 15),
             sliver: SliverToBoxAdapter(
               child: Center(
-                child:
-                    Text('Пропущено дней: ${previousDate.difference(currentDate).inDays}'),
-              ),
-            ));
-      }
-      yield SliverPadding(
-        padding: const EdgeInsets.only(top: 10),
-        sliver: SliverToBoxAdapter(
-          child: DecoratedBox(
-            decoration: const BoxDecoration(
-              color: AppColors.headerNoteColor,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20.0),
-                topRight: Radius.circular(20.0),
-              ),
-            ),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 3.5),
                 child: Text(
-                  entry.key,
-                  style: AppTextStyle.dateHeader,
+                  _getDatAddition(difference),
+                  style: AppTextStyle.missedDaysText,
                 ),
               ),
             ),
+          );
+        }
+      }
+      yield SliverToBoxAdapter(
+        child: DecoratedBox(
+          key: keyMonth,
+          decoration: const BoxDecoration(
+            color: AppColors.headerNoteColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.0),
+              topRight: Radius.circular(20.0),
+            ),
+          ),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 3.5),
+              child: Text(
+                entry.key.toHeaderDate(),
+                style: AppTextStyle.dateHeader,
+              ),
+            ),
           ),
         ),
       );
-      yield SliverList(
-        delegate: SliverChildBuilderDelegate(
-          childCount: entry.value.length,
-          (BuildContext context, int index) => SliverListItem(
-            notes: entry.value,
-            index: index,
+      yield SliverPadding(
+        padding: const EdgeInsets.only(bottom: 15),
+        sliver: SliverList(
+          delegate: SliverChildBuilderDelegate(
+            childCount: entry.value.length,
+            (BuildContext context, int index) => Dismissible(
+              background: const DecoratedBox(decoration: BoxDecoration(color: Colors.red)),
+              onDismissed: (_) => _dismissNote(entry.value[index].id),
+              key: ValueKey(entry),
+              child: SliverListItem(
+                notes: entry.value,
+                index: index,
+              ),
+            ),
           ),
         ),
       );
-      yield const SliverToBoxAdapter(child: SizedBox(height: 5));
     }
   }
 
@@ -195,7 +232,6 @@ class SliverListItem extends StatelessWidget {
         color: AppColors.listBackground,
         borderRadius: borderRadius,
       ),
-      // TODO(MipZ): Обрезать сплеш по айтему, при скроле
       child: Material(
         color: Colors.transparent,
         child: InkWell(
