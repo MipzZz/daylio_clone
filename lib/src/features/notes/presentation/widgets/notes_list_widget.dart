@@ -162,7 +162,20 @@ class _NotesListViewState extends State<_NotesListView> {
           delegate: SliverChildBuilderDelegate(
             childCount: entry.value.length,
             (BuildContext context, int index) => Dismissible(
-              background: const DecoratedBox(decoration: BoxDecoration(color: Colors.red)),
+              direction: DismissDirection.startToEnd,
+              background: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: index == notes.length - 1
+                        ? const Radius.circular(20.0)
+                        : Radius.zero,
+                    bottomRight: index == notes.length - 1
+                        ? const Radius.circular(20.0)
+                        : Radius.zero,
+                  ),
+                ),
+              ),
               onDismissed: (_) => _dismissNote(entry.value[index].id),
               key: ValueKey(entry),
               child: SliverListItem(

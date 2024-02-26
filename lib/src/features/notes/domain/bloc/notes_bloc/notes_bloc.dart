@@ -53,6 +53,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
     try {
       final id = event.noteId;
       if (id == null) return;
+      emitter(NotesState$Progress(notes: state.notes));
       _notesRepository.deleteNote(id);
     } on Object {
       emitter(
