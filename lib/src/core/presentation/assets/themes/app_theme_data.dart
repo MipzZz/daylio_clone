@@ -9,11 +9,7 @@ abstract class AppThemeData {
       rangePickerHeaderForegroundColor: AppColors.mainTextColor,
       weekdayStyle: TextStyle(color: AppColors.mainTextColor),
       headerForegroundColor: AppColors.mainTextColor,
-
       dayForegroundColor: MaterialStatePropertyAll(AppColors.mainTextColor),
-      yearForegroundColor: MaterialStatePropertyAll(AppColors.mainTextColor),
-      yearOverlayColor: MaterialStatePropertyAll(AppColors.mainGreen),
-      yearStyle: TextStyle(color: Colors.green),
       todayForegroundColor: MaterialStatePropertyAll(AppColors.mainTextColor),
     ),
     timePickerTheme: const TimePickerThemeData(
@@ -31,5 +27,8 @@ abstract class AppThemeData {
       // selectedItemColor: Colors.black
     ),
     textTheme: Typography.whiteRedmond,
+    buttonTheme: const ButtonThemeData(
+      textTheme: ButtonTextTheme.accent,
+    )
   );
 }

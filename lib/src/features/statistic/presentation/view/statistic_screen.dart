@@ -1,7 +1,8 @@
 import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
-import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
+import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
+import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
 import 'package:daylio_clone/src/features/statistic/domain/bloc/statistic_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -89,33 +90,9 @@ class _DefaultBodyWidget extends StatelessWidget {
                 Flexible(child: _ActivityCountCard()),
               ],
             ),
-            Flexible(
-              child: _PieChart(),
-            ),
+            Flexible(child: _DatePickerWidget()),
+            Flexible(flex: 2, child: _PieChart()),
           ],
-        ),
-      );
-}
-
-class _PieChart extends StatelessWidget {
-  const _PieChart();
-
-  @override
-  Widget build(BuildContext context) =>
-      BlocBuilder<StatisticBloc, StatisticState>(
-        builder: (context, state) => PieChart(
-          PieChartData(
-            sections: List.generate(
-              5,
-              (index) => PieChartSectionData(
-                titleStyle: AppTextStyle.pieChart,
-                title: state.moodsCount[GradeLabel.values[index].title]
-                    ?.toStringAsFixed(0),
-                color: GradeLabel.values[index].color,
-                value: state.moodsCount[GradeLabel.values[index].title] ?? 0,
-              ),
-            ),
-          ),
         ),
       );
 }
@@ -221,13 +198,92 @@ class _ActivityCountCard extends StatelessWidget {
                   ),
                   title: Text(
                     'Занятия',
-                    style: TextStyle(color: Colors.white),
+                    // style: TextStyle(color: AppColors.mainTextColor),
                   ),
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                   horizontalTitleGap: 7,
                 ),
               ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _DatePickerWidget extends StatefulWidget {
+  const _DatePickerWidget();
+
+  @override
+  State<_DatePickerWidget> createState() => _DatePickerWidgetState();
+}
+
+class _DatePickerWidgetState extends State<_DatePickerWidget> {
+  Future<void> pickDateRange(BuildContext context) async {
+    final DateTimeRange? newDateRange = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      currentDate: DateTime.now(),
+      saveText: 'Выбрать',
+    );
+    if (newDateRange == null) return;
+    _saveTimeRange(newDateRange);
+  }
+
+  void _saveTimeRange(DateTimeRange newDateRange) {
+    context
+        .read<StatisticBloc>()
+        .add(StatisticEvent$DateRangeChange(newDateRange));
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocBuilder<StatisticBloc, StatisticState>(
+        builder: (context, state) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 50),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  '${state.dateRange.start.dateOnly()} - '
+                      '${state.dateRange.end.dateOnly()}',
+                ),
+              ),
+              Expanded(
+                child: OutlinedButton(
+                  style: AppButtonStyle.buttonDateTimeStyle,
+                  onPressed: () => pickDateRange(context),
+                  child: const Text(
+                    'Выберите период',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+}
+
+class _PieChart extends StatelessWidget {
+  const _PieChart();
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocBuilder<StatisticBloc, StatisticState>(
+        builder: (context, state) => PieChart(
+          PieChartData(
+            sections: List.generate(
+              5,
+              (index) => PieChartSectionData(
+                titleStyle: AppTextStyle.pieChart,
+                title: state.moodsCount[MoodsStorage.values[index].title]
+                    ?.toStringAsFixed(0),
+                color: MoodsStorage.values[index].color,
+                value: state.moodsCount[MoodsStorage.values[index].title] ?? 0,
+              ),
             ),
           ),
         ),

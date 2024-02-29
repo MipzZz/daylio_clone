@@ -100,7 +100,7 @@ class _NoteDetailsWidgetState extends State<NoteDetailsWidget> {
 class _DefaultBodyWidget extends StatelessWidget {
   const _DefaultBodyWidget();
 
-  void _unFocus(BuildContext context){
+  void _unFocus(BuildContext context) {
     FocusScope.of(context).unfocus();
   }
 
@@ -172,28 +172,8 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
     final DateTime? date = await showDatePicker(
       context: context,
       initialDate: selectedDate,
-      firstDate: DateTime(2022),
-      lastDate: DateTime(2030),
-      builder: (context, child) {
-        if (child == null) {
-          return const SizedBox(
-            child: Text('Непредвиденная ошибка'),
-          );
-        }
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              onSurface: Colors.white,
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: const Color.fromARGB(255, 180, 135, 218),
-              ),
-            ),
-          ),
-          child: child,
-        );
-      },
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
     );
     if (date != null) {
       _updateDate(date);
@@ -457,7 +437,6 @@ class _FoodRowWidgetState extends State<_FoodRowWidget> {
                 isDense: true,
                 border: OutlineInputBorder(),
                 labelText: 'Описание еды',
-
               ),
               style: const TextStyle(fontSize: 15),
             ),

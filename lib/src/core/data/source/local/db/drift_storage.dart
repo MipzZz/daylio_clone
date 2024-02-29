@@ -15,11 +15,11 @@ import 'package:path_provider/path_provider.dart';
 part 'drift_storage.g.dart';
 
 LazyDatabase _openConnection() => LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(path.join(dbFolder.path, 'note.sqlite'));
+      final dbFolder = await getApplicationDocumentsDirectory();
+      final file = File(path.join(dbFolder.path, 'note.sqlite'));
 
-    return NativeDatabase(file);
-  });
+      return NativeDatabase(file);
+    });
 
 @DriftDatabase(tables: [NoteTable])
 class AppDb extends _$AppDb {

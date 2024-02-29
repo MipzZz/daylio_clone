@@ -9,28 +9,30 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       : _notesRepository = notesRepository,
         super(NotesState$Initial()) {
     on<NotesEvent>(
-          (event, emitter) =>
-      switch (event) {
+      (event, emitter) => switch (event) {
         final NotesEvent$Read event => _readNotes(event, emitter),
         final NotesEvent$Refresh event => _readNotes(event, emitter),
         final NotesEvent$Update event => _updateNotes(event, emitter),
-      final NotesEvent$Delete event => _deleteNote(event, emitter),
+        final NotesEvent$Delete event => _deleteNote(event, emitter),
       },
       transformer: sequential(),
     );
     _notesRepository.notesStream.listen(
-          (notes) => add(NotesEvent$Update(notes)),
+      (notes) => add(NotesEvent$Update(notes)),
     );
   }
 
   final NotesRepository _notesRepository;
 
-  Future<void> _readNotes(NotesEvent event,
-      Emitter<NotesState> emitter,) async {
+  Future<void> _readNotes(
+    NotesEvent event,
+    Emitter<NotesState> emitter,
+  ) async {
     try {
       if (event is NotesEvent$Refresh) {
         emitter(
-          NotesState$Refreshing(notes: state.notes),);
+          NotesState$Refreshing(notes: state.notes),
+        );
       } else {
         emitter(NotesState$Progress(notes: state.notes));
       }
@@ -47,25 +49,32 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       rethrow;
     }
   }
- // TODO(MipZ): Добавить обработку ошибок и длительного удаления
-  void _deleteNote(NotesEvent$Delete event,
-      Emitter<NotesState> emitter,) {
+
+  Future<void> _deleteNote(
+    NotesEvent$Delete event,
+    Emitter<NotesState> emitter,
+  ) async {
     try {
       final id = event.noteId;
       if (id == null) return;
-      emitter(NotesState$Progress(notes: state.notes));
-      _notesRepository.deleteNote(id);
+      state.notes.removeWhere((element) => id == element.id);
+      emitter(NotesState$Data(notes: state.notes.toList()));
+      await _notesRepository.deleteNote(id);
     } on Object {
       emitter(
         NotesState$Error(
-          notes: state.notes, message: 'При удалении записи произошла ошибка',
-        )
+          notes: state.notes,
+          message: 'При удалении записи произошла ошибка',
+        ),
       );
+      rethrow;
     }
   }
 
-  void _updateNotes(NotesEvent$Update event,
-      Emitter<NotesState> emitter,) {
+  void _updateNotes(
+    NotesEvent$Update event,
+    Emitter<NotesState> emitter,
+  ) {
     try {
       emitter(NotesState$Data(notes: event.notes.toList()));
     } on Object {

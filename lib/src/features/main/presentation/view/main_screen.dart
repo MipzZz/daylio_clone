@@ -1,6 +1,7 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/utils/extensions/string_extension.dart';
 import 'package:daylio_clone/src/features/main/domain/main_bloc.dart';
+import 'package:daylio_clone/src/features/main/presentation/widgets/bottom_bar_item.dart';
 import 'package:daylio_clone/src/features/more/presentation/view/more_screen.dart';
 import 'package:daylio_clone/src/features/navigation/domain/app_routes.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/notes_list_widget.dart';
@@ -19,14 +20,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedTab = 0;
 
-  void _addDays(BuildContext context) {
-    context.read<MainBloc>().add(MainEvent$AddTime());
-  }
-
-  void _reduceDays(BuildContext context) {
-    context.read<MainBloc>().add(MainEvent$ReduceTime());
-  }
-
   final List<Widget> _tabs = [
     const NotesListWidget(),
     const StatisticWidget(),
@@ -38,10 +31,6 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       _selectedTab = index;
     });
-  }
-
-  Future<void> _addNote() async {
-    await Navigator.pushNamed(context, AppRouteNames.addNote);
   }
 
   Future<void> _onDebug() async {
@@ -82,38 +71,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
               const SizedBox(width: 10),
             ],
-            title: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.chevron_left,
-                      color: Colors.white,
-                    ),
-                    onPressed: () => _reduceDays(context),
-                  ),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Center(
-                    child: Text(
-                      DateFormat.yMMMM('ru-Ru').format(state.date).capitalize(),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.chevron_right,
-                      color: Colors.white,
-                    ),
-                    onPressed: () => _addDays(context),
-                  ),
-                ),
-              ],
-            ),
+            title: const _TitleMonth(),
             centerTitle: true,
           ),
           body: IndexedStack(
@@ -121,16 +79,7 @@ class _MainScreenState extends State<MainScreen> {
             children: _tabs,
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-          floatingActionButton: FloatingActionButton(
-            onPressed: _addNote,
-            backgroundColor: AppColors.bottomNavigationBarBackground,
-            shape: const CircleBorder(
-              side: BorderSide(color: AppColors.background, width: 2.3),
-            ),
-            foregroundColor: Colors.black,
-            elevation: 10,
-            child: const Icon(Icons.add),
-          ),
+          floatingActionButton: const _AddButton(),
           bottomNavigationBar: BottomAppBar(
             padding: const EdgeInsets.symmetric(
               horizontal: 9.0,
@@ -139,85 +88,92 @@ class _MainScreenState extends State<MainScreen> {
             height: 70.0,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  // TODO(Mipz): Сделать более лаконично
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () => onSelectTab(0),
-                      icon: const Icon(Icons.notes),
-                      color: _selectedTab == 0
-                          ? AppColors.bottomNavigationBarSelectedItemColor
-                          : AppColors.bottomNavigationBarUnselectedItemColor,
-                    ),
-                    FittedBox(
-                      child: Text(
-                        'Записи',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _selectedTab == 0
-                              ? AppColors.bottomNavigationBarSelectedItemColor
-                              : AppColors
-                                  .bottomNavigationBarUnselectedItemColor,
-                        ),
-                      ),
-                    ),
-                  ],
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: List.generate(
+                3,
+                (index) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: BottomBarItemWidget(
+                    index: index,
+                    onSelectTab: () => onSelectTab(index),
+                    isSelected: _selectedTab == index,
+                  ),
                 ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () => onSelectTab(1),
-                      icon: const Icon(Icons.stacked_bar_chart),
-                      color: _selectedTab == 1
-                          ? AppColors.bottomNavigationBarSelectedItemColor
-                          : AppColors.bottomNavigationBarUnselectedItemColor,
-                    ),
-                    FittedBox(
-                      child: Text(
-                        'Статистика',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _selectedTab == 1
-                              ? AppColors.bottomNavigationBarSelectedItemColor
-                              : AppColors
-                                  .bottomNavigationBarUnselectedItemColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () => onSelectTab(2),
-                      icon: const Icon(Icons.more_horiz),
-                      color: _selectedTab == 2
-                          ? AppColors.bottomNavigationBarSelectedItemColor
-                          : AppColors.bottomNavigationBarUnselectedItemColor,
-                    ),
-                    FittedBox(
-                      child: Text(
-                        'Более',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _selectedTab == 2
-                              ? AppColors.bottomNavigationBarSelectedItemColor
-                              : AppColors
-                                  .bottomNavigationBarUnselectedItemColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 1),
-              ],
+              ),
             ),
           ),
         ),
+      );
+}
+
+class _TitleMonth extends StatelessWidget {
+  const _TitleMonth();
+
+  void _addDays(BuildContext context) {
+    context.read<MainBloc>().add(MainEvent$AddTime());
+  }
+
+  void _reduceDays(BuildContext context) {
+    context.read<MainBloc>().add(MainEvent$ReduceTime());
+  }
+
+  @override
+  Widget build(BuildContext context) => BlocBuilder<MainBloc, MainState>(
+        builder: (context, state) => Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Expanded(
+              child: IconButton(
+                icon: const Icon(
+                  Icons.chevron_left,
+                  color: Colors.white,
+                ),
+                onPressed: () => _reduceDays(context),
+              ),
+            ),
+            Expanded(
+              flex: 4,
+              child: Center(
+                child: Text(
+                  DateFormat.yMMMM('ru-Ru').format(state.date).capitalize(),
+                ),
+              ),
+            ),
+            Expanded(
+              child: IconButton(
+                icon: Icon(
+                  Icons.chevron_right,
+                  color: state.date.isAfter(DateTime.now())
+                      ? Colors.grey
+                      : Colors.white,
+                ),
+                onPressed: state.date.isAfter(DateTime.now())
+                    ? null
+                    : () => _addDays(context),
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _AddButton extends StatelessWidget {
+  const _AddButton();
+
+  Future<void> _addNote(BuildContext context) async {
+    await Navigator.pushNamed(context, AppRouteNames.addNote);
+  }
+
+  @override
+  Widget build(BuildContext context) => FloatingActionButton(
+        onPressed: () => _addNote(context),
+        backgroundColor: AppColors.bottomNavigationBarBackground,
+        shape: const CircleBorder(
+          side: BorderSide(color: AppColors.background, width: 2.3),
+        ),
+        foregroundColor: Colors.black,
+        elevation: 10,
+        child: const Icon(Icons.add),
       );
 }

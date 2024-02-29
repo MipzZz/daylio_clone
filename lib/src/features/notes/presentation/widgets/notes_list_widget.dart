@@ -110,13 +110,18 @@ class _NotesListViewState extends State<_NotesListView> {
   Iterable<Widget> _listWithTitle(Map<DateTime, List<NoteModel>> notes) sync* {
     for (int i = 0; i < notes.length; i++) {
       final entry = notes.entries.elementAt(i);
-
+      //Берем месяц + год записи в строке и формируем из них int ключ
       GlobalObjectKey? keyMonth =
           GlobalObjectKey('${entry.key.month}-${entry.key.year}'.hashCode);
+      // Если это не первая и не единственная запись в месяце
       if (notes.length > 1 && i > 0) {
         final prevEntry = notes.entries.elementAt(i - 1);
         final currentDate = entry.value[0].date;
         final previousDate = prevEntry.value.last.date;
+        // Записи сортированы от самой новой до самой старой
+        // Если месяцы прошлой и нынешней записи совпадают, то ключ обнуляется
+        // и следующей по списку записи не присваивается ключ
+        // Так как ключ должен быть только у ПЕРВОЙ записи в месяце
         if (entry.key.month == prevEntry.key.month) {
           keyMonth = null;
         }
@@ -135,6 +140,8 @@ class _NotesListViewState extends State<_NotesListView> {
           );
         }
       }
+
+      //Шапка день недели, день месяц
       yield SliverToBoxAdapter(
         child: DecoratedBox(
           key: keyMonth,
@@ -162,18 +169,22 @@ class _NotesListViewState extends State<_NotesListView> {
           delegate: SliverChildBuilderDelegate(
             childCount: entry.value.length,
             (BuildContext context, int index) => Dismissible(
-              direction: DismissDirection.startToEnd,
+              direction: DismissDirection.endToStart,
               background: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Colors.red,
                   borderRadius: BorderRadius.only(
-                    bottomLeft: index == notes.length - 1
+                    bottomLeft: index == entry.value.length - 1
                         ? const Radius.circular(20.0)
                         : Radius.zero,
-                    bottomRight: index == notes.length - 1
+                    bottomRight: index == entry.value.length - 1
                         ? const Radius.circular(20.0)
                         : Radius.zero,
                   ),
+                ),
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
                 ),
               ),
               onDismissed: (_) => _dismissNote(entry.value[index].id),
@@ -308,7 +319,7 @@ class _SleepAndFoodRow extends StatelessWidget {
   }) : _note = note;
 
   final NoteModel _note;
-
+  // TODO(MipZ): Переделать ListTile в Icon + Text
   @override
   Widget build(BuildContext context) => Row(
         mainAxisSize: MainAxisSize.min,

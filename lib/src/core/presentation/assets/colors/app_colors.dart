@@ -13,7 +13,7 @@ abstract class AppColors{
   static const headerNoteColor = Color.fromRGBO(27, 62, 56, 1.0);
   static const headerNoteTextColor = Color.fromRGBO(23, 199, 150, 1.0);
 
-  static const excellentGrade = Color(0xFF63E6BE);
+  static const excellentGrade = Color(0xFF55BD9B);
   static const goodGrade = Color(0xFF76d589);
   static const normalGrade = Color(0xFf74C0FC);
   static const badGrade = Color(0xFFff943d);

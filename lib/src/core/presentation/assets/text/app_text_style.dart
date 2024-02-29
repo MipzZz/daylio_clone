@@ -27,7 +27,9 @@ abstract class AppTextStyle {
     color: Color.fromARGB(255, 232, 232, 232),
   );
   static const TextStyle pieChart = TextStyle(
-    fontSize: 18,
-    color: Colors.black54,
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+    shadows: [Shadow(color: Colors.black, blurRadius: 2)],
+    color: Colors.white,
   );
 }

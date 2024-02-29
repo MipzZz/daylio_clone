@@ -55,11 +55,11 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
             AddNoteState$Progress() => Stack(
                 children: [
                   PopScope(
-                    canPop: false, //Можно ли свайпнуть для возврата
+                    canPop: false, //Можно ли свай пнуть для возврата
                     child: AbsorbPointer(
-                      absorbing: true, //Состояние абсорба нажатий
+                      absorbing: true, //Состояние обжора нажатий
                       child: buildBlur(
-                        isLoading: true, //Состояние блюра
+                        isLoading: true, //Состояние аллюра
                         child: const _BodyWidget(),
                       ),
                     ),
@@ -144,32 +144,11 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
     final DateTime? date = await showDatePicker(
       context: context,
       initialDate: context.read<AddNoteBloc>().state.date,
-      firstDate: DateTime(2022),
-      lastDate: DateTime(2030),
-      builder: (context, child) {
-        if (child == null) {
-          return const SizedBox(
-            child: Text('Непредвиденная ошибка'),
-          );
-        }
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              onSurface: Colors.white,
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: const Color.fromARGB(255, 180, 135, 218),
-              ),
-            ),
-          ),
-          child: child,
-        );
-      },
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
     );
-    if (date != null) {
-      _saveDate(date);
-    }
+    if (date == null) return;
+    _saveDate(date);
   }
 
   @override
@@ -219,9 +198,8 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
         child: child!,
       ),
     );
-    if (timeOfDay != null) {
-      _saveTime(timeOfDay);
-    }
+    if (timeOfDay == null) return;
+    _saveTime(timeOfDay);
   }
 
   @override
@@ -247,15 +225,10 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
       );
 }
 
-class _MoodFacesRow extends StatefulWidget {
+class _MoodFacesRow extends StatelessWidget {
   const _MoodFacesRow();
 
-  @override
-  State<_MoodFacesRow> createState() => _MoodFacesRowState();
-}
-
-class _MoodFacesRowState extends State<_MoodFacesRow> {
-  void selectMood(int moodId) {
+  void selectMood(BuildContext context, int moodId) {
     context.read<AddNoteBloc>().add(AddNoteEvent$MoodChange(moodId));
   }
 
@@ -270,7 +243,7 @@ class _MoodFacesRowState extends State<_MoodFacesRow> {
               return MoodIcon(
                 iconPath: mood.selectedIcon,
                 unselectedPath: mood.unSelectedIcon,
-                onTap: () => selectMood(index),
+                onTap: () => selectMood(context, index),
                 selected: mood.id == addNotesState.moodId,
               );
             },
