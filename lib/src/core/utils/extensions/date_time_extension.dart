@@ -8,6 +8,7 @@ extension NotesDateTime on DateTime {
   String toHeaderDate() => DateFormat.MMMMEEEEd('ru-RU').format(this).capitalize();
   TimeOfDay toTimeOfDay() => TimeOfDay.fromDateTime(this);
   DateTime withoutTime() => DateTime(year, month, day);
+  DateTime endOfDay() => DateTime(year, month, day, 23, 59, 59);
 }
 
 extension DateOnlyCompare on DateTime {

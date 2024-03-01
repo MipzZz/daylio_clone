@@ -32,4 +32,8 @@ abstract class AppTextStyle {
     shadows: [Shadow(color: Colors.black, blurRadius: 2)],
     color: Colors.white,
   );
+  static const TextStyle rangeText = TextStyle(
+    fontSize: 16,
+    color: AppColors.mainTextColor,
+  );
 }

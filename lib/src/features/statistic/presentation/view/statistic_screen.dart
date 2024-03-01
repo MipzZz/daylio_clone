@@ -20,7 +20,7 @@ class StatisticWidget extends StatelessWidget {
             ),
           final StatisticState$Error errorState =>
             _FailureBody(errorMessage: errorState.message),
-          _ => (statisticState.notesCount) > 2
+          _ => (statisticState.notes.length) > 2
               ? const _DefaultBodyWidget()
               : const _NotEnoughNotesWidget()
         },
@@ -198,7 +198,7 @@ class _ActivityCountCard extends StatelessWidget {
                   ),
                   title: Text(
                     'Занятия',
-                    // style: TextStyle(color: AppColors.mainTextColor),
+                    style: TextStyle(color: AppColors.mainTextColor),
                   ),
                   dense: true,
                   contentPadding: EdgeInsets.zero,
@@ -249,6 +249,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
                 child: Text(
                   '${state.dateRange.start.dateOnly()} - '
                       '${state.dateRange.end.dateOnly()}',
+                  style: AppTextStyle.rangeText,
                 ),
               ),
               Expanded(
@@ -257,7 +258,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
                   onPressed: () => pickDateRange(context),
                   child: const Text(
                     'Выберите период',
-                    style: TextStyle(fontSize: 12),
+                    style: TextStyle(fontSize: 14),
                   ),
                 ),
               ),

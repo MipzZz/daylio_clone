@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 
 abstract class AppColors{
+  static const primary = Color.fromRGBO(49, 163, 129, 0.8);
+  static const onPrimary = Color.fromRGBO(255, 255, 255, 1.0);
+  static const secondary = Color.fromRGBO(10, 10, 10, 1.0);
+  static const secondaryContainer = Color.fromRGBO(33, 61, 53, 0.8);
+  static const surface = Color.fromRGBO(10, 10, 10, 1.0);
+  static const onSurface = Color.fromRGBO(255, 255, 255, 1.0);
+
+  static const surfaceTintColor = Color.fromRGBO(255, 255, 255, 1.0);
+  static const timePickerBackGroundColor = Color.fromRGBO(36, 36, 36, 1.0);
+
   static const mainGreen = Color.fromRGBO(49, 163, 129, 0.8);
-  static const background = Colors.black;
+  static const background = Color.fromRGBO(10, 10, 10, 1.0);
   static const listBackground = Color.fromRGBO(
       29, 33, 36, 1.0,);
   static const bottomNavigationBarBackground = Color.fromRGBO(6, 192, 116, 1.0);

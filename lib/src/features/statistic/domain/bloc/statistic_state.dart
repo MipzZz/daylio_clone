@@ -3,6 +3,8 @@ part of 'statistic_bloc.dart';
 sealed class StatisticState {
   List<NoteModel> get notes;
 
+  List<NoteModel> get sortedNotes;
+
   int get notesCount;
 
   double get averageMood;
@@ -26,6 +28,9 @@ sealed class StatisticState {
 class StatisticState$Initial extends StatisticState {
   @override
   List<NoteModel> get notes => [];
+
+  @override
+  List<NoteModel> get sortedNotes => [];
 
   @override
   int get notesCount => 0;
@@ -65,10 +70,14 @@ class StatisticState$Data extends StatisticState {
     required this.activityCount,
     required this.moodsCount,
     required this.dateRange,
-  });
+  }){
+    sortedNotes = notes.sorted((a, b) => a.date.compareTo(b.date));
+  }
 
   @override
   final List<NoteModel> notes;
+  @override
+  late final List<NoteModel> sortedNotes;
   @override
   final int notesCount;
   @override
@@ -107,10 +116,14 @@ class StatisticState$Progress extends StatisticState {
     required this.activityCount,
     required this.moodsCount,
     required this.dateRange,
-  });
+  }) {
+    sortedNotes = notes.sorted((a, b) => a.date.compareTo(b.date));
+  }
 
   @override
   final List<NoteModel> notes;
+  @override
+  late final List<NoteModel> sortedNotes;
   @override
   final int notesCount;
   @override
@@ -149,10 +162,14 @@ class StatisticState$Error extends StatisticState {
     required this.moodsCount,
     required this.dateRange,
     required this.message,
-  });
+  }){
+    sortedNotes = notes.sorted((a, b) => a.date.compareTo(b.date));
+  }
 
   @override
   final List<NoteModel> notes;
+  @override
+  late final List<NoteModel> sortedNotes;
   @override
   final int notesCount;
   @override
