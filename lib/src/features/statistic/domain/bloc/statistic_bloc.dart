@@ -55,7 +55,7 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
       final averageMood = _calculateAverageMood(notes);
       final activityCount = _activityCount(notes);
       final moodsCount = _moodsCount(notes);
-      final dateRange = _calculateDateRange(notes);
+      final dateRange = _calculateInitDateRange(notes);
 
       emitter(
         StatisticState$Data(
@@ -83,7 +83,7 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
     }
   }
 
-  DateTimeRange _calculateDateRange(Iterable<NoteModel> notes) {
+  DateTimeRange _calculateInitDateRange(Iterable<NoteModel> notes) {
     final sortedNotes = notes.sorted((a, b) => a.date.compareTo(b.date));
     return DateTimeRange(start: sortedNotes.first.date, end: sortedNotes.last.date);
   }

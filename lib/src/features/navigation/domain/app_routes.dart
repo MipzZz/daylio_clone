@@ -3,6 +3,7 @@ import 'package:daylio_clone/src/features/main/presentation/view/main_screen.dar
 import 'package:daylio_clone/src/features/more/presentation/view/about_screen.dart';
 import 'package:daylio_clone/src/features/notes/presentation/view/add_note_screen.dart';
 import 'package:daylio_clone/src/features/notes/presentation/view/note_details_screen.dart';
+import 'package:daylio_clone/src/features/search/presentation/view/search_screen.dart';
 import 'package:flutter/material.dart';
 
 abstract class AppRouteNames {
@@ -11,6 +12,7 @@ abstract class AppRouteNames {
   static const String addNote = '/add_note';
   static const String noteDetails = '/note_details';
   static const String about = '/about';
+  static const String search = '/search';
 }
 
 class MainNavigator {
@@ -19,6 +21,7 @@ class MainNavigator {
     AppRouteNames.debug: (context) => const DebugScreen(),
     AppRouteNames.addNote: (context) => const AddNoteWidget(),
     AppRouteNames.about: (context) => const AboutScreen(),
+    AppRouteNames.search: (context) => const SearchScreen(),
   };
 
   Route<Object> onGenerateRoute(RouteSettings settings) {

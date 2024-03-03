@@ -26,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
     const MoreWidget(),
   ];
 
-  void onSelectTab(int index) {
+  void _onSelectTab(int index) {
     if (_selectedTab == index) return;
     setState(() {
       _selectedTab = index;
@@ -35,6 +35,10 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> _onDebug() async {
     await Navigator.pushNamed(context, AppRouteNames.debug);
+  }
+
+  Future<void> _onSearch() async {
+    await Navigator.pushNamed(context, AppRouteNames.search);
   }
 
   void _scrollToItem(GlobalObjectKey key) {
@@ -67,7 +71,7 @@ class _MainScreenState extends State<MainScreen> {
                   Icons.search,
                   color: Colors.white,
                 ),
-                onPressed: () {},
+                onPressed: _onSearch,
               ),
               const SizedBox(width: 10),
             ],
@@ -95,7 +99,7 @@ class _MainScreenState extends State<MainScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
                   child: BottomBarItemWidget(
                     index: index,
-                    onSelectTab: () => onSelectTab(index),
+                    onSelectTab: () => _onSelectTab(index),
                     isSelected: _selectedTab == index,
                   ),
                 ),
@@ -144,11 +148,15 @@ class _TitleMonth extends StatelessWidget {
               child: IconButton(
                 icon: Icon(
                   Icons.chevron_right,
-                  color: state.date.isAfter(DateTime.now())
+                  color: state.date
+                          .copyWith(month: state.date.month + 1)
+                          .isAfter(DateTime.now())
                       ? Colors.grey
                       : Colors.white,
                 ),
-                onPressed: state.date.isAfter(DateTime.now())
+                onPressed: state.date
+                        .copyWith(month: state.date.month + 1)
+                        .isAfter(DateTime.now())
                     ? null
                     : () => _addDays(context),
               ),

@@ -8,6 +8,8 @@ abstract class AppColors{
   static const surface = Color.fromRGBO(10, 10, 10, 1.0);
   static const onSurface = Color.fromRGBO(255, 255, 255, 1.0);
 
+  static const appBarSearch = Color.fromRGBO(29, 33, 36, 1.0);
+
   static const surfaceTintColor = Color.fromRGBO(255, 255, 255, 1.0);
   static const timePickerBackGroundColor = Color.fromRGBO(36, 36, 36, 1.0);
 

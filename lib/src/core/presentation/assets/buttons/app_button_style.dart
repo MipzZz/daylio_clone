@@ -6,6 +6,9 @@ abstract class AppButtonStyle {
     // TODO(MipZ): Попробовать избавиться от MaterialState
     backgroundColor: MaterialStatePropertyAll<Color>(AppColors.background),
     foregroundColor: MaterialStatePropertyAll<Color>(AppColors.mainTextColor),
+    padding: MaterialStatePropertyAll<EdgeInsets>(
+      EdgeInsets.symmetric(vertical: 11.0, horizontal: 15.0),
+    ),
   );
 
   static const addNoteButtonStyle = ButtonStyle(

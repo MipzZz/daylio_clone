@@ -252,14 +252,12 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
                   style: AppTextStyle.rangeText,
                 ),
               ),
-              Expanded(
-                child: OutlinedButton(
-                  style: AppButtonStyle.buttonDateTimeStyle,
-                  onPressed: () => pickDateRange(context),
-                  child: const Text(
-                    'Выберите период',
-                    style: TextStyle(fontSize: 14),
-                  ),
+              OutlinedButton(
+                style: AppButtonStyle.buttonDateTimeStyle,
+                onPressed: () => pickDateRange(context),
+                child: const Text(
+                  'Выберите период',
+                  style: TextStyle(fontSize: 14),
                 ),
               ),
             ],
