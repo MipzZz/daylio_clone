@@ -23,8 +23,6 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
           _updateNotesStatistic(event, emitter),
         final StatisticEvent$DateRangeChange event =>
           _onDateRangeChange(event, emitter),
-        final StatisticEvent$RecalculateStatistic event =>
-          _reCalculateStatistic(event, emitter),
       },
       transformer: sequential(),
     );
@@ -52,19 +50,15 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
       );
 
       final notes = await _notesRepository.readNotes();
-      final averageMood = _calculateAverageMood(notes);
-      final activityCount = _activityCount(notes);
-      final moodsCount = _moodsCount(notes);
-      final dateRange = _calculateInitDateRange(notes);
 
       emitter(
         StatisticState$Data(
           notes: notes.toList(),
           notesCount: notes.length,
-          averageMood: averageMood,
-          activityCount: activityCount,
-          moodsCount: moodsCount,
-          dateRange: dateRange,
+          averageMood: _calculateAverageMood(notes),
+          activityCount: _countActivity(notes),
+          moodsCount: _countMoods(notes),
+          dateRange: _calculateInitDateRange(notes),
         ),
       );
     } on Object {
@@ -84,55 +78,64 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
   }
 
   DateTimeRange _calculateInitDateRange(Iterable<NoteModel> notes) {
+    if (notes.isEmpty) {
+      return DateTimeRange(start: DateTime.now(), end: DateTime.now());
+    }
     final sortedNotes = notes.sorted((a, b) => a.date.compareTo(b.date));
-    return DateTimeRange(start: sortedNotes.first.date, end: sortedNotes.last.date);
+    return DateTimeRange(
+      start: sortedNotes.first.date,
+      end: sortedNotes.last.date,
+    );
   }
-
 
   void _updateNotesStatistic(
     StatisticEvent$Update event,
     Emitter<StatisticState> emitter,
   ) {
-    emitter(state.copyWith(notes: event.notes.toList()));
-    add(StatisticEvent$RecalculateStatistic());
+    emitter(
+      StatisticState$Data(
+        notes: event.notes.toList(),
+        notesCount: event.notes.length,
+        averageMood: _calculateAverageMood(event.notes),
+        activityCount: _countActivity(event.notes),
+        moodsCount: _countMoods(event.notes),
+        dateRange: state.dateRange,
+      ),
+    );
   }
 
   void _onDateRangeChange(
     StatisticEvent$DateRangeChange event,
     Emitter<StatisticState> emitter,
   ) {
-    emitter(state.copyWith(dateRange: event.newDateRange));
-    add(StatisticEvent$RecalculateStatistic());
-  }
-
-  void _reCalculateStatistic(
-    StatisticEvent$RecalculateStatistic event,
-    Emitter<StatisticState> emitter,
-  ) {
-    final startDate = state.dateRange.start.withoutTime();
-    final endDate = state.dateRange.end.endOfDay();
-    final notesInRange = state.notes.where(
-      (note) =>
-          (note.date.isAfter(startDate) ||
-              note.date.isAtSameMomentAs(startDate)) &&
-          (note.date.isAtSameMomentAs(endDate) || note.date.isBefore(endDate)),
-    );
-    final averageMood = _calculateAverageMood(notesInRange);
-    final activityCount = _activityCount(notesInRange);
-    final moodsCount = _moodsCount(notesInRange);
+    final notesInRange = _filterByDateRange(event.newDateRange);
     emitter(
       StatisticState$Data(
         notes: state.notes,
         notesCount: notesInRange.length,
-        averageMood: averageMood,
-        activityCount: activityCount,
-        moodsCount: moodsCount,
-        dateRange: state.dateRange,
+        averageMood: _calculateAverageMood(notesInRange),
+        activityCount: _countActivity(notesInRange),
+        moodsCount: _countMoods(notesInRange),
+        dateRange: event.newDateRange,
       ),
     );
   }
 
-  Map<String, double> _moodsCount(Iterable<NoteModel> notes) {
+  List<NoteModel> _filterByDateRange(DateTimeRange dateRange) {
+    final startDate = dateRange.start.withoutTime();
+    final endDate = dateRange.end.endOfDay();
+    return state.notes
+        .where(
+          (note) =>
+              (note.date.isAfter(startDate) ||
+                  note.date.isAtSameMomentAs(startDate)) &&
+              (note.date.isAtSameMomentAs(endDate) ||
+                  note.date.isBefore(endDate)),
+        )
+        .toList();
+  }
+
+  Map<String, double> _countMoods(Iterable<NoteModel> notes) {
     final moodMap = <String, double>{};
     for (final note in notes) {
       moodMap[note.mood.title] = (moodMap[note.mood.title] ?? 0) + 1;
@@ -148,7 +151,7 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
     return 5 - averageMood;
   }
 
-  int _activityCount(Iterable<NoteModel> notes) {
+  int _countActivity(Iterable<NoteModel> notes) {
     if (notes.isEmpty) return 0;
     return notes.length * 2;
   }

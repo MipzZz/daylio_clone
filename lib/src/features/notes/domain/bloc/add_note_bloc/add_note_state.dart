@@ -1,6 +1,7 @@
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/note_model.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
 
 sealed class AddNoteState {
   DateTime get date;
@@ -15,6 +16,8 @@ sealed class AddNoteState {
 
   String get foodDescription;
 
+  bool? get inTwoHoursPeriod;
+
   AddNoteState copyWith({
     DateTime? date,
     int? moodId,
@@ -22,6 +25,7 @@ sealed class AddNoteState {
     String? sleepDescription,
     int? foodId,
     String? foodDescription,
+    bool? inTwoHoursPeriod,
   });
 }
 
@@ -34,6 +38,7 @@ final class AddNoteState$Idle implements AddNoteState {
     this.foodDescription = '',
     this.sleepId = 0,
     this.sleepDescription = '',
+    this.inTwoHoursPeriod,
   });
 
   @override
@@ -55,6 +60,9 @@ final class AddNoteState$Idle implements AddNoteState {
   final String sleepDescription;
 
   @override
+  final bool? inTwoHoursPeriod;
+
+  @override
   AddNoteState$Idle copyWith({
     DateTime? date,
     int? moodId,
@@ -62,6 +70,7 @@ final class AddNoteState$Idle implements AddNoteState {
     String? foodDescription,
     int? sleepId,
     String? sleepDescription,
+    bool? inTwoHoursPeriod,
   }) =>
       AddNoteState$Idle(
         date: date ?? this.date,
@@ -70,6 +79,7 @@ final class AddNoteState$Idle implements AddNoteState {
         foodDescription: foodDescription ?? this.foodDescription,
         sleepId: sleepId ?? this.sleepId,
         sleepDescription: sleepDescription ?? this.sleepDescription,
+        inTwoHoursPeriod: inTwoHoursPeriod ?? this.inTwoHoursPeriod,
       );
 
   @override
@@ -82,6 +92,7 @@ final class AddNoteState$Idle implements AddNoteState {
           foodId == other.foodId &&
           foodDescription == other.foodDescription &&
           sleepId == other.sleepId &&
+          sleepDescription == other.sleepDescription &&
           sleepDescription == other.sleepDescription;
 
   @override
@@ -92,6 +103,7 @@ final class AddNoteState$Idle implements AddNoteState {
         foodDescription,
         sleepId,
         sleepDescription,
+        inTwoHoursPeriod,
       );
 }
 
@@ -103,6 +115,7 @@ final class AddNoteState$Progress implements AddNoteState {
     required this.sleepDescription,
     required this.foodId,
     required this.foodDescription,
+    required this.inTwoHoursPeriod,
   });
 
   @override
@@ -117,6 +130,8 @@ final class AddNoteState$Progress implements AddNoteState {
   final int foodId;
   @override
   final String foodDescription;
+  @override
+  final bool? inTwoHoursPeriod;
 
   @override
   AddNoteState$Progress copyWith({
@@ -126,6 +141,7 @@ final class AddNoteState$Progress implements AddNoteState {
     String? sleepDescription,
     int? foodId,
     String? foodDescription,
+    bool? inTwoHoursPeriod,
   }) =>
       AddNoteState$Progress(
         date: date ?? this.date,
@@ -134,6 +150,7 @@ final class AddNoteState$Progress implements AddNoteState {
         sleepDescription: sleepDescription ?? this.sleepDescription,
         foodId: foodId ?? this.foodId,
         foodDescription: foodDescription ?? this.foodDescription,
+        inTwoHoursPeriod: inTwoHoursPeriod ?? this.inTwoHoursPeriod,
       );
 }
 
@@ -157,6 +174,9 @@ final class AddNoteState$Created implements AddNoteState {
   int get sleepId => 0;
 
   @override
+  bool? get inTwoHoursPeriod => null;
+
+  @override
   AddNoteState$Created copyWith({
     NoteModel? note,
     DateTime? date,
@@ -165,6 +185,7 @@ final class AddNoteState$Created implements AddNoteState {
     String? sleepDescription,
     int? foodId,
     String? foodDescription,
+    bool? inTwoHoursPeriod,
   }) =>
       AddNoteState$Created();
 }
@@ -177,6 +198,7 @@ final class AddNoteState$Error implements AddNoteState {
     required this.sleepDescription,
     required this.foodId,
     required this.foodDescription,
+    required this.inTwoHoursPeriod,
     required this.message,
   });
 
@@ -192,6 +214,8 @@ final class AddNoteState$Error implements AddNoteState {
   final int foodId;
   @override
   final String foodDescription;
+  @override
+  final bool? inTwoHoursPeriod;
   final String message;
 
   @override
@@ -203,6 +227,7 @@ final class AddNoteState$Error implements AddNoteState {
     int? foodId,
     String? foodDescription,
     String? message,
+    bool? inTwoHoursPeriod,
   }) =>
       AddNoteState$Error(
         date: date ?? this.date,
@@ -211,6 +236,7 @@ final class AddNoteState$Error implements AddNoteState {
         sleepDescription: sleepDescription ?? this.sleepDescription,
         foodId: foodId ?? this.foodId,
         foodDescription: foodDescription ?? this.foodDescription,
+        inTwoHoursPeriod: inTwoHoursPeriod ?? this.inTwoHoursPeriod,
         message: message ?? this.message,
       );
 }

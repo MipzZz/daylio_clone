@@ -15,4 +15,3 @@ class StatisticEvent$DateRangeChange implements StatisticEvent {
 
   final DateTimeRange newDateRange;
 }
-class StatisticEvent$RecalculateStatistic implements StatisticEvent {}

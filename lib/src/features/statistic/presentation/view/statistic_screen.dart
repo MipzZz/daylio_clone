@@ -105,30 +105,34 @@ class _NotesCountCard extends StatelessWidget {
       BlocBuilder<StatisticBloc, StatisticState>(
         builder: (context, statisticState) => Card(
           color: AppColors.listBackground,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  statisticState.notesCount.toString(),
-                  style: AppTextStyle.statisticText,
-                ),
-                const ListTile(
-                  leading: Icon(
-                    Icons.sticky_note_2_rounded,
-                    color: Colors.blueAccent,
+          clipBehavior: Clip.hardEdge,
+          child: InkWell(
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    statisticState.notesCount.toString(),
+                    style: AppTextStyle.statisticText,
                   ),
-                  title: Text(
-                    'Записи',
-                    style: TextStyle(color: Colors.white),
+                  const ListTile(
+                    leading: Icon(
+                      Icons.sticky_note_2_rounded,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      'Записи',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    horizontalTitleGap: 7,
                   ),
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                  horizontalTitleGap: 7,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -143,30 +147,34 @@ class _AverageMoodCard extends StatelessWidget {
       BlocBuilder<StatisticBloc, StatisticState>(
         builder: (context, statisticState) => Card(
           color: AppColors.listBackground,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  statisticState.averageMood.toStringAsFixed(1),
-                  style: AppTextStyle.statisticText,
-                ),
-                const ListTile(
-                  leading: Icon(
-                    Icons.emoji_emotions,
-                    color: Colors.amberAccent,
+          clipBehavior: Clip.hardEdge,
+          child: InkWell(
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    statisticState.averageMood.toStringAsFixed(1),
+                    style: AppTextStyle.statisticText,
                   ),
-                  title: Text(
-                    'Муд',
-                    style: TextStyle(color: Colors.white),
+                  const ListTile(
+                    leading: Icon(
+                      Icons.emoji_emotions,
+                      color: Colors.amberAccent,
+                    ),
+                    title: Text(
+                      'Муд',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    horizontalTitleGap: 7,
                   ),
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                  horizontalTitleGap: 7,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -181,30 +189,34 @@ class _ActivityCountCard extends StatelessWidget {
       BlocBuilder<StatisticBloc, StatisticState>(
         builder: (context, statisticState) => Card(
           color: AppColors.listBackground,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  statisticState.activityCount.toString(),
-                  style: AppTextStyle.statisticText,
-                ),
-                const ListTile(
-                  leading: Icon(
-                    Icons.accessibility_new,
-                    color: Colors.amberAccent,
+          clipBehavior: Clip.hardEdge,
+          child: InkWell(
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    statisticState.activityCount.toString(),
+                    style: AppTextStyle.statisticText,
                   ),
-                  title: Text(
-                    'Занятия',
-                    style: TextStyle(color: AppColors.mainTextColor),
+                  const ListTile(
+                    leading: Icon(
+                      Icons.accessibility_new,
+                      color: Colors.amberAccent,
+                    ),
+                    title: Text(
+                      'Занятия',
+                      style: TextStyle(color: AppColors.mainTextColor),
+                    ),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    horizontalTitleGap: 7,
                   ),
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                  horizontalTitleGap: 7,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

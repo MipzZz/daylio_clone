@@ -1,9 +1,11 @@
 import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
 import 'package:daylio_clone/src/core/utils/extensions/string_extension.dart';
-import 'package:daylio_clone/src/features/main/domain/main_bloc.dart';
 import 'package:daylio_clone/src/features/main/presentation/widgets/bottom_bar_item.dart';
 import 'package:daylio_clone/src/features/more/presentation/view/more_screen.dart';
 import 'package:daylio_clone/src/features/navigation/domain/app_routes.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_bloc.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_event.dart';
+import 'package:daylio_clone/src/features/notes/domain/bloc/notes_bloc/notes_state.dart';
 import 'package:daylio_clone/src/features/notes/presentation/widgets/notes_list_widget.dart';
 import 'package:daylio_clone/src/features/statistic/presentation/view/statistic_screen.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +55,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => BlocConsumer<MainBloc, MainState>(
+  Widget build(BuildContext context) => BlocConsumer<NotesBloc, NotesState>(
         listener: (previous, current) => _scrollToItem(
           GlobalObjectKey(
             '${current.date.month}-${current.date.year}'.hashCode,
@@ -114,56 +116,73 @@ class _TitleMonth extends StatelessWidget {
   const _TitleMonth();
 
   void _addDays(BuildContext context) {
-    context.read<MainBloc>().add(MainEvent$AddTime());
+    context.read<NotesBloc>().add(NotesEvent$AddTime());
   }
 
   void _reduceDays(BuildContext context) {
-    context.read<MainBloc>().add(MainEvent$ReduceTime());
+    context.read<NotesBloc>().add(NotesEvent$ReduceTime());
   }
 
   @override
-  Widget build(BuildContext context) => BlocBuilder<MainBloc, MainState>(
-        builder: (context, state) => Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Expanded(
-              child: IconButton(
-                icon: const Icon(
-                  Icons.chevron_left,
-                  color: Colors.white,
-                ),
-                onPressed: () => _reduceDays(context),
+  Widget build(BuildContext context) => BlocBuilder<NotesBloc, NotesState>(
+      builder: (context, state) => switch (state) {
+            NotesState$Initial() => const SizedBox.shrink(),
+            NotesState$Progress() => const CircularProgressIndicator(),
+            _ => Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Expanded(
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.chevron_left,
+                        color: state.date
+                                .copyWith(month: state.date.month)
+                                .isBefore(
+                                  state.sortedNotes.lastOrNull?.date ??
+                                      DateTime.now(),
+                                )
+                            ? Colors.grey
+                            : Colors.white,
+                      ),
+                      onPressed: state.date
+                              .copyWith(month: state.date.month)
+                              .isBefore(state.sortedNotes.lastOrNull?.date ??
+                                  DateTime.now(),)
+                          ? null
+                          : () => _reduceDays(context),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 4,
+                    child: Center(
+                      child: Text(
+                        DateFormat.yMMMM('ru-Ru')
+                            .format(state.date)
+                            .capitalize(),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.chevron_right,
+                        color: state.date
+                                .copyWith(month: state.date.month + 1)
+                                .isAfter(DateTime.now())
+                            ? Colors.grey
+                            : Colors.white,
+                      ),
+                      onPressed: state.date
+                              .copyWith(month: state.date.month + 1)
+                              .isAfter(DateTime.now())
+                          ? null
+                          : () => _addDays(context),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Expanded(
-              flex: 4,
-              child: Center(
-                child: Text(
-                  DateFormat.yMMMM('ru-Ru').format(state.date).capitalize(),
-                ),
-              ),
-            ),
-            Expanded(
-              child: IconButton(
-                icon: Icon(
-                  Icons.chevron_right,
-                  color: state.date
-                          .copyWith(month: state.date.month + 1)
-                          .isAfter(DateTime.now())
-                      ? Colors.grey
-                      : Colors.white,
-                ),
-                onPressed: state.date
-                        .copyWith(month: state.date.month + 1)
-                        .isAfter(DateTime.now())
-                    ? null
-                    : () => _addDays(context),
-              ),
-            ),
-          ],
-        ),
-      );
+          },);
 }
 
 class _AddButton extends StatelessWidget {

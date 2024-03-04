@@ -14,6 +14,8 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
         final NotesEvent$Refresh event => _readNotes(event, emitter),
         final NotesEvent$Update event => _updateNotes(event, emitter),
         final NotesEvent$Delete event => _deleteNote(event, emitter),
+        final NotesEvent$AddTime event => _addTime(event, emitter),
+        final NotesEvent$ReduceTime event => _reduceTime(event, emitter)
       },
       transformer: sequential(),
     );
@@ -24,6 +26,28 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
 
   final NotesRepository _notesRepository;
 
+  void _addTime(
+    NotesEvent$AddTime event,
+    Emitter<NotesState> emitter,
+  ) {
+    emitter(
+      state.copyWith(
+        date: state.date.copyWith(month: state.date.month + 1),
+      ),
+    );
+  }
+
+  void _reduceTime(
+    NotesEvent$ReduceTime event,
+    Emitter<NotesState> emitter,
+  ) {
+    emitter(
+      state.copyWith(
+        date: state.date.copyWith(month: state.date.month - 1),
+      ),
+    );
+  }
+
   Future<void> _readNotes(
     NotesEvent event,
     Emitter<NotesState> emitter,
@@ -31,17 +55,18 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
     try {
       if (event is NotesEvent$Refresh) {
         emitter(
-          NotesState$Refreshing(notes: state.notes),
+          NotesState$Refreshing(notes: state.notes, date: state.date),
         );
       } else {
-        emitter(NotesState$Progress(notes: state.notes));
+        emitter(NotesState$Progress(notes: state.notes, date: state.date));
       }
       final notes = await _notesRepository.readNotes();
-      emitter(NotesState$Data(notes: notes.toList()));
+      emitter(NotesState$Data(notes: notes.toList(), date: state.date));
     } on Object {
       emitter(
         NotesState$Error(
           notes: state.notes,
+          date: state.date,
           message: 'При загрузке данных произошла ошибка. '
               'Пожалуйста, попробуйте повторить позже',
         ),
@@ -58,12 +83,13 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       final id = event.noteId;
       if (id == null) return;
       state.notes.removeWhere((element) => id == element.id);
-      emitter(NotesState$Data(notes: state.notes.toList()));
+      emitter(NotesState$Data(notes: state.notes.toList(), date: state.date));
       await _notesRepository.deleteNote(id);
     } on Object {
       emitter(
         NotesState$Error(
           notes: state.notes,
+          date: state.date,
           message: 'При удалении записи произошла ошибка',
         ),
       );
@@ -76,11 +102,12 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
     Emitter<NotesState> emitter,
   ) {
     try {
-      emitter(NotesState$Data(notes: event.notes.toList()));
+      emitter(NotesState$Data(notes: event.notes.toList(), date: state.date));
     } on Object {
       emitter(
         NotesState$Error(
           notes: state.notes,
+          date: state.date,
           message: 'При обновлении данных произошла ошибка',
         ),
       );

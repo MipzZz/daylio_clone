@@ -16,3 +16,7 @@ final class NotesEvent$Delete implements NotesEvent {
   NotesEvent$Delete(this.noteId);
   final int? noteId;
 }
+
+final class NotesEvent$AddTime implements NotesEvent {}
+
+final class NotesEvent$ReduceTime implements NotesEvent {}

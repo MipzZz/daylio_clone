@@ -15,6 +15,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
         super(AddNoteState$Idle(date: DateTime.now())) {
     on<AddNoteEvent>(
       (event, emitter) => switch (event) {
+        final AddNoteEvent$Initialize event => _onInitialize(event, emitter),
         final AddNoteEvent$DateChange event => _onDateChange(event, emitter),
         final AddNoteEvent$TimeChange event => _onTimeChange(event, emitter),
         final AddNoteEvent$MoodChange event => _onMoodChange(event, emitter),
@@ -34,6 +35,13 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
 
   final NotesRepository _notesRepository;
 
+  void _onInitialize(
+    AddNoteEvent$Initialize event,
+    Emitter<AddNoteState> emitter,
+  ) {
+
+  }
+
   void _onDateChange(
     AddNoteEvent$DateChange event,
     Emitter<AddNoteState> emitter,
@@ -49,16 +57,17 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
     );
   }
 
-  void _onTimeChange(
+  Future<void> _onTimeChange(
     AddNoteEvent$TimeChange event,
     Emitter<AddNoteState> emitter,
-  ) {
+  ) async {
+    final date =
+        state.date.copyWith(hour: event.time.hour, minute: event.time.minute);
+    final inHourPeriod = await _notesRepository.checkNotePeriod(date) == null;
     emitter(
       state.copyWith(
-        date: state.date.copyWith(
-          hour: event.time.hour,
-          minute: event.time.minute,
-        ),
+        date: date,
+        inTwoHoursPeriod: inHourPeriod,
       ),
     );
   }
@@ -131,9 +140,16 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
           sleepDescription: state.sleepDescription,
           foodId: state.foodId,
           foodDescription: state.foodDescription,
+          inTwoHoursPeriod: state.inTwoHoursPeriod,
         ),
       );
-
+      final checkNote = await _notesRepository.checkNotePeriod(
+        state.date,
+      );
+      // TODO(MipZ): Добавить корректную обработку, повторной записи в течение двухчасового периода
+      if (checkNote != null) {
+        throw Exception('Невозможно создать запись за этот период');
+      }
       final note = NoteModel(
         id: null,
         mood: MoodModel.fromEnum(MoodsStorage.values[state.moodId]),
@@ -159,9 +175,9 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
           sleepDescription: state.sleepDescription,
           foodId: state.foodId,
           foodDescription: state.foodDescription,
+          inTwoHoursPeriod: state.inTwoHoursPeriod,
           message: 'При сохранении данных произошла ошибка',
         ),
-
       );
       rethrow;
     } finally {

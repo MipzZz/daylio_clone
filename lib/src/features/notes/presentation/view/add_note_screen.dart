@@ -27,6 +27,7 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
   void initState() {
     _addNoteBloc =
         AddNoteBloc(notesRepository: context.read<NotesRepository>());
+    _addNoteBloc.add(AddNoteEvent$Initialize(DateTime.now()));
     super.initState();
   }
 
@@ -215,9 +216,9 @@ class _TimePickerWidgetState extends State<_TimePickerWidget> {
             OutlinedButton(
               style: AppButtonStyle.buttonDateTimeStyle,
               onPressed: setTime,
-              child: const Text(
-                'Выбрать время',
-                style: TextStyle(fontSize: 12),
+              child: Text(
+                'Выбрать время ${state.inTwoHoursPeriod}',
+                style: const TextStyle(fontSize: 12),
               ),
             ),
           ],
@@ -387,7 +388,9 @@ class _AddNoteButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 100),
           child: OutlinedButton(
             style: AppButtonStyle.addNoteButtonStyle,
-            onPressed: () => _onAddButton(context),
+            onPressed: addNoteState.inTwoHoursPeriod ?? false
+                ? () => _onAddButton(context)
+                : null,
             child: const Text(
               'Добавить запись',
               style: TextStyle(fontSize: 15),

@@ -4,6 +4,11 @@ sealed class AddNoteEvent {
   const AddNoteEvent();
 }
 
+final class AddNoteEvent$Initialize implements AddNoteEvent {
+  const AddNoteEvent$Initialize(this.date);
+  final DateTime date;
+}
+
 final class AddNoteEvent$DateChange implements AddNoteEvent {
   const AddNoteEvent$DateChange(this.date);
   final DateTime date;

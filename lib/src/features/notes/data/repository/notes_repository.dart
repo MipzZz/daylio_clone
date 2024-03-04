@@ -77,4 +77,9 @@ class NotesRepository {
     final notes = updateNotes.map(NoteModel.fromNoteTableData);
     _notesController.add(notes);
   }
+
+  Future<NoteTableData?> checkNotePeriod(DateTime date) async{
+    final updateNote = await _driftStorage.checkIsThereAnotherNoteInTwoHoursPeriod(date) ;
+    return updateNote;
+  }
 }

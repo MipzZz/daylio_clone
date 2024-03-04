@@ -39,6 +39,18 @@ class AppDb extends _$AppDb {
   Future<bool> updateNote(NoteTableCompanion entity) async =>
       update(noteTable).replace(entity);
 
+  Future<NoteTableData?> checkIsThereAnotherNoteInTwoHoursPeriod(
+    DateTime date,
+  ) =>
+      (select(noteTable)
+            ..where(
+              (tbl) => tbl.date.isBetweenValues(
+                date.subtract(const Duration(hours: 2)),
+                date.add(const Duration(hours: 2)),
+              ),
+            ))
+          .getSingleOrNull();
+
   Future<void> createAllTablesAgain() async {
     final migrator = createMigrator();
     for (final table in allTables) {

@@ -89,7 +89,7 @@ class _NotesListViewState extends State<_NotesListView> {
   String _getDatAddition(int days) {
     final double preLastDigit = days % 100 / 10;
     if (preLastDigit == 1) {
-      return 'дней';
+      return 'Пропущено $days дней';
     }
     switch (days % 10) {
       case 1:
@@ -141,7 +141,7 @@ class _NotesListViewState extends State<_NotesListView> {
         }
       }
 
-      //Шапка день недели, день месяц
+      //Шапка день недели, число, месяц
       yield SliverToBoxAdapter(
         child: DecoratedBox(
           key: keyMonth,
@@ -188,7 +188,7 @@ class _NotesListViewState extends State<_NotesListView> {
                 ),
               ),
               onDismissed: (_) => _dismissNote(entry.value[index].id),
-              key: ValueKey(entry),
+              key: ValueKey(entry.value[index].id),
               child: SliverListItem(
                 notes: entry.value,
                 index: index,
@@ -202,18 +202,20 @@ class _NotesListViewState extends State<_NotesListView> {
 
   @override
   Widget build(BuildContext context) => BlocConsumer<NotesBloc, NotesState>(
+        // TODO(MipZ): Сделать скролл, к только что добавленной записи
         listenWhen: (previous, current) =>
             previous.notes.length < current.notes.length,
-        listener: (_, __) =>
-            SchedulerBinding.instance.addPostFrameCallback((_) {
-          if (_scrollController.hasClients) {
-            _scrollController.animateTo(
-              _scrollController.position.minScrollExtent,
-              duration: const Duration(milliseconds: 700),
-              curve: Curves.easeInOut,
-            );
-          }
-        }),
+        listener: (_, __) => SchedulerBinding.instance.addPostFrameCallback(
+          (_) {
+            if (_scrollController.hasClients) {
+              _scrollController.animateTo(
+                _scrollController.position.extentInside,
+                duration: const Duration(milliseconds: 700),
+                curve: Curves.easeInOut,
+              );
+            }
+          },
+        ),
         builder: (context, state) => RefreshIndicator(
           onRefresh: _refreshList,
           child: Padding(
@@ -319,36 +321,47 @@ class _SleepAndFoodRow extends StatelessWidget {
   }) : _note = note;
 
   final NoteModel _note;
+
   // TODO(MipZ): Переделать ListTile в Icon + Text
   @override
   Widget build(BuildContext context) => Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Flexible(
-            child: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              horizontalTitleGap: 7,
-              leading: Icon(Icons.bed, color: _note.sleep.color),
-              title: Text(
-                _note.sleep.title,
-                style: AppTextStyle.noteListItemSub,
-              ),
+          _ActivityWidget(
+            icon: Icon(
+              Icons.bed,
+              color: _note.sleep.color,
             ),
+            text: _note.sleep.title,
           ),
-          const SizedBox(width: 5),
-          Flexible(
-            child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              horizontalTitleGap: 7,
-              dense: true,
-              leading: Icon(Icons.emoji_food_beverage, color: _note.food.color),
-              title: Text(
-                _note.food.title,
-                style: AppTextStyle.noteListItemSub,
-              ),
+          _ActivityWidget(
+            icon: Icon(
+              Icons.emoji_food_beverage,
+              color: _note.food.color,
             ),
+            text: _note.food.title,
           ),
         ],
+      );
+}
+
+class _ActivityWidget extends StatelessWidget {
+  const _ActivityWidget({required this.icon, required this.text});
+
+  final Icon icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Flexible(
+        child: ListTile(
+          contentPadding: EdgeInsets.zero,
+          horizontalTitleGap: 7,
+          dense: true,
+          leading: icon,
+          title: Text(
+            text,
+            style: AppTextStyle.noteListItemSub,
+          ),
+        ),
       );
 }
