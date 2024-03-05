@@ -61,15 +61,35 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
     AddNoteEvent$TimeChange event,
     Emitter<AddNoteState> emitter,
   ) async {
-    final date =
-        state.date.copyWith(hour: event.time.hour, minute: event.time.minute);
-    final inHourPeriod = await _notesRepository.checkNotePeriod(date) == null;
-    emitter(
-      state.copyWith(
-        date: date,
-        inTwoHoursPeriod: inHourPeriod,
-      ),
-    );
+    try {
+      emitter(
+        AddNoteState$Progress(
+          date: state.date,
+          moodId: state.moodId,
+          sleepId: state.sleepId,
+          sleepDescription: state.sleepDescription,
+          foodId: state.foodId,
+          foodDescription: state.foodDescription,
+          inTwoHoursPeriod: state.inTwoHoursPeriod,
+        ),
+      );
+      final date =
+      state.date.copyWith(hour: event.time.hour, minute: event.time.minute);
+      final inHourPeriod = await _notesRepository.checkNotePeriod(date) == null;
+      emitter(
+        AddNoteState$Idle(
+          date: date,
+          moodId: state.moodId,
+          sleepId: state.sleepId,
+          sleepDescription: state.sleepDescription,
+          foodId: state.foodId,
+          foodDescription: state.foodDescription,
+          inTwoHoursPeriod: inHourPeriod,
+        ),
+      );
+    } on Object {
+      rethrow;
+    }
   }
 
   void _onMoodChange(
@@ -164,7 +184,6 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
         date: state.date,
       );
       await _notesRepository.saveNote(note);
-
       emitter(AddNoteState$Created());
     } on Object {
       emitter(

@@ -388,7 +388,7 @@ class _AddNoteButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 100),
           child: OutlinedButton(
             style: AppButtonStyle.addNoteButtonStyle,
-            onPressed: addNoteState.inTwoHoursPeriod ?? false
+            onPressed: addNoteState.inTwoHoursPeriod ?? true
                 ? () => _onAddButton(context)
                 : null,
             child: const Text(
