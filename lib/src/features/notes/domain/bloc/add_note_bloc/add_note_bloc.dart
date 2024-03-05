@@ -12,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
   AddNoteBloc({required NotesRepository notesRepository})
       : _notesRepository = notesRepository,
-        super(AddNoteState$Idle(date: DateTime.now())) {
+        super(AddNoteState$Initial(date: DateTime.now())) {
     on<AddNoteEvent>(
       (event, emitter) => switch (event) {
         final AddNoteEvent$Initialize event => _onInitialize(event, emitter),
@@ -35,11 +35,27 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
 
   final NotesRepository _notesRepository;
 
-  void _onInitialize(
+  Future<void> _onInitialize(
     AddNoteEvent$Initialize event,
     Emitter<AddNoteState> emitter,
-  ) {
-
+  ) async {
+    try {
+      final inHourPeriod =
+          await _notesRepository.checkNotePeriod(state.date) == null;
+      emitter(
+        AddNoteState$Idle(
+          date: state.date,
+          moodId: state.moodId,
+          sleepId: state.sleepId,
+          sleepDescription: state.sleepDescription,
+          foodId: state.foodId,
+          foodDescription: state.foodDescription,
+          inTwoHoursPeriod: inHourPeriod,
+        ),
+      );
+    } on Object {
+      rethrow;
+    }
   }
 
   void _onDateChange(
@@ -74,7 +90,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
         ),
       );
       final date =
-      state.date.copyWith(hour: event.time.hour, minute: event.time.minute);
+          state.date.copyWith(hour: event.time.hour, minute: event.time.minute);
       final inHourPeriod = await _notesRepository.checkNotePeriod(date) == null;
       emitter(
         AddNoteState$Idle(

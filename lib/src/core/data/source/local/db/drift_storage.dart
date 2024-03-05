@@ -48,8 +48,7 @@ class AppDb extends _$AppDb {
                 date.subtract(const Duration(hours: 2)),
                 date.add(const Duration(hours: 2)),
               ),
-            ))
-          .getSingleOrNull();
+            )).get().then((value) => value.isEmpty ? null : value.first);
 
   Future<void> createAllTablesAgain() async {
     final migrator = createMigrator();

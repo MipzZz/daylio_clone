@@ -29,6 +29,58 @@ sealed class AddNoteState {
   });
 }
 
+final class AddNoteState$Initial implements AddNoteState {
+  AddNoteState$Initial({
+    required this.date,
+    this.moodId = 0,
+    this.foodId = 0,
+    this.foodDescription = '',
+    this.sleepId = 0,
+    this.sleepDescription = '',
+    this.inTwoHoursPeriod,
+  });
+
+  @override
+  final DateTime date;
+
+  @override
+  final int moodId;
+
+  @override
+  final int foodId;
+
+  @override
+  final String foodDescription;
+
+  @override
+  final int sleepId;
+
+  @override
+  final String sleepDescription;
+
+  @override
+  final bool? inTwoHoursPeriod;
+
+  @override
+  AddNoteState$Initial copyWith({
+    DateTime? date,
+    int? moodId,
+    int? foodId,
+    String? foodDescription,
+    int? sleepId,
+    String? sleepDescription,
+    bool? inTwoHoursPeriod,
+  }) => AddNoteState$Initial(
+      date: date ?? this.date,
+      moodId: moodId ?? this.moodId,
+      foodId: foodId ?? this.foodId,
+      foodDescription: foodDescription ?? this.foodDescription,
+      sleepId: sleepId ?? this.sleepId,
+      sleepDescription: sleepDescription ?? this.sleepDescription,
+      inTwoHoursPeriod: inTwoHoursPeriod ?? this.inTwoHoursPeriod,
+    );
+}
+
 @immutable
 final class AddNoteState$Idle implements AddNoteState {
   const AddNoteState$Idle({
