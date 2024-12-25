@@ -43,17 +43,16 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  Future<void> _addNote() async {
-    Navigator.pushNamed(context, '/add_note');
-  }
+  Future<void> _addNote() async =>
+    await Navigator.pushNamed(context, '/add_note');
 
-  Future<void> _onDebug() async {
-    Navigator.pushNamed(context, '/debug');
-  }
+
+  Future<void> _onDebug() async =>
+     Navigator.pushNamed(context, '/debug');
+
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.bug_report),
@@ -197,5 +196,4 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
     );
-  }
 }

@@ -45,6 +45,7 @@ dependencies:
   json_annotation: ^4.8.1
   font_awesome_flutter: ^10.7.0
   collection: ^1.18.0
+  auto_route: ^9.2.2
 
 
 
