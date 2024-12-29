@@ -1,4 +1,4 @@
-import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/color_palette.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/grade_label.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +9,7 @@ class SearchScreen extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: const Text('Поиск'),
-          backgroundColor: AppColors.appBarSearch,
+          backgroundColor: ColorPalette.appBarSearch,
         ),
         body: SafeArea(
           child: Column(
@@ -17,7 +17,7 @@ class SearchScreen extends StatelessWidget {
             children: [
               const DecoratedBox(
                 decoration: BoxDecoration(
-                  color: AppColors.appBarSearch,
+                  color: ColorPalette.appBarSearch,
                 ),
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15.0),
@@ -35,7 +35,7 @@ class SearchScreen extends StatelessWidget {
                             ),
                           ),
                           filled: true,
-                          fillColor: AppColors.background,
+                          fillColor: ColorPalette.background,
                         ),
                       ),
                       SizedBox(height: 15),
@@ -49,7 +49,7 @@ class SearchScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.mainGreen,
+                    backgroundColor: ColorPalette.mainGreen,
                   ),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

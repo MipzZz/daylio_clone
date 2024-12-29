@@ -1,11 +1,11 @@
-import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/color_palette.dart';
 import 'package:flutter/material.dart';
 
 abstract class AppTextStyle {
   static const TextStyle statisticText = TextStyle(fontSize: 20);
   static const TextStyle noteListItemSub = TextStyle(
     fontSize: 13,
-    color: AppColors.mainTextColor,
+    color: ColorPalette.mainTextColor,
   );
   static const TextStyle title = TextStyle(
     fontSize: 18,
@@ -17,11 +17,11 @@ abstract class AppTextStyle {
   );
   static const TextStyle dropdownLabel = TextStyle(
     fontSize: 16.5,
-    color: AppColors.labelTextColor,
+    color: ColorPalette.labelTextColor,
   );
   static const TextStyle dateHeader = TextStyle(
     fontSize: 14.5,
-    color: AppColors.headerNoteTextColor,
+    color: ColorPalette.headerNoteTextColor,
   );
   static const TextStyle missedDaysText = TextStyle(
     color: Color.fromARGB(255, 232, 232, 232),
@@ -34,6 +34,6 @@ abstract class AppTextStyle {
   );
   static const TextStyle rangeText = TextStyle(
     fontSize: 16,
-    color: AppColors.mainTextColor,
+    color: ColorPalette.mainTextColor,
   );
 }

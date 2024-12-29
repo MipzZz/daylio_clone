@@ -1,50 +1,69 @@
-import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/color_palette.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/color_scheme.dart';
 import 'package:flutter/material.dart';
 
 abstract class AppThemeData {
-  static final darkMainTheme = ThemeData(
-    colorScheme: const ColorScheme(
-      brightness: Brightness.dark,
-      // Splash, выделение, цвет рефреш значка, изменение цвета аппабра при скролее
-      primary: AppColors.primary,
-      // primaryContainer: Colors.orangeAccent,
-      // цвет на выделении
-      onPrimary: AppColors.onPrimary,
-      // Выделение периода
-      secondary: AppColors.secondary,
-      secondaryContainer: AppColors.secondaryContainer,
+
+  static final lightTheme = ThemeData(
+    colorScheme: ColorScheme(
+      brightness: Brightness.light,
+      primary: _lightColorScheme.primary,
+      onPrimary: ColorPalette.onPrimary,
+      secondary: ColorPalette.secondary,
+      secondaryContainer: ColorPalette.secondaryContainer,
       onSecondary: Colors.lime,
       error: Colors.redAccent,
       onError: Colors.redAccent,
-      background: AppColors.background,
-      onBackground: Colors.grey,
-      // Цвет дропдаун меню, пик даты, пик веремени меню
-      surface: AppColors.surface,
-      // Цвет текста пик даты, пик веремени меню, дропдаун меню
-      onSurface: AppColors.onSurface,
+      surface: ColorPalette.surface,
+      onSurface: ColorPalette.onSurface,
     ),
     datePickerTheme: const DatePickerThemeData(
-      surfaceTintColor: AppColors.surfaceTintColor,
+      surfaceTintColor: ColorPalette.surfaceTintColor,
     ),
     timePickerTheme: const TimePickerThemeData(
-      backgroundColor: AppColors.timePickerBackGroundColor,
+      backgroundColor: ColorPalette.timePickerBackGroundColor,
+    ),
+    extensions: [_lightColorScheme],
+  );
+
+
+  static final darkTheme = ThemeData(
+    colorScheme: ColorScheme(
+      brightness: Brightness.dark,
+      primary: _darkColorScheme.primary,
+      onPrimary: ColorPalette.onPrimary,
+      secondary: ColorPalette.secondary,
+      secondaryContainer: ColorPalette.secondaryContainer,
+      onSecondary: Colors.lime,
+      error: Colors.redAccent,
+      onError: Colors.redAccent,
+      surface: ColorPalette.surface,
+      onSurface: ColorPalette.onSurface,
+    ),
+    datePickerTheme: const DatePickerThemeData(
+      surfaceTintColor: ColorPalette.surfaceTintColor,
+    ),
+    timePickerTheme: const TimePickerThemeData(
+      backgroundColor: ColorPalette.timePickerBackGroundColor,
     ),
     appBarTheme: const AppBarTheme(
-      foregroundColor: AppColors.mainTextColor,
-      backgroundColor: AppColors.background,
+      foregroundColor: ColorPalette.mainTextColor,
+      backgroundColor: ColorPalette.background,
       titleTextStyle: TextStyle(
-        color: AppColors.mainTextColor,
+        color: ColorPalette.mainTextColor,
         fontSize: 20,
       ),
     ),
-    scaffoldBackgroundColor: AppColors.background,
+    scaffoldBackgroundColor: ColorPalette.background,
     bottomAppBarTheme: const BottomAppBarTheme(
-      color: AppColors.bottomNavigationBarBackground,
-      // selectedItemColor: Colors.black
+      color: ColorPalette.bottomNavigationBarBackground,
     ),
     textTheme: Typography.whiteRedmond,
     buttonTheme: const ButtonThemeData(
       textTheme: ButtonTextTheme.accent,
     ),
   );
+
+  static final _lightColorScheme = AppColorScheme.light();
+  static final _darkColorScheme = AppColorScheme.dark();
 }

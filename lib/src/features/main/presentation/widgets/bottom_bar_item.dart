@@ -1,4 +1,4 @@
-import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/color_palette.dart';
 import 'package:daylio_clone/src/features/main/domain/entity/bottom_bar_item_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -17,8 +17,8 @@ class BottomBarItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isSelected
-        ? AppColors.bottomNavigationBarSelectedItemColor
-        : AppColors.bottomNavigationBarUnselectedItemColor;
+        ? ColorPalette.bottomNavigationBarSelectedItemColor
+        : ColorPalette.bottomNavigationBarUnselectedItemColor;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

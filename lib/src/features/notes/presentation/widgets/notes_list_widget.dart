@@ -1,5 +1,5 @@
 import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
-import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/color_palette.dart';
 import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
 import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
 import 'package:daylio_clone/src/features/navigation/domain/app_routes.dart';
@@ -146,7 +146,7 @@ class _NotesListViewState extends State<_NotesListView> {
         child: DecoratedBox(
           key: keyMonth,
           decoration: const BoxDecoration(
-            color: AppColors.headerNoteColor,
+            color: ColorPalette.headerNoteColor,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20.0),
               topRight: Radius.circular(20.0),
@@ -255,7 +255,7 @@ class SliverListItem extends StatelessWidget {
     );
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.listBackground,
+        color: ColorPalette.listBackground,
         borderRadius: borderRadius,
       ),
       child: Material(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-abstract class AppColors{
+abstract class ColorPalette {
   static const primary = Color.fromRGBO(49, 163, 129, 0.8);
   static const onPrimary = Color.fromRGBO(255, 255, 255, 1.0);
   static const secondary = Color.fromRGBO(10, 10, 10, 1.0);
@@ -15,8 +15,7 @@ abstract class AppColors{
 
   static const mainGreen = Color.fromRGBO(49, 163, 129, 0.8);
   static const background = Color.fromRGBO(10, 10, 10, 1.0);
-  static const listBackground = Color.fromRGBO(
-      29, 33, 36, 1.0,);
+  static const listBackground = Color.fromRGBO(29, 33, 36, 1.0);
   static const bottomNavigationBarBackground = Color.fromRGBO(6, 192, 116, 1.0);
   static const mainTextColor = Colors.white;
   static const bottomNavigationBarSelectedItemColor = Colors.black;

@@ -1,4 +1,4 @@
-import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/color_palette.dart';
 import 'package:flutter/material.dart';
 
 class AlertFailureDialogWidget extends StatelessWidget {
@@ -20,7 +20,7 @@ class AlertFailureDialogWidget extends StatelessWidget {
           onPressed: () => _goBack(context),
           child: const Text(
             'Ок',
-            style: TextStyle(color: AppColors.mainGreen),
+            style: TextStyle(color: ColorPalette.mainGreen),
           ),
         ),
       ],

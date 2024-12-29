@@ -1,5 +1,5 @@
 import 'package:daylio_clone/src/core/presentation/assets/buttons/app_button_style.dart';
-import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/color_palette.dart';
 import 'package:daylio_clone/src/core/presentation/assets/text/app_text_style.dart';
 import 'package:daylio_clone/src/core/utils/extensions/date_time_extension.dart';
 import 'package:daylio_clone/src/features/notes/domain/entity/moods_storage.dart';
@@ -104,7 +104,7 @@ class _NotesCountCard extends StatelessWidget {
   Widget build(BuildContext context) =>
       BlocBuilder<StatisticBloc, StatisticState>(
         builder: (context, statisticState) => Card(
-          color: AppColors.listBackground,
+          color: ColorPalette.listBackground,
           clipBehavior: Clip.hardEdge,
           child: InkWell(
             onTap: () {},
@@ -146,7 +146,7 @@ class _AverageMoodCard extends StatelessWidget {
   Widget build(BuildContext context) =>
       BlocBuilder<StatisticBloc, StatisticState>(
         builder: (context, statisticState) => Card(
-          color: AppColors.listBackground,
+          color: ColorPalette.listBackground,
           clipBehavior: Clip.hardEdge,
           child: InkWell(
             onTap: () {},
@@ -188,7 +188,7 @@ class _ActivityCountCard extends StatelessWidget {
   Widget build(BuildContext context) =>
       BlocBuilder<StatisticBloc, StatisticState>(
         builder: (context, statisticState) => Card(
-          color: AppColors.listBackground,
+          color: ColorPalette.listBackground,
           clipBehavior: Clip.hardEdge,
           child: InkWell(
             onTap: () {},
@@ -209,7 +209,7 @@ class _ActivityCountCard extends StatelessWidget {
                     ),
                     title: Text(
                       'Занятия',
-                      style: TextStyle(color: AppColors.mainTextColor),
+                      style: TextStyle(color: ColorPalette.mainTextColor),
                     ),
                     dense: true,
                     contentPadding: EdgeInsets.zero,

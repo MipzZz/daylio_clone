@@ -1,4 +1,4 @@
-import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/color_palette.dart';
 import 'package:daylio_clone/src/core/utils/extensions/string_extension.dart';
 import 'package:daylio_clone/src/features/main/presentation/widgets/bottom_bar_item.dart';
 import 'package:daylio_clone/src/features/more/presentation/view/more_screen.dart';
@@ -195,9 +195,9 @@ class _AddButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => FloatingActionButton(
         onPressed: () => _addNote(context),
-        backgroundColor: AppColors.bottomNavigationBarBackground,
+        backgroundColor: ColorPalette.bottomNavigationBarBackground,
         shape: const CircleBorder(
-          side: BorderSide(color: AppColors.background, width: 2.3),
+          side: BorderSide(color: ColorPalette.background, width: 2.3),
         ),
         foregroundColor: Colors.black,
         elevation: 10,

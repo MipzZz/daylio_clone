@@ -55,7 +55,7 @@ class _AppViewState extends State<AppView> {
           ),
         ],
         child: MaterialApp(
-          theme: AppThemeData.darkMainTheme,
+          theme: AppThemeData.darkTheme,
           title: 'Daylio Clone',
           routes: mainNavigator.routes,
           initialRoute: AppRouteNames.root,

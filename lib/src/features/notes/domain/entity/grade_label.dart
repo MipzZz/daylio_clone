@@ -1,13 +1,13 @@
 import 'dart:ui';
 
-import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/color_palette.dart';
 
 enum GradeLabel{
-  excellent('Отлично', AppColors.excellentGrade),
-  good('Хорошо', AppColors.goodGrade),
-  normal('Нормально', AppColors.normalGrade),
-  bad('Плохо', AppColors.badGrade),
-  terrible('Ужасно', AppColors.terribleGrade);
+  excellent('Отлично', ColorPalette.excellentGrade),
+  good('Хорошо', ColorPalette.goodGrade),
+  normal('Нормально', ColorPalette.normalGrade),
+  bad('Плохо', ColorPalette.badGrade),
+  terrible('Ужасно', ColorPalette.terribleGrade);
 
   const GradeLabel(this.title, this.color);
 

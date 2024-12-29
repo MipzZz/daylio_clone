@@ -1,31 +1,31 @@
-import 'package:daylio_clone/src/core/presentation/assets/colors/app_colors.dart';
+import 'package:daylio_clone/src/core/presentation/assets/colors/color_palette.dart';
 import 'package:flutter/material.dart';
 
 abstract class AppButtonStyle {
   static const buttonDateTimeStyle = ButtonStyle(
     // TODO(MipZ): Попробовать избавиться от MaterialState
-    backgroundColor: MaterialStatePropertyAll<Color>(AppColors.background),
-    foregroundColor: MaterialStatePropertyAll<Color>(AppColors.mainTextColor),
-    padding: MaterialStatePropertyAll<EdgeInsets>(
+    backgroundColor: WidgetStatePropertyAll<Color>(ColorPalette.background),
+    foregroundColor: WidgetStatePropertyAll<Color>(ColorPalette.mainTextColor),
+    padding: WidgetStatePropertyAll<EdgeInsets>(
       EdgeInsets.symmetric(vertical: 11.0, horizontal: 15.0),
     ),
   );
 
   static const addNoteButtonStyle = ButtonStyle(
-    backgroundColor: MaterialStatePropertyAll<Color>(AppColors.mainGreen),
-    foregroundColor: MaterialStatePropertyAll<Color>(Colors.white),
-    side: MaterialStatePropertyAll<BorderSide>(
+    backgroundColor: WidgetStatePropertyAll<Color>(ColorPalette.mainGreen),
+    foregroundColor: WidgetStatePropertyAll<Color>(Colors.white),
+    side: WidgetStatePropertyAll<BorderSide>(
       BorderSide(
-        color: AppColors.mainGreen,
+        color: ColorPalette.mainGreen,
         width: 2,
       ),
     ),
   );
 
   static const deleteNoteButtonStyle = ButtonStyle(
-    backgroundColor: MaterialStatePropertyAll<Color>(Colors.redAccent),
-    foregroundColor: MaterialStatePropertyAll<Color>(Colors.white),
-    side: MaterialStatePropertyAll<BorderSide>(
+    backgroundColor: WidgetStatePropertyAll<Color>(Colors.redAccent),
+    foregroundColor: WidgetStatePropertyAll<Color>(Colors.white),
+    side: WidgetStatePropertyAll<BorderSide>(
       BorderSide(color: Colors.redAccent, width: 2),
     ),
   );
